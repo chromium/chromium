@@ -28,6 +28,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Add-child"/>
   <variant name="Ai-intro"/>
   <variant name="App-downloading"/>
+  <variant name="App-launch-splash"/>
   <variant name="Apply-online-password"/>
   <variant name="Assistant-optin-flow"/>
   <variant name="Autolaunch" summary="(obsolete) Not used since M-129"/>
@@ -114,6 +115,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Add-child"/>
   <variant name="Ai-intro"/>
   <variant name="App-downloading"/>
+  <variant name="App-launch-splash"/>
   <variant name="Apply-online-password"/>
   <variant name="Assistant-optin-flow"/>
   <variant name="Auto-enrollment-check"/>

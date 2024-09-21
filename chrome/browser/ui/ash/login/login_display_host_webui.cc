@@ -630,7 +630,9 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   DVLOG(1) << "Starting wizard, first_screen: " << first_screen;
 
   // Create and show the wizard.
-  if (wizard_controller_) {
+  if (wizard_controller_ && !wizard_controller_->is_initialized()) {
+    wizard_controller_->Init(first_screen);
+  } else if (wizard_controller_) {
     wizard_controller_->AdvanceToScreen(first_screen);
   } else {
     wizard_controller_ = std::make_unique<WizardController>(GetWizardContext());
@@ -700,6 +702,10 @@ void LoginDisplayHostWebUI::OnStartAppLaunch() {
   }
 
   login_view_->set_should_emit_login_prompt_visible(false);
+  if (!wizard_controller_) {
+    wizard_controller_ = std::make_unique<WizardController>(GetWizardContext());
+    NotifyWizardCreated();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

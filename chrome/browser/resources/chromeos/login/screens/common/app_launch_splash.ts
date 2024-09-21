@@ -33,6 +33,10 @@ interface AppLaunchSplashScreenData {
   appInfo: AppData;
 }
 
+enum UserAction {
+  CONFIGURE_NETWORK = 'configure-network',
+}
+
 class AppLaunchSplash extends AppLaunchSplashBase {
   static get is() {
     return 'app-launch-splash-element' as const;
@@ -64,7 +68,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
   private launchText: string;
 
   override get EXTERNAL_API(): string[] {
-    return ['toggleNetworkConfig', 'updateApp', 'updateMessage'];
+    return ['toggleNetworkConfig', 'setAppData', 'updateMessage'];
   }
 
   override ready(): void {
@@ -91,7 +95,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
   }
 
   private onConfigNetwork(): void {
-    chrome.send('configureNetwork');
+    this.userActed(UserAction.CONFIGURE_NETWORK);
   }
 
   private onConfigNetworkTransitionend(): void {
@@ -113,11 +117,21 @@ class AppLaunchSplash extends AppLaunchSplashBase {
     // If the screen is reshown from the ErrorScreen using the default callback
     // data might be undefined.
     if (data) {
-      this.updateApp(data['appInfo']);
-      const shortcutInfo = this.shadowRoot.getElementById('shortcutInfo');
-      assert(shortcutInfo instanceof HTMLElement);
-      shortcutInfo.hidden = !data['shortcutEnabled'];
+      this.setAppData(data);
     }
+  }
+
+  setAppData(data: AppLaunchSplashScreenData): void {
+    const appInfo: AppData = data['appInfo'];
+    this.appName = appInfo.name;
+    this.appUrl = appInfo.url;
+    const header = this.shadowRoot!.getElementById('header');
+    assert(header instanceof HTMLElement);
+    header.style.backgroundImage = 'url(' + appInfo.iconURL + ')';
+
+    const shortcutInfo = this.shadowRoot!.getElementById('shortcutInfo');
+    assert(shortcutInfo instanceof HTMLElement);
+    shortcutInfo.hidden = !data['shortcutEnabled'];
   }
 
   /**
@@ -140,17 +154,6 @@ class AppLaunchSplash extends AppLaunchSplashBase {
       this.shadowRoot!.getElementById('configNetworkContainer')!.classList.add(
           'faded');
     }
-  }
-
-  /**
-   * Updates the app name and icon.
-   * @param app Details of app being launched.
-   */
-  updateApp(app: AppData): void {
-    this.appName = app.name;
-    this.appUrl = app.url;
-    this.shadowRoot!.getElementById('header')!.style.backgroundImage =
-        'url(' + app.iconURL + ')';
   }
 
   /**

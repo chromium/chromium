@@ -19,6 +19,8 @@ static_library("screens") {
     "ai_intro_screen.h",
     "app_downloading_screen.cc",
     "app_downloading_screen.h",
+    "app_launch_splash_screen.cc",
+    "app_launch_splash_screen.h",
     "arc_vm_data_migration_screen.cc",
     "arc_vm_data_migration_screen.h",
     "assistant_optin_flow_screen.cc",
@@ -170,6 +172,7 @@ static_library("screens") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/app_discovery_service",
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/auth",
     "//chrome/browser/ash/base",
     "//chrome/browser/ash/drive",
@@ -237,6 +240,7 @@ static_library("screens") {
     "//build:branding_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
+    "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/apps:user_type_filter",
@@ -343,6 +347,7 @@ static_library("screens") {
 
   allow_circular_includes_from = [
     "//chrome/browser/ash/arc/optin",
+    "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/app_mode",
     "//chrome/browser/ash/login/lock",
@@ -358,6 +363,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_app_launch_splash_screen.cc",
+    "fake_app_launch_splash_screen.h",
     "mock_consolidated_consent_screen.cc",
     "mock_consolidated_consent_screen.h",
     "mock_demo_preferences_screen.cc",

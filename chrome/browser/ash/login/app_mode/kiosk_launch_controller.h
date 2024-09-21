@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/app_mode/load_profile.h"
 #include "chrome/browser/ash/login/app_mode/force_install_observer.h"
 #include "chrome/browser/ash/login/app_mode/network_ui_controller.h"
-#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
+#include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 
 namespace app_mode {
 class ForceInstallObserver;
@@ -39,7 +39,6 @@ namespace ash {
 class KioskProfileLoadFailedObserver;
 class KioskTestHelper;
 class LoginDisplayHost;
-class OobeUI;
 
 extern const base::TimeDelta kDefaultKioskSplashScreenMinTime;
 
@@ -118,12 +117,12 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
       base::OnceCallback<void(KioskAppLaunchError::Error error)>;
 
   KioskLaunchController(LoginDisplayHost* host,
-                        OobeUI* oobe_ui,
                         AppLaunchedCallback app_launched_callback,
+                        AppLaunchSplashScreen* splash_screen,
                         LaunchCompleteCallback done_callback);
   KioskLaunchController(
       LoginDisplayHost* host,
-      AppLaunchSplashScreenView* splash_screen,
+      AppLaunchSplashScreen* splash_screen,
       kiosk::LoadProfileCallback profile_loader,
       AppLaunchedCallback app_launched_callback,
       LaunchCompleteCallback done_callback,
@@ -209,7 +208,13 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   void HandleProfileLoadError(KioskAppLaunchError::Error error);
 
   // Returns the `Data` struct used to populate the splash screen.
-  AppLaunchSplashScreenView::Data GetSplashScreenAppData();
+  AppLaunchSplashScreen::Data GetSplashScreenAppData();
+
+  // Shows the app launch screen after it's populated with `data`.
+  void ShowAppLaunchSplashScreen(AppLaunchSplashScreen::Data data);
+
+  // Updates the app data shown in the app launch splash screen.
+  void UpdateSplashScreenData(AppLaunchSplashScreen::Data data);
 
   // Continues launching after forced extensions are installed if required.
   // If it times out waiting for extensions to install, logs metrics via UMA.
@@ -236,8 +241,8 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
 
   // Not owned, destructed upon shutdown.
   raw_ptr<LoginDisplayHost> host_ = nullptr;
-  // Owned by OobeUI.
-  raw_ptr<AppLaunchSplashScreenView> splash_screen_view_ = nullptr;
+  // Owned by WizardController.
+  raw_ptr<AppLaunchSplashScreen> splash_screen_ = nullptr;
   // Current app. Present once `Start` is called.
   std::optional<KioskApp> kiosk_app_;
   // Current app browser window name. Present once the app window is created.

@@ -548,8 +548,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddWebUIHandler(std::make_unique<SshConfiguredHandler>());
 
-  AddScreenHandler(std::make_unique<AppLaunchSplashScreenHandler>(
-      network_state_informer_, error_screen));
+  AddScreenHandler(std::make_unique<AppLaunchSplashScreenHandler>());
 
   AddScreenHandler(std::make_unique<DeviceDisabledScreenHandler>());
 

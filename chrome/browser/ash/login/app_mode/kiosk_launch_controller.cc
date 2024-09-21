@@ -58,7 +58,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -298,12 +297,12 @@ class KioskLaunchController::ScopedAcceleratorDisabler {
 
 KioskLaunchController::KioskLaunchController(
     LoginDisplayHost* host,
-    OobeUI* oobe_ui,
     AppLaunchedCallback app_launched_callback,
+    AppLaunchSplashScreen* splash_screen,
     LaunchCompleteCallback done_callback)
     : KioskLaunchController(
           host,
-          oobe_ui->GetView<AppLaunchSplashScreenHandler>(),
+          splash_screen,
           /*profile_loader=*/base::BindOnce(&LoadProfile),
           /*app_launched_callback=*/std::move(app_launched_callback),
           /*done_callback=*/std::move(done_callback),
@@ -315,7 +314,7 @@ KioskLaunchController::KioskLaunchController(
 
 KioskLaunchController::KioskLaunchController(
     LoginDisplayHost* host,
-    AppLaunchSplashScreenView* splash_screen,
+    AppLaunchSplashScreen* splash_screen,
     LoadProfileCallback profile_loader,
     AppLaunchedCallback app_launched_callback,
     LaunchCompleteCallback done_callback,
@@ -325,12 +324,12 @@ KioskLaunchController::KioskLaunchController(
     std::unique_ptr<NetworkUiController::NetworkMonitor> network_monitor,
     std::unique_ptr<AcceleratorController> accelerator_controller)
     : host_(host),
-      splash_screen_view_(splash_screen),
+      splash_screen_(splash_screen),
       app_launcher_factory_(std::move(app_launcher_factory)),
       network_ui_controller_(std::make_unique<NetworkUiController>(
           *this,
           host_,
-          CHECK_DEREF(splash_screen_view_.get()),
+          CHECK_DEREF(splash_screen_.get()),
           std::move(network_monitor))),
       app_launched_callback_(std::move(app_launched_callback)),
       done_callback_(std::move(done_callback)),
@@ -370,7 +369,7 @@ void KioskLaunchController::Start(KioskApp kiosk_app, bool auto_launch) {
 
   network_ui_controller_->Start();
 
-  splash_screen_view_->Show(GetSplashScreenAppData());
+  ShowAppLaunchSplashScreen(GetSplashScreenAppData());
 
   splash_wait_timer_.Start(FROM_HERE, GetSplashScreenMinTime(),
                            base::BindOnce(&KioskLaunchController::OnTimerFire,
@@ -490,9 +489,8 @@ void KioskLaunchController::OnCancelAppLaunch() {
   OnLaunchFailed(KioskAppLaunchError::Error::kUserCancel);
 }
 
-AppLaunchSplashScreenView::Data
-KioskLaunchController::GetSplashScreenAppData() {
-  return AppLaunchSplashScreenView::Data(
+AppLaunchSplashScreen::Data KioskLaunchController::GetSplashScreenAppData() {
+  return AppLaunchSplashScreen::Data(
       kiosk_app().name(), kiosk_app().icon(),
       /*url=*/kiosk_app().url().value_or(GURL()));
 }
@@ -503,7 +501,7 @@ void KioskLaunchController::CleanUp() {
 
   splash_wait_timer_.Stop();
 
-  splash_screen_view_ = nullptr;
+  splash_screen_ = nullptr;
 
   app_launcher_observation_.Reset();
 
@@ -543,27 +541,27 @@ void KioskLaunchController::OnAppInstalling() {
   SYSLOG(INFO) << "Kiosk app started installing.";
 
   app_state_ = AppState::kInstallingApp;
-  if (!splash_screen_view_) {
+  if (!splash_screen_) {
     return;
   }
-  splash_screen_view_->UpdateAppLaunchState(
-      AppLaunchSplashScreenView::AppLaunchState::kInstallingApplication);
 
-  splash_screen_view_->Show(GetSplashScreenAppData());
+  splash_screen_->UpdateAppLaunchState(
+      AppLaunchSplashScreenView::AppLaunchState::kInstallingApplication);
+  UpdateSplashScreenData(GetSplashScreenAppData());
 }
 
 void KioskLaunchController::OnAppPrepared() {
   SYSLOG(INFO) << "Kiosk app is ready to launch.";
 
-  if (!splash_screen_view_) {
+  if (!splash_screen_) {
     return;
   }
 
   app_state_ = AppState::kInstallingExtensions;
 
-  splash_screen_view_->UpdateAppLaunchState(
+  splash_screen_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kInstallingExtension);
-  splash_screen_view_->Show(GetSplashScreenAppData());
+  UpdateSplashScreenData(GetSplashScreenAppData());
 
   force_install_observer_ = std::make_unique<app_mode::ForceInstallObserver>(
       profile_,
@@ -635,20 +633,20 @@ void KioskLaunchController::FinishForcedExtensionsInstall(
 
   switch (result) {
     case app_mode::ForceInstallObserver::Result::kTimeout:
-      splash_screen_view_->ShowErrorMessage(
+      splash_screen_->ShowErrorMessage(
           KioskAppLaunchError::Error::kExtensionsLoadTimeout);
       break;
     case app_mode::ForceInstallObserver::Result::kInvalidPolicy:
-      splash_screen_view_->ShowErrorMessage(
+      splash_screen_->ShowErrorMessage(
           KioskAppLaunchError::Error::kExtensionsPolicyInvalid);
       break;
     case app_mode::ForceInstallObserver::Result::kSuccess:
       break;
   }
 
-  splash_screen_view_->UpdateAppLaunchState(
+  splash_screen_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
-  splash_screen_view_->Show(GetSplashScreenAppData());
+  UpdateSplashScreenData(GetSplashScreenAppData());
 
   if (launch_on_install_ || TestOverrides::skip_splash_wait) {
     LaunchApp();
@@ -658,10 +656,10 @@ void KioskLaunchController::FinishForcedExtensionsInstall(
 void KioskLaunchController::OnAppLaunched() {
   SYSLOG(INFO) << "Kiosk launch succeeded, wait for app window.";
   app_state_ = AppState::kLaunched;
-  if (splash_screen_view_) {
-    splash_screen_view_->UpdateAppLaunchState(
+  if (splash_screen_) {
+    splash_screen_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kWaitingAppWindow);
-    splash_screen_view_->Show(GetSplashScreenAppData());
+    UpdateSplashScreenData(GetSplashScreenAppData());
   }
   session_manager::SessionManager::Get()->SessionStarted();
 }
@@ -688,10 +686,8 @@ void KioskLaunchController::OnAppWindowCreated(
 }
 
 void KioskLaunchController::OnAppDataUpdated() {
-  // Invokes Show() to update the app title and icon.
-  if (splash_screen_view_) {
-    splash_screen_view_->Show(GetSplashScreenAppData());
-  }
+  // Updates the app title and icon in the app launch splash screen.
+  UpdateSplashScreenData(GetSplashScreenAppData());
 }
 
 void KioskLaunchController::HandleProfileLoadError(
@@ -724,10 +720,10 @@ void KioskLaunchController::OnNetworkConfigureUiShowing() {
 }
 
 void KioskLaunchController::OnNetworkConfigureUiFinished() {
-  if (splash_screen_view_) {
-    splash_screen_view_->UpdateAppLaunchState(
+  if (splash_screen_) {
+    splash_screen_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kPreparingProfile);
-    splash_screen_view_->Show(GetSplashScreenAppData());
+    UpdateSplashScreenData(GetSplashScreenAppData());
   }
 
   InitializeLauncher();
@@ -775,6 +771,23 @@ const KioskApp& KioskLaunchController::kiosk_app() const {
 
 const KioskAppId& KioskLaunchController::kiosk_app_id() const {
   return kiosk_app().id();
+}
+
+void KioskLaunchController::ShowAppLaunchSplashScreen(
+    AppLaunchSplashScreen::Data data) {
+  UpdateSplashScreenData(std::move(data));
+  if (host_) {
+    host_->StartWizard(AppLaunchSplashScreenView::kScreenId);
+  } else {
+    CHECK_IS_TEST();
+  }
+}
+
+void KioskLaunchController::UpdateSplashScreenData(
+    AppLaunchSplashScreen::Data data) {
+  if (splash_screen_) {
+    splash_screen_->SetAppData(std::move(data));
+  }
 }
 
 NetworkUiController* KioskLaunchController::GetNetworkUiControllerForTesting() {

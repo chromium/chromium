@@ -59,6 +59,7 @@
 #include "chrome/browser/ash/login/screens/add_child_screen.h"
 #include "chrome/browser/ash/login/screens/ai_intro_screen.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
+#include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
 #include "chrome/browser/ash/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
@@ -1020,6 +1021,12 @@ WizardController::CreateScreens() {
                             weak_factory_.GetWeakPtr())));
   }
 
+  append(std::make_unique<AppLaunchSplashScreen>(
+      oobe_ui->GetView<AppLaunchSplashScreenHandler>()->AsWeakPtr(),
+      oobe_ui->GetErrorScreen(),
+      base::BindRepeating(&WizardController::OnAppLaunchSplashScreenExit,
+                          weak_factory_.GetWeakPtr())));
+
   return result;
 }
 
@@ -1352,6 +1359,10 @@ void WizardController::ShowCryptohomeRecoveryScreen(
 
 void WizardController::ShowAccountSelectionScreen() {
   SetCurrentScreen(GetScreen(AccountSelectionScreenView::kScreenId));
+}
+
+void WizardController::ShowAppLaunchSplashScreen() {
+  SetCurrentScreen(GetScreen(AppLaunchSplashScreenView::kScreenId));
 }
 
 void WizardController::OnUserCreationScreenExit(
@@ -2776,6 +2787,11 @@ void WizardController::OnPackagedLicenseScreenExit(
   }
 }
 
+void WizardController::OnAppLaunchSplashScreenExit() {
+  // TODO(b/343483938): Exit AppLaunchSplashScreen before launching the app.
+  NOTIMPLEMENTED();
+}
+
 void WizardController::OnOobeFlowFinished() {
   if (GetLoginDisplayHost()
           ->GetWizardContext()
@@ -3114,10 +3130,7 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
   } else if (screen_id == AutoEnrollmentCheckScreenView::kScreenId) {
     ShowAutoEnrollmentCheckScreen();
   } else if (screen_id == AppLaunchSplashScreenView::kScreenId) {
-    auto app = KioskController::Get().GetAutoLaunchApp();
-    CHECK(app.has_value());
-    CHECK_EQ(app->id().type, KioskAppType::kChromeApp);
-    AutoLaunchKioskApp(app.value());
+    ShowAppLaunchSplashScreen();
   } else if (screen_id == HIDDetectionView::kScreenId) {
     ShowHIDDetectionScreen();
   } else if (screen_id == DeviceDisabledScreenView::kScreenId) {

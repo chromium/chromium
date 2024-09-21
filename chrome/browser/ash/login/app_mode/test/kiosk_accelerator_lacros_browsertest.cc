@@ -5,6 +5,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_observer.h"

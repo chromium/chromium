@@ -179,6 +179,7 @@ static_library("test_support") {
     "//testing/gmock",
   ]
   deps = [
+    "//chrome/browser/ash/login/screens",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
     "//chrome/common",

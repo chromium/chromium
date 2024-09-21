@@ -362,8 +362,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "fake_app_launch_splash_screen_handler.cc",
-    "fake_app_launch_splash_screen_handler.h",
     "fake_update_required_screen_handler.cc",
     "fake_update_required_screen_handler.h",
   ]

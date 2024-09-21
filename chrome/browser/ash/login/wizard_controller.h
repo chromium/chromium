@@ -358,6 +358,7 @@ class WizardController : public OobeUI::Observer {
   void ShowPerksDiscoveryScreen();
   void ShowSplitModifierKeyboardInfoScreen();
   void ShowAccountSelectionScreen();
+  void ShowAppLaunchSplashScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -474,6 +475,8 @@ class WizardController : public OobeUI::Observer {
   void OnPersonalizedRecomendAppsScreenExit(
       PersonalizedRecommendAppsScreen::Result result);
   void OnPerksDiscoveryScreenExit(PerksDiscoveryScreen::Result result);
+  void OnAppLaunchSplashScreenExit();
+
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
   void OnDeviceDisabledChecked(bool device_disabled);

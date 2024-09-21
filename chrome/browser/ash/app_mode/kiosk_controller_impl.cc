@@ -39,6 +39,8 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -167,7 +169,8 @@ void KioskControllerImpl::InitializeKioskSystemSession(
 
 void KioskControllerImpl::StartSession(const KioskAppId& app_id,
                                        bool is_auto_launch,
-                                       LoginDisplayHost* host) {
+                                       LoginDisplayHost* host,
+                                       AppLaunchSplashScreen* splash_screen) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK_EQ(launch_controller_, nullptr);
@@ -179,10 +182,11 @@ void KioskControllerImpl::StartSession(const KioskAppId& app_id,
   KioskApp app = std::move(app_maybe).value_or(EmptyKioskApp(app_id));
 
   launch_controller_ = std::make_unique<KioskLaunchController>(
-      host, host->GetOobeUI(),
+      host,
       /*app_launched_callback=*/
       base::BindOnce(&KioskControllerImpl::OnAppLaunched,
                      base::Unretained(this)),
+      /*splash_screen=*/splash_screen,
       /*done_callback=*/
       base::BindOnce(&KioskControllerImpl::OnLaunchComplete,
                      base::Unretained(this)));

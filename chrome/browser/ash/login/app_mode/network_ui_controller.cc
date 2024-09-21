@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
-#include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -61,20 +60,20 @@ namespace ash {
 NetworkUiController::NetworkUiController(
     Observer& observer,
     LoginDisplayHost* host,
-    AppLaunchSplashScreenView& splash_screen,
+    AppLaunchSplashScreen& splash_screen,
     std::unique_ptr<NetworkMonitor> network_monitor)
     : observer_(observer),
       host_(host),
-      splash_screen_view_(splash_screen),
+      splash_screen_(splash_screen),
       network_monitor_(std::move(network_monitor)) {
   if (!host_) {
     CHECK_IS_TEST();
   }
-  splash_screen_view_->SetDelegate(this);
+  splash_screen_->SetDelegate(this);
 }
 
 NetworkUiController::~NetworkUiController() {
-  splash_screen_view_->SetDelegate(nullptr);
+  splash_screen_->SetDelegate(nullptr);
 }
 
 void NetworkUiController::Start() {
@@ -89,7 +88,7 @@ void NetworkUiController::UserRequestedNetworkConfig() {
   if (!profile_) {
     SYSLOG(INFO) << "Postponing network dialog till profile is loaded.";
     network_ui_state_ = NetworkUIState::kNeedToShow;
-    splash_screen_view_->UpdateAppLaunchState(
+    splash_screen_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kShowingNetworkConfigureUI);
     return;
   }
@@ -117,7 +116,7 @@ void NetworkUiController::InitializeNetwork() {
   // Asking to initialize network means the app requires network. Remember that.
   network_required_ = true;
 
-  splash_screen_view_->UpdateAppLaunchState(
+  splash_screen_->UpdateAppLaunchState(
       AppLaunchSplashScreenView::AppLaunchState::kPreparingNetwork);
 
   if (IsNetworkReady()) {
@@ -182,8 +181,8 @@ void NetworkUiController::OnNetworkOffline() {
 }
 
 void NetworkUiController::CloseNetworkConfigureUI() {
-  splash_screen_view_->ToggleNetworkConfig(false);
-  splash_screen_view_->ContinueAppLaunch();
+  splash_screen_->ToggleNetworkConfig(false);
+  splash_screen_->ContinueAppLaunch();
 }
 
 bool NetworkUiController::IsNetworkReady() const {
@@ -193,7 +192,7 @@ bool NetworkUiController::IsNetworkReady() const {
 void NetworkUiController::MaybeShowNetworkConfigureUI() {
   SYSLOG(INFO) << "Network configure UI was requested to be shown.";
   if (!CanConfigureNetwork()) {
-    splash_screen_view_->UpdateAppLaunchState(
+    splash_screen_->UpdateAppLaunchState(
         AppLaunchSplashScreenView::AppLaunchState::kNetworkWaitTimeout);
     return;
   }
@@ -212,8 +211,8 @@ void NetworkUiController::ShowNetworkConfigureUI() {
   if (!network_required_) {
     state = NetworkStateInformer::ONLINE;
   }
-  splash_screen_view_->ShowNetworkConfigureUI(
-      state, network_monitor_->GetNetworkName());
+  splash_screen_->ShowNetworkConfigureUI(state,
+                                         network_monitor_->GetNetworkName());
 
   observer_->OnNetworkConfigureUiShowing();
 }
