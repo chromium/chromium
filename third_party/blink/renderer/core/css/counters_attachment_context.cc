@@ -131,43 +131,34 @@ void CountersAttachmentContext::EnterElement(const Element& element) {
     return;
   }
   const CounterDirectiveMap* counter_directives = style->GetCounterDirectives();
-  if (!counter_directives) {
-    // If this element doesn't have any counter directives on it,
-    // it still can generate list-item counter or create a style
-    // containment scope.
-    if (ElementGeneratesListItemCounter(element)) {
-      MaybeCreateListItemCounter(element);
+  if (counter_directives) {
+    for (auto& [counter_name, directives] : *counter_directives) {
+      std::optional<std::pair<unsigned, int>> type_and_value =
+          DetermineCounterTypeAndValue(*layout_object, directives);
+      if (!type_and_value.has_value()) {
+        continue;
+      }
+      // First, there might be some counters on stack that are stale,
+      // remove those (e.g. remove counters whose parent is not
+      // ancestor of `element` from stack).
+      RemoveStaleCounters(element, counter_name);
+      auto [counter_type, counter_value] = type_and_value.value();
+      // Reset counter always creates counter.
+      if (IsReset(counter_type)) {
+        CreateCounter(element, counter_name, counter_value);
+        continue;
+      }
+      // Otherswise, get the value of last counter from stack and update its
+      // value.
+      // Note: this can create counter, if there are no counters on stack.
+      UpdateCounterValue(element, counter_name, counter_type, counter_value);
     }
-    if (style->ContainsStyle()) {
-      EnterStyleContainmentScope();
-    }
-    return;
-  }
-  for (auto& [counter_name, directives] : *counter_directives) {
-    std::optional<std::pair<unsigned, int>> type_and_value =
-        DetermineCounterTypeAndValue(*layout_object, directives);
-    if (!type_and_value.has_value()) {
-      continue;
-    }
-    // First, there might be some counters on stack that are stale,
-    // remove those (e.g. remove counters whose parent is not
-    // ancestor of `element` from stack).
-    RemoveStaleCounters(element, counter_name);
-    auto [counter_type, counter_value] = type_and_value.value();
-    // Reset counter always creates counter.
-    if (IsReset(counter_type)) {
-      CreateCounter(element, counter_name, counter_value);
-      continue;
-    }
-    // Otherswise, get the value of last counter from stack and update its
-    // value.
-    // Note: this can create counter, if there are no counters on stack.
-    UpdateCounterValue(element, counter_name, counter_type, counter_value);
   }
   // If there were no explicit counter related property set for `list-item`
   // counter, maybe we need to create implicit one.
   if (ElementGeneratesListItemCounter(element) &&
-      counter_directives->find(list_item_) == counter_directives->end()) {
+      (!counter_directives ||
+       counter_directives->find(list_item_) == counter_directives->end())) {
     MaybeCreateListItemCounter(element);
   }
   // Create style containment boundary if the element has contains style.
@@ -192,44 +183,35 @@ void CountersAttachmentContext::LeaveElement(const Element& element) {
   if (!layout_object) {
     return;
   }
-  const CounterDirectiveMap* counter_directives = style->GetCounterDirectives();
-  if (!counter_directives) {
-    // If this element doesn't have any counter directives on it,
-    // it still can generate list-item counter or create a style
-    // containment scope.
-    if (style->ContainsStyle()) {
-      LeaveStyleContainmentScope();
-    }
-    if (ElementGeneratesListItemCounter(element)) {
-      RemoveCounterIfAncestorExists(element, list_item_);
-    }
-    return;
-  }
   // Remove style containment boundary if the element has contains style.
   // Doing it here as reverse to VisitElement.
   if (style->ContainsStyle()) {
     LeaveStyleContainmentScope();
   }
-  for (auto& [counter_name, directives] : *counter_directives) {
-    std::optional<std::pair<unsigned, int>> type_and_value =
-        DetermineCounterTypeAndValue(*layout_object, directives);
-    if (!type_and_value.has_value()) {
-      continue;
+  const CounterDirectiveMap* counter_directives = style->GetCounterDirectives();
+  if (counter_directives) {
+    for (auto& [counter_name, directives] : *counter_directives) {
+      std::optional<std::pair<unsigned, int>> type_and_value =
+          DetermineCounterTypeAndValue(*layout_object, directives);
+      if (!type_and_value.has_value()) {
+        continue;
+      }
+      auto [counter_type, counter_value] = type_and_value.value();
+      if (!IsReset(counter_type)) {
+        continue;
+      }
+      // Remove self from stack if previous counter on stack is ancestor to
+      // self. This is done since we should always inherit from ancestor first,
+      // and in the case described, all next elements would inherit ancestor
+      // instead of self, so remove self.
+      RemoveCounterIfAncestorExists(element, counter_name);
     }
-    auto [counter_type, counter_value] = type_and_value.value();
-    if (!IsReset(counter_type)) {
-      continue;
-    }
-    // Remove self from stack if previous counter on stack is ancestor to
-    // self. This is done since we should always inherit from ancestor first,
-    // and in the case described, all next elements would inherit ancestor
-    // instead of self, so remove self.
-    RemoveCounterIfAncestorExists(element, counter_name);
   }
   // If there were no explicit counter related property set for `list-item`
   // counter, maybe we need to remove implicit one.
   if (ElementGeneratesListItemCounter(element) &&
-      counter_directives->find(list_item_) == counter_directives->end()) {
+      (!counter_directives ||
+       counter_directives->find(list_item_) == counter_directives->end())) {
     RemoveCounterIfAncestorExists(element, list_item_);
   }
 }
