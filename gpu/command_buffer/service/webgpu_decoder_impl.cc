@@ -1547,10 +1547,17 @@ struct WGPUDeviceDescriptorDeepCopy : WGPUDeviceDescriptor {
           desc.requiredLimits->nextInChain == nullptr);
     CHECK_EQ(desc.defaultQueue.nextInChain, nullptr);
 
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
+    device_label_ = WGPUStringViewToString(desc.label);
+    if (device_label_) {
+      label = {device_label_->data(), device_label_->size()};
+    }
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
     if (desc.label) {
       device_label_ = std::string(desc.label);
       label = device_label_.c_str();
     }
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
     if (desc.requiredFeatures) {
       required_features_ = std::vector<WGPUFeatureName>(
           desc.requiredFeatures,
@@ -1561,15 +1568,35 @@ struct WGPUDeviceDescriptorDeepCopy : WGPUDeviceDescriptor {
       required_limits_ = *desc.requiredLimits;
       requiredLimits = &required_limits_;
     }
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
+    queue_label_ = WGPUStringViewToString(desc.defaultQueue.label);
+    if (queue_label_) {
+      defaultQueue.label = {queue_label_->data(), queue_label_->size()};
+    }
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
     if (desc.defaultQueue.label) {
       queue_label_ = std::string(desc.defaultQueue.label);
       defaultQueue.label = queue_label_.c_str();
     }
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
   }
 
   // Memory backed members.
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
+  std::optional<std::string> WGPUStringViewToString(WGPUStringView sv) {
+    if (sv.data == nullptr && sv.length == WGPU_STRLEN) {
+      return {};
+    }
+    size_t length = sv.length == WGPU_STRLEN ? std::strlen(sv.data) : sv.length;
+    return std::string(sv.data, length);
+  }
+
+  std::optional<std::string> device_label_;
+  std::optional<std::string> queue_label_;
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
   std::string device_label_;
   std::string queue_label_;
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
   std::vector<WGPUFeatureName> required_features_;
   WGPURequiredLimits required_limits_;
 };

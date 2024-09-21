@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 // This file provides helpers for converting WebGPU objects, descriptors,
 // and enums from Blink to Dawn types.
@@ -52,6 +53,12 @@ bool ConvertToDawn(const GPUImageCopyTexture* in,
 
 const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
                                       wgpu::TextureDataLayout* layout);
+
+// TODO(42241188): The const char* overload shouldn't be needed anymore once all
+// Dawn strings are converted to [Nullable]StringView.
+String ConvertFromDawn(const char* s);
+String ConvertFromDawn(wgpu::StringView view);
+String ConvertFromDawn(wgpu::NullableStringView view);
 
 // WebGPU objects are converted to Dawn objects by getting the opaque handle
 // which can be passed to Dawn.
