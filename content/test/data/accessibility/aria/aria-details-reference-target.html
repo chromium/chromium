@@ -1,0 +1,19 @@
+<!--
+@BLINK-ALLOW:details*
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+    <p>This <span aria-details="details details2">text</span> has details</p>
+    <x-description id="details">
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <div role="group" id="target">Text details</div>
+      </template>
+    </x-description>
+    <x-description id="details2">
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <img id="target" alt="Image details">
+      </template>
+    </x-description>
+  </body>
+</html>

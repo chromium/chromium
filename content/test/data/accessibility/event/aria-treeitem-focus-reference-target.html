@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<body>
+<ul id="tree" role="tree" tabindex="0">
+  <x-li id="before">
+    <template shadowrootmode="open" shadowrootreferencetarget="target">
+      <li id="target" role="treeitem" tabindex="0" aria-expanded="false">
+        Major
+      </li>
+    </template>
+  </x-li>
+  <x-li>
+    <template shadowrootmode="open" shadowrootreferencetarget="target">
+      <li id="target" role="treeitem" tabindex="0" aria-expanded="true">
+        Minor
+      </li>
+    </template>
+  </x-li>
+  <ul role="group">
+    <x-li>
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <li id="target" role="treeitem" tabindex="0">
+          Minor Seventh
+        </li>
+      </template>
+    </x-li>
+    <x-li id="after">
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <li id="target" role="treeitem" tabindex="0">
+          Minor Ninth
+        </li>
+      </template>
+    </x-li>
+  </ul>
+</ul>
+<script>
+  var tree = document.getElementById('tree');
+  var go_passes = [
+    () => tree.focus(),
+    () => tree.setAttribute('aria-activedescendant', 'before'),
+    () => tree.setAttribute('aria-activedescendant', 'after'),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>
+</body>
+</html>

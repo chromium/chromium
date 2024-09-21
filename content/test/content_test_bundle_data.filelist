@@ -405,6 +405,10 @@ data/accessibility/aria/annotation-roles.html
 data/accessibility/aria/aria-activedescendant-expected-auralinux.txt
 data/accessibility/aria/aria-activedescendant-expected-blink.txt
 data/accessibility/aria/aria-activedescendant-expected-mac.txt
+data/accessibility/aria/aria-activedescendant-reference-target-dynamic-expected-blink.txt
+data/accessibility/aria/aria-activedescendant-reference-target-dynamic.html
+data/accessibility/aria/aria-activedescendant-reference-target-expected-blink.txt
+data/accessibility/aria/aria-activedescendant-reference-target.html
 data/accessibility/aria/aria-activedescendant-target-id-change-expected-blink.txt
 data/accessibility/aria/aria-activedescendant-target-id-change.html
 data/accessibility/aria/aria-activedescendant.html
@@ -636,6 +640,8 @@ data/accessibility/aria/aria-controls-expected-mac.txt
 data/accessibility/aria/aria-controls-expected-win.txt
 data/accessibility/aria/aria-controls-many-paragraphs-between-expected-blink.txt
 data/accessibility/aria/aria-controls-many-paragraphs-between.html
+data/accessibility/aria/aria-controls-reference-target-expected-blink.txt
+data/accessibility/aria/aria-controls-reference-target.html
 data/accessibility/aria/aria-controls-target-id-change-expected-blink.txt
 data/accessibility/aria/aria-controls-target-id-change.html
 data/accessibility/aria/aria-controls.html
@@ -664,6 +670,10 @@ data/accessibility/aria/aria-describedby-expected-mac-before-11.txt
 data/accessibility/aria/aria-describedby-expected-mac.txt
 data/accessibility/aria/aria-describedby-expected-uia-win.txt
 data/accessibility/aria/aria-describedby-expected-win.txt
+data/accessibility/aria/aria-describedby-reference-target-dynamic-expected-blink.txt
+data/accessibility/aria/aria-describedby-reference-target-dynamic.html
+data/accessibility/aria/aria-describedby-reference-target-expected-blink.txt
+data/accessibility/aria/aria-describedby-reference-target.html
 data/accessibility/aria/aria-describedby-target-id-change-expected-blink.txt
 data/accessibility/aria/aria-describedby-target-id-change.html
 data/accessibility/aria/aria-describedby-updates-expected-blink.txt
@@ -695,6 +705,8 @@ data/accessibility/aria/aria-details-multiple-expected-mac.txt
 data/accessibility/aria/aria-details-multiple-expected-uia-win.txt
 data/accessibility/aria/aria-details-multiple-expected-win.txt
 data/accessibility/aria/aria-details-multiple.html
+data/accessibility/aria/aria-details-reference-target-expected-blink.txt
+data/accessibility/aria/aria-details-reference-target.html
 data/accessibility/aria/aria-details-roles-expected-auralinux.txt
 data/accessibility/aria/aria-details-roles-expected-mac.txt
 data/accessibility/aria/aria-details-roles-expected-win.txt
@@ -757,6 +769,8 @@ data/accessibility/aria/aria-errormessage-expected-blink.txt
 data/accessibility/aria/aria-errormessage-expected-mac.txt
 data/accessibility/aria/aria-errormessage-expected-uia-win.txt
 data/accessibility/aria/aria-errormessage-expected-win.txt
+data/accessibility/aria/aria-errormessage-reference-target-expected-blink.txt
+data/accessibility/aria/aria-errormessage-reference-target.html
 data/accessibility/aria/aria-errormessage-target-id-change-expected-blink.txt
 data/accessibility/aria/aria-errormessage-target-id-change.html
 data/accessibility/aria/aria-errormessage.html
@@ -790,6 +804,8 @@ data/accessibility/aria/aria-flowto-expected-win.txt
 data/accessibility/aria/aria-flowto-multiple-expected-blink.txt
 data/accessibility/aria/aria-flowto-multiple-expected-win.txt
 data/accessibility/aria/aria-flowto-multiple.html
+data/accessibility/aria/aria-flowto-reference-target-expected-blink.txt
+data/accessibility/aria/aria-flowto-reference-target.html
 data/accessibility/aria/aria-flowto-target-id-change-expected-blink.txt
 data/accessibility/aria/aria-flowto-target-id-change.html
 data/accessibility/aria/aria-flowto.html
@@ -2339,6 +2355,9 @@ data/accessibility/event/aria-tree-expand-expected-mac.txt
 data/accessibility/event/aria-tree-expand.html
 data/accessibility/event/aria-treeitem-focus-expected-auralinux.txt
 data/accessibility/event/aria-treeitem-focus-expected-mac.txt
+data/accessibility/event/aria-treeitem-focus-expected-uia-win.txt
+data/accessibility/event/aria-treeitem-focus-reference-target-expected-uia-win.txt
+data/accessibility/event/aria-treeitem-focus-reference-target.html
 data/accessibility/event/aria-treeitem-focus.html
 data/accessibility/event/button-click-expected-android.txt
 data/accessibility/event/button-click-expected-auralinux.txt

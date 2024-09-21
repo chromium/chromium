@@ -28,6 +28,7 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -300,6 +301,12 @@ void ShadowRoot::ReferenceTargetChanged() {
   if (const auto& id = host().GetIdAttribute()) {
     if (auto* registry = host().GetTreeScope().GetIdTargetObserverRegistry()) {
       registry->NotifyObservers(id);
+    }
+  }
+
+  if (host().isConnected()) {
+    if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+      cache->HandleReferenceTargetChanged(host());
     }
   }
 }

@@ -107,6 +107,9 @@ void DumpAccessibilityTreeTest::SetUpCommandLine(
   // Enable CSSVisibilityInert, used by AccessibilityCSSVisibilityInert
   command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                   "CSSVisibilityInert");
+  // Enable reference target
+  command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                  "ShadowRootReferenceTarget");
 }
 
 std::vector<std::string> DumpAccessibilityTreeTest::Dump(ui::AXMode mode) {
@@ -614,6 +617,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-activedescendant-target-id-change.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaActivedescendantReferenceTarget) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-activedescendant-reference-target.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    AccessibilityAriaActivedescendantReferenceTargetDynamic) {
+  RunAriaTest(
+      FILE_PATH_LITERAL("aria-activedescendant-reference-target-dynamic.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaAlert) {
   RunAriaTest(FILE_PATH_LITERAL("aria-alert.html"));
 }
@@ -778,6 +793,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaControlsReferenceTarget) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-controls-reference-target.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaControlsManyParagraphsBetween) {
   RunAriaTest(FILE_PATH_LITERAL("aria-controls-many-paragraphs-between.html"));
 }
@@ -800,6 +820,17 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-describedby-target-id-change.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaDescribedByReferenceTarget) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-describedby-reference-target.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaDescribedByReferenceTargetDynamic) {
+  RunAriaTest(
+      FILE_PATH_LITERAL("aria-describedby-reference-target-dynamic.html"));
+}
+
 // TODO(crbug.com/40853220): disabled on UIA
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestExceptUIA,
                        AccessibilityAriaDescribedByUpdates) {
@@ -818,6 +849,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaDetails) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaDetailsTargetIdChange) {
   RunAriaTest(FILE_PATH_LITERAL("aria-details-target-id-change.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaDetailsReferenceTarget) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-details-reference-target.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -864,6 +900,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaErrorMessageTargetIdChange) {
   RunAriaTest(FILE_PATH_LITERAL("aria-errormessage-target-id-change.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaErrorMessageReferenceTarget) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-errormessage-reference-target.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaExpanded) {
@@ -1000,6 +1041,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaFlowto) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaFlowtoTargetIdChange) {
   RunAriaTest(FILE_PATH_LITERAL("aria-flowto-target-id-change.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaFlowtoReferenceTarget) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-flowto-reference-target.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,

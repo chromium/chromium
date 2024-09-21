@@ -762,6 +762,7 @@ static std::string TreeUpdateReasonAsDebugString(
     DEBUG_STRING_CASE(kPostNotificationFromHandleLoadComplete);
     DEBUG_STRING_CASE(kPostNotificationFromHandleLoadStart);
     DEBUG_STRING_CASE(kPostNotificationFromHandleScrolledToAnchor);
+    DEBUG_STRING_CASE(kReferenceTargetChanged);
     DEBUG_STRING_CASE(kRemoveValidationMessageObjectFromFocusedUIElement);
     DEBUG_STRING_CASE(
         kRemoveValidationMessageObjectFromValidationMessageObject);
@@ -3731,6 +3732,12 @@ void AXObjectCacheImpl::FireTreeUpdatedEventForNode(
     case TreeUpdateReason::kPostNotificationFromHandleScrolledToAnchor:
       PostNotification(node, tree_update->event);
       break;
+    case TreeUpdateReason::kReferenceTargetChanged:
+      // When a shadow root's reference target changes, relations referring
+      // to the shadow host may change since they will be forwarded to
+      // the new reference target.
+      MaybeNewRelationTarget(*node, ax_object);
+      break;
     case TreeUpdateReason::kRemoveValidationMessageObjectFromFocusedUIElement:
       RemoveValidationMessageObjectWithCleanLayout(node);
       break;
@@ -4500,6 +4507,10 @@ void AXObjectCacheImpl::HandleEventListenerRemoved(
     HandleEventSubscriptionChanged(node, event_type);
 }
 
+void AXObjectCacheImpl::HandleReferenceTargetChanged(Element& element) {
+  DeferTreeUpdate(TreeUpdateReason::kReferenceTargetChanged, &element);
+}
+
 bool AXObjectCacheImpl::DoesEventListenerImpactIgnoredState(
     const AtomicString& event_type,
     const Node& node) const {
@@ -4746,6 +4757,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequired(
     case TreeUpdateReason::kNodeIsAttached:
     case TreeUpdateReason::kPostNotificationFromHandleLoadStart:
     case TreeUpdateReason::kPostNotificationFromHandleScrolledToAnchor:
+    case TreeUpdateReason::kReferenceTargetChanged:
     case TreeUpdateReason::kRemoveValidationMessageObjectFromFocusedUIElement:
     case TreeUpdateReason::
         kRemoveValidationMessageObjectFromValidationMessageObject:

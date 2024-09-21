@@ -1,0 +1,61 @@
+<!--
+@BLINK-ALLOW:active*
+@EXECUTE-AND-WAIT-FOR:switchActiveDescendantAway()
+@EXECUTE-AND-WAIT-FOR:switchActiveDescendantBack()
+@EXECUTE-AND-WAIT-FOR:switchReferencedElementIDAway()
+@EXECUTE-AND-WAIT-FOR:switchReferencedElementIDBack()
+@EXECUTE-AND-WAIT-FOR:switchReferenceTarget()
+-->
+<html>
+<body>
+  <span id="parent" aria-label="parent node" role="menu" aria-activedescendant="active" tabindex="0" autofocus>
+    <x-menuitem>
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <div role="menuitem" id="target">Inactive descendant</div>
+      </template>
+    </x-menuitem>
+    <x-menuitem id="active">
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <div role="menuitemcheckbox" id="target">Active descendant</div>
+        <div role="menuitemradio" id="target-2">Other descendant</div>
+      </template>
+    </x-menuitem>
+  </span>
+  <script>
+    function switchActiveDescendantAway() {
+      const parent = document.querySelector("#parent");
+      parent.setAttribute("aria-activedescendant", "not-matched-active-descendant");
+      document.title = "switch-active-descendant-away";
+      return "switch-active-descendant-away";
+    }
+
+    function switchActiveDescendantBack() {
+      const parent = document.querySelector("#parent");
+      parent.setAttribute("aria-activedescendant", "active");
+      document.title = "switch-active-descendant-back";
+      return "switch-active-descendant-back";
+    }
+
+    function switchReferencedElementIDAway() {
+      const shadow = document.querySelector("#active").shadowRoot;
+      shadow.querySelector("div[role=menuitemcheckbox]").id = "not-matched";
+      document.title = "switch-referenced-element-id-away";
+      return "switch-referenced-element-id-away";
+    }
+
+    function switchReferencedElementIDBack() {
+      const shadow = document.querySelector("#active").shadowRoot;
+      shadow.querySelector("div").id = "target";
+      document.title = "switch-referenced-element-id-back";
+      return "switch-referenced-element-id-back";
+    }
+
+    function switchReferenceTarget() {
+      const shadow = document.querySelector("#active").shadowRoot;
+      shadow.referenceTarget = "target-2";
+      document.title = "switch-reference-target";
+      return "switch-reference-target";
+    }
+  </script>
+</body>
+</html>

@@ -80,6 +80,8 @@ class DumpAccessibilityEventsTest : public DumpAccessibilityTestBase {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "KeyboardFocusableScrollers");
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "ShadowRootReferenceTarget");
     DumpAccessibilityTestBase::SetUpCommandLine(command_line);
   }
 
@@ -370,6 +372,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaTreeItemFocus) {
   RunEventTest(FILE_PATH_LITERAL("aria-treeitem-focus.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaTreeItemFocusReferenceTarget) {
+  RunEventTest(FILE_PATH_LITERAL("aria-treeitem-focus-reference-target.html"));
 }
 
 // TODO(crbug.com/40844027): Flaky on win & mac

@@ -281,6 +281,7 @@ class MODULES_EXPORT AXObjectCacheImpl
                                 const AtomicString& event_type) override;
   void HandleEventListenerRemoved(Node& node,
                                   const AtomicString& event_type) override;
+  void HandleReferenceTargetChanged(Element&) override;
   void HandleFocusedUIElementChanged(Element* old_focused_element,
                                      Element* new_focused_element) override;
   void HandleInitialFocus() override;
@@ -699,6 +700,7 @@ class MODULES_EXPORT AXObjectCacheImpl
     kPostNotificationFromHandleLoadComplete,
     kPostNotificationFromHandleLoadStart,
     kPostNotificationFromHandleScrolledToAnchor,
+    kReferenceTargetChanged,
     kRemoveValidationMessageObjectFromFocusedUIElement,
     kRemoveValidationMessageObjectFromValidationMessageObject,
     kRoleChangeFromAriaHasPopup,
