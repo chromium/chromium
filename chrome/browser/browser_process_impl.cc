@@ -1385,23 +1385,16 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
       /*precedence=*/10u,
       std::make_unique<os_crypt_async::DPAPIKeyProvider>(local_state())));
 
-  // TODO(crbug.com/40241934): For Windows, continue to add providers behind
-  // features, as support for them is added.
-  if (base::FeatureList::IsEnabled(
-          features::kRegisterAppBoundEncryptionProvider)) {
-    // Support level is logged separately to metrics from
-    // app_bound_encryption_metrics_win.cc.
-    providers.emplace_back(std::make_pair(
-        // Note: 15 is chosen to be higher than the 10 precedence above for
-        // DPAPI. This ensures that when the the provider is enabled for
-        // encryption, the App-Bound encryption key is used and not the DPAPI
-        // one.
-        /*precedence=*/15u,
-        std::make_unique<os_crypt_async::AppBoundEncryptionProviderWin>(
-            local_state(),
-            base::FeatureList::IsEnabled(
-                features::kUseAppBoundEncryptionProviderForEncryption))));
-  }
+  providers.emplace_back(std::make_pair(
+      // Note: 15 is chosen to be higher than the 10 precedence above for
+      // DPAPI. This ensures that when the the provider is enabled for
+      // encryption, the App-Bound encryption key is used and not the DPAPI
+      // one.
+      /*precedence=*/15u,
+      std::make_unique<os_crypt_async::AppBoundEncryptionProviderWin>(
+          local_state(),
+          base::FeatureList::IsEnabled(
+              features::kUseAppBoundEncryptionProviderForEncryption))));
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)

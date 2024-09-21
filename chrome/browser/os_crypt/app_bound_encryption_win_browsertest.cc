@@ -148,11 +148,6 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptInvalid) {
 // browser in the PRE_ test stores the "Test Key" with App-Bound encryption and
 // the second stage of the test verifies it can be retrieved successfully.
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, PRE_MetricsTest) {
-  if (!base::FeatureList::IsEnabled(
-          features::kRegisterAppBoundEncryptionProvider)) {
-    GTEST_SKIP() << "Metrics only reported if provider is registered.";
-  }
-
   histogram_tester_.ExpectUniqueSample(
       "OSCrypt.AppBoundEncryption.SupportLevel", SupportLevel::kSupported, 1);
 
@@ -165,11 +160,6 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, PRE_MetricsTest) {
 
 IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, MetricsTest) {
   ASSERT_TRUE(install_static::IsSystemInstall());
-
-  if (!base::FeatureList::IsEnabled(
-          features::kRegisterAppBoundEncryptionProvider)) {
-    GTEST_SKIP() << "Metrics only reported if provider is registered.";
-  }
 
   // These histograms are recorded on a background worker thread, so the test
   // needs to wait until this task completes and the histograms are recorded.

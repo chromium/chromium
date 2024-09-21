@@ -75,7 +75,6 @@ BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 #endif
 
 #if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kRegisterAppBoundEncryptionProvider);
 BASE_DECLARE_FEATURE(kUseAppBoundEncryptionProviderForEncryption);
 #endif
 
@@ -163,7 +162,6 @@ BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 BASE_DECLARE_FEATURE(kTabCaptureBlueBorderCrOS);
 #endif
 
-BASE_DECLARE_FEATURE(kUseOsCryptAsyncForCookieEncryption);
 BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
 #if BUILDFLAG(IS_WIN)

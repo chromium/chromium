@@ -171,14 +171,6 @@ BASE_FEATURE(kDoubleTapToZoomInTabletMode,
 #endif
 
 #if BUILDFLAG(IS_WIN)
-// When this feature is enabled, the App-Bound encryption provider is registered
-// with Chrome. Do not disable this feature if
-// UseAppBoundEncryptionProviderForEncryption has been enabled for a client,
-// since data loss might occur.
-BASE_FEATURE(kRegisterAppBoundEncryptionProvider,
-             "RegisterAppBoundEncryptionProvider",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When this feature is enabled, the App-Bound encryption provider is used as
 // the default encryption provider.
 BASE_FEATURE(kUseAppBoundEncryptionProviderForEncryption,
@@ -409,13 +401,6 @@ BASE_FEATURE(kTabCaptureBlueBorderCrOS,
              "TabCaptureBlueBorderCrOS",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
-// When this feature is enabled, the network service will be passed an
-// OSCryptAsync crypto cookie delegate meaning that OSCryptAsync will be used
-// for cookie encryption.
-BASE_FEATURE(kUseOsCryptAsyncForCookieEncryption,
-             "UseOsCryptAsyncForCookieEncryption",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables runtime detection of USB devices which provide a WebUSB landing page
 // descriptor.

@@ -116,18 +116,12 @@ class ChromeNetworkServiceBrowserTest
     network::mojom::NetworkContextParamsPtr context_params =
         network::mojom::NetworkContextParams::New();
     context_params->enable_encrypted_cookies = enable_encrypted_cookies;
-#if BUILDFLAG(IS_WIN)
-    // On Windows, the ProfileNetworkContextService adds a cookie encryption
-    // manager when the feature is enabled. This test uses its own network
-    // context, so replicate that behavior here to ensure that this test
-    // represents production code as much as possible.
-    if (base::FeatureList::IsEnabled(
-            features::kUseOsCryptAsyncForCookieEncryption)) {
-      g_browser_process->system_network_context_manager()
-          ->AddCookieEncryptionManagerToNetworkContextParams(
-              context_params.get());
-    }
-#endif  // BUILDFLAG(IS_WIN)
+    // Mirrors behavior in
+    // ProfileNetworkContextService::ConfigureNetworkContextParamsInternal into
+    // this test.
+    g_browser_process->system_network_context_manager()
+        ->AddCookieEncryptionManagerToNetworkContextParams(
+            context_params.get());
     context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
 
     // Network files for the test context need to differ from the ones created
