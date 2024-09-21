@@ -483,14 +483,7 @@ FormDataImporter::GetAddressObservedFieldValues(
 
   // Go through each |form| field and attempt to constitute a valid profile.
   for (const AutofillField* const field : section_fields) {
-    // If `field` has a selected option, we give precedence to the option's text
-    // over its value because the user-visible text is likely more meaningful.
-    // Currently, only <select> elements may have a selected option.
-    base::optional_ref<const SelectOption> selected_option =
-        field->selected_option();
-    std::u16string value = selected_option.has_value()
-                               ? selected_option->text
-                               : field->value(ValueSemantics::kCurrent);
+    std::u16string value = field->value_for_import();
     base::TrimWhitespace(value, base::TRIM_ALL, &value);
 
     // If we don't know the type of the field, or the user hasn't entered any
@@ -980,14 +973,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
           return user_input;
         }
       }
-      // If `field` has a selected option, we give precedence to the option's
-      // text over its value because the user-visible text is likely more
-      // meaningful. Currently,
-      // only <select> elements may have a selected option.
-      base::optional_ref<const SelectOption> selected_option =
-          field.selected_option();
-      return selected_option ? selected_option->text
-                             : field.value(ValueSemantics::kCurrent);
+      return field.value_for_import();
     }();
     base::TrimWhitespace(value, base::TRIM_ALL);
 
@@ -1065,15 +1051,13 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
   // unknown if this IBAN already exists locally or on the server.
   Iban candidate_iban;
   for (const auto& field : form) {
-    if (!field->IsFieldFillable() ||
-        field->value(ValueSemantics::kCurrent).empty()) {
+    const std::u16string& value = field->value_for_import();
+    if (!field->IsFieldFillable() || value.empty()) {
       continue;
     }
     FieldType field_type = field->Type().GetStorableType();
-    if (field_type == IBAN_VALUE &&
-        Iban::IsValid(field->value(ValueSemantics::kCurrent))) {
-      candidate_iban.SetInfo(IBAN_VALUE, field->value(ValueSemantics::kCurrent),
-                             app_locale_);
+    if (field_type == IBAN_VALUE && Iban::IsValid(value)) {
+      candidate_iban.SetInfo(IBAN_VALUE, value, app_locale_);
       break;
     }
   }

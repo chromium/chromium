@@ -177,9 +177,6 @@ class AutofillField : public FormFieldData {
   // surrounding fields.
   AutofillType ComputedType() const;
 
-  // Returns true if the value of this field is empty.
-  bool IsEmpty() const;
-
   // The rank of a field is N iff this field is preceded by N other fields
   // in the frame-transcending form.
   size_t rank() const { return rank_; }
@@ -239,6 +236,9 @@ class AutofillField : public FormFieldData {
   // `ValueSemantics`, if `features::kAutofillFixValueSemantics` is enabled.
   // Otherwise just forwards to `FormFieldData::value().
   //
+  // In the context of form submission and import, consider calling
+  // `value_for_import()`.
+  //
   // Currently, `value(ValueSemantics::kInitial)` is the empty string for fields
   // of FormControlType::kSelect*.
   // TODO: crbug.com/40227496 - Let `value(kInitial)` for select elements behave
@@ -249,6 +249,31 @@ class AutofillField : public FormFieldData {
   // - `value(ValueSemantics::kCurrent)` with `FormFieldData::value()`
   // - `value(ValueSemantics::kInitial)` with `AutofillField::initial_value()`
   const std::u16string& value(ValueSemantics s) const;
+
+  // Returns the current value, formatted as desired for import:
+  // (1) If the user left a field unchanged, returns the empty string.
+  // (2) If the field has FormControlType::kSelect* and has a selected text,
+  //     it is FormFieldData::selected_text().
+  //
+  // The motivation behind (1) is that unchanged values usually carry little
+  // value for importing. The exception are <select> feilds, which often have
+  // a correct default value, so we consider them for import even if their value
+  // didn't change.
+  // TODO: crbug.com/40137859 - Consider making an exception for also for
+  // non-<select> ADDRESS_HOME_{STATE,COUNTRY} fields.
+  //
+  // The motivation behind (2) is that the human-readable text of an <option> is
+  // usually better suited for import than the its value. See the documentation
+  // of FormFieldData::value() and FormFieldData::selected_text() for further
+  // details.
+  //
+  // This function only behaves reasonably if kAutofillFixValueSemantics and
+  // kAutofillFixCurrentValueInImport are enabled. If the latter is not enabled,
+  // FormStructure::RetrieveFromCache() resets the field's current value, with
+  // the intention of avoiding form import.
+  // TODO: crbug.com/40227496 - Remove the previous paragraph when the feature
+  // is launched.
+  const std::u16string& value_for_import() const;
 
   // Sets the field's current value, if `features::kAutofillFixValueSemantics`
   // is enabled. Otherwise just forwards to FormFieldData::set_value().

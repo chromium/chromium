@@ -263,6 +263,17 @@ BASE_FEATURE(kAutofillFixInitialValueOfSelect,
              "AutofillFixInitialValueOfSelect",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, AutofillField::value(kCurrent) is not reset for form import.
+// Otherwise, AutofillField::value(kCurrent) is reset to the empty string for
+// fields that are non-<select>, non-state, non-country and haven't changed
+// their value.
+// Should only be enabled if kAutofillFixValueSemantics and
+// kAutofillFixInitialValueOfSelect is enabled.
+// TODO: crbug.com/40227496 - Clean up when launched.
+BASE_FEATURE(kAutofillFixCurrentValueInImport,
+             "AutofillFixCurrentValueInImport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Killswitch for not running logic in `form_util::ClearPreviewedElements` that
 // force-sets the selectionrange of the focused element.
 BASE_FEATURE(kAutofillDontUpdateSelectionRangeOnPreviewClearing,

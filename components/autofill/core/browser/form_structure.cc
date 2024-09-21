@@ -534,10 +534,17 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
             had_type) {
           field->set_initial_value_changed(!same_value_as_on_page_load);
         }
+        // TODO: crbug.com/40137859 - The server type hasn't been set yet (it is
+        // set a few lines further down below), so this is trivially true. Once
+        // kAutofillFixCurrentValueInImport is launched, consider adding this
+        // to AutofillField::value_for_import() and running an experiment for
+        // this.
         const bool field_is_neither_state_nor_country =
             field->server_type() != ADDRESS_HOME_COUNTRY &&
             field->server_type() != ADDRESS_HOME_STATE;
-        if (!field->IsSelectOrSelectListElement() &&
+        if ((!field->IsSelectOrSelectListElement() &&
+             !base::FeatureList::IsEnabled(
+                 features::kAutofillFixCurrentValueInImport)) &&
             same_value_as_on_page_load && field_is_neither_state_nor_country) {
           field->set_value(std::u16string());
         }
@@ -956,7 +963,8 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
         0, std::min(field->label().length(), kMaxLabelSize));
     buffer << "\n  Label: " << truncated_label;
 
-    buffer << "\n  Is empty: " << (field->IsEmpty() ? "Yes" : "No");
+    buffer << "\n  Is empty: "
+           << (field->value(ValueSemantics::kCurrent).empty() ? "Yes" : "No");
   }
   return buffer;
 }
@@ -1043,7 +1051,8 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
         label.substr(0, std::min(label.length(), kMaxLabelSize));
     buffer << Tr{} << "Label:" << truncated_label;
 
-    buffer << Tr{} << "Is empty:" << (field->IsEmpty() ? "Yes" : "No");
+    buffer << Tr{} << "Is empty:"
+           << (field->value(ValueSemantics::kCurrent).empty() ? "Yes" : "No");
     buffer << Tr{} << "Is focusable:"
            << (field->IsFocusable() ? "Yes (focusable)" : "No (unfocusable)");
     buffer << Tr{} << "Is visible:"

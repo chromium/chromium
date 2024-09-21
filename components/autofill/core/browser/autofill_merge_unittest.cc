@@ -94,6 +94,22 @@ const std::vector<base::FilePath> GetTestFiles() {
   return files;
 }
 
+// Fakes that a `form` has been seen (without its field value) and parsed and
+// then values have been entered. Returns the resulting FormStructure.
+std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
+    const FormData& form) {
+  auto cached_form_structure =
+      std::make_unique<FormStructure>(test::WithoutValues(form));
+  cached_form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                                 nullptr);
+
+  auto form_structure = std::make_unique<FormStructure>(form);
+  form_structure->RetrieveFromCache(
+      *cached_form_structure,
+      FormStructure::RetrieveFromCacheReason::kFormImport);
+  return form_structure;
+}
+
 // Serializes the |profiles| into a string.
 std::string SerializeProfiles(
     const std::vector<const AutofillProfile*>& profiles) {
@@ -216,12 +232,13 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
     // followed by an explicit separator.
     if ((i > 0 && line == kProfileSeparator) || i == lines.size() - 1) {
       // Reached the end of a profile.  Try to import it.
-      FormStructure form_structure(form);
-      for (size_t j = 0; j < form_structure.field_count(); ++j) {
+      std::unique_ptr<FormStructure> form_structure =
+          ConstructFormStructureFromFormData(form);
+      for (size_t j = 0; j < form_structure->field_count(); ++j) {
         // Set the heuristic type for each field, which is currently serialized
         // into the field's name.
         AutofillField* field =
-            const_cast<AutofillField*>(form_structure.field(j));
+            const_cast<AutofillField*>(form_structure->field(j));
         FieldType type = TypeNameToFieldType(base::UTF16ToUTF8(field->name()));
         field->set_heuristic_type(GetActiveHeuristicSource(), type);
       }
@@ -229,7 +246,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       // Extract the profile.
       auto extracted_data =
           test_api(*form_data_importer_)
-              .ExtractFormData(form_structure,
+              .ExtractFormData(*form_structure,
                                /*profile_autofill_enabled=*/true,
                                /*payment_methods_autofill_enabled=*/true);
       test_api(*form_data_importer_)

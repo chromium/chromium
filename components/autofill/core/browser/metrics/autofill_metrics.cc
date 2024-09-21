@@ -605,8 +605,7 @@ bool DuplicatedFilling(const FormStructure& form, const AutofillField& field) {
           // *duplicate* filling happened.
           return false;
         }
-        return field.value(ValueSemantics::kCurrent) ==
-                   form_field->value(ValueSemantics::kCurrent) &&
+        return field.value_for_import() == form_field->value_for_import() &&
                form_field->is_autofilled();
       };
   return std::ranges::any_of(form, is_autofilled_with_same_value);
@@ -1309,12 +1308,12 @@ void AutofillMetrics::LogOverallPredictionQualityMetrics(
 void AutofillMetrics::LogEmailFieldPredictionMetrics(
     const AutofillField& field) {
   // If the field has no value, there is no need to record any of the metrics.
-  if (field.value(ValueSemantics::kCurrent).empty()) {
+  const std::u16string& value = field.value_for_import();
+  if (value.empty()) {
     return;
   }
 
-  bool is_valid_email =
-      IsValidEmailAddress(field.value(ValueSemantics::kCurrent));
+  bool is_valid_email = IsValidEmailAddress(value);
   bool is_email_prediction = field.Type().GetStorableType() == EMAIL_ADDRESS;
 
   if (is_email_prediction) {
@@ -2165,7 +2164,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogTextFieldDidChange(
       .SetHtmlFieldType(static_cast<int>(field.html_type()))
       .SetHtmlFieldMode(static_cast<int>(field.html_mode()))
       .SetIsAutofilled(field.is_autofilled())
-      .SetIsEmpty(field.IsEmpty())
+      .SetIsEmpty(field.value(ValueSemantics::kCurrent).empty())
       .SetMillisecondsSinceFormParsed(
           MillisecondsSinceFormParsed(form.form_parsed_timestamp()))
       .Record(ukm_recorder_);

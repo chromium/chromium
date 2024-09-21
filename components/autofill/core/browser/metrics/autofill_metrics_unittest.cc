@@ -696,6 +696,12 @@ TEST_F(AutofillMetricsTest, TimingMetrics) {
 // Test that we behave sanely when the cached form differs from the submitted
 // one.
 TEST_F(AutofillMetricsTest, SaneMetricsWithCacheMismatch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kAutofillFixValueSemantics,
+       features::kAutofillFixInitialValueOfSelect,
+       features::kAutofillFixCurrentValueInImport},
+      {});
   FormData form = CreateForm(
       {CreateTestFormField("Both match", "match", "Elvis Aaron Presley",
                            FormControlType::kInputText),
@@ -712,9 +718,16 @@ TEST_F(AutofillMetricsTest, SaneMetricsWithCacheMismatch) {
   std::vector<FieldType> server_types = {NAME_FULL, PHONE_HOME_NUMBER,
                                          PHONE_HOME_NUMBER, UNKNOWN_TYPE};
 
-  autofill_manager().AddSeenForm(form, heuristic_types, server_types);
+  autofill_manager().AddSeenForm(test::WithoutValues(form), heuristic_types,
+                                 server_types);
 
-  // Add a field and re-arrange the remaining form fields before submitting.
+  // Add a field and re-arrange the remaining form fields before submitting. The
+  // five submitted fields are filled with
+  // - ADDRESS_HOME_STATE (Tennessee)
+  // - ADDRESS_HOME_CITY (Memphis)
+  // - EMAIL_ADDRESS (buddy@gmail.com)
+  // - garbage
+  // - NAME_FULL (buddy@gmail.com)
   std::vector<FormFieldData> cached_fields = form.fields();
   form.set_fields({CreateTestFormField("New field", "new field", "Tennessee",
                                        FormControlType::kInputText),
@@ -725,45 +738,32 @@ TEST_F(AutofillMetricsTest, SaneMetricsWithCacheMismatch) {
   SubmitForm(form);
 
   for (const std::string source : {"Heuristic", "Server", "Overall"}) {
-    std::string aggregate_histogram =
-        "Autofill.FieldPredictionQuality.Aggregate." + source;
-    std::string by_field_type_histogram =
-        "Autofill.FieldPredictionQuality.ByFieldType." + source;
+    SCOPED_TRACE(testing::Message() << source);
+    using FieldTypeQualityMetric = AutofillMetrics::FieldTypeQualityMetric;
+    using enum FieldTypeQualityMetric;
 
-    // Unknown:
-    histogram_tester.ExpectBucketCount(
-        aggregate_histogram, AutofillMetrics::FALSE_NEGATIVE_UNKNOWN, 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            ADDRESS_HOME_STATE, AutofillMetrics::FALSE_NEGATIVE_UNKNOWN),
-        1);
-    // Match:
-    histogram_tester.ExpectBucketCount(aggregate_histogram,
-                                       AutofillMetrics::TRUE_POSITIVE,
-                                       source == "Heuristic" ? 2 : 1);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            NAME_FULL, AutofillMetrics::TRUE_POSITIVE),
-        1);
-    // Mismatch:
-    histogram_tester.ExpectBucketCount(aggregate_histogram,
-                                       AutofillMetrics::FALSE_NEGATIVE_MISMATCH,
-                                       source == "Heuristic" ? 1 : 2);
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            EMAIL_ADDRESS, AutofillMetrics::FALSE_NEGATIVE_MISMATCH),
-        1);
-    // Source dependent:
-    histogram_tester.ExpectBucketCount(
-        by_field_type_histogram,
-        GetFieldTypeGroupPredictionQualityMetric(
-            ADDRESS_HOME_CITY, source == "Heuristic"
-                                   ? AutofillMetrics::TRUE_POSITIVE
-                                   : AutofillMetrics::FALSE_NEGATIVE_MISMATCH),
-        1);
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples(
+            "Autofill.FieldPredictionQuality.Aggregate." + source),
+        BucketsAre(
+            Bucket(TRUE_NEGATIVE_UNKNOWN, 1), Bucket(TRUE_NEGATIVE_EMPTY, 1),
+            Bucket(TRUE_POSITIVE, source == "Heuristic" ? 2 : 1),
+            Bucket(FALSE_NEGATIVE_MISMATCH, source == "Heuristic" ? 1 : 2)));
+
+    auto b = [](FieldType type, FieldTypeQualityMetric metric,
+                size_t count = 1) {
+      return Bucket(GetFieldTypeGroupPredictionQualityMetric(type, metric),
+                    count);
+    };
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    "Autofill.FieldPredictionQuality.ByFieldType." + source),
+                BucketsAre(b(ADDRESS_HOME_CITY, source == "Heuristic"
+                                                    ? TRUE_POSITIVE
+                                                    : FALSE_NEGATIVE_MISMATCH),
+                           b(PHONE_HOME_NUMBER, FALSE_POSITIVE_MISMATCH,
+                             source != "Heuristic" ? 2 : 1),
+                           b(EMAIL_ADDRESS, FALSE_NEGATIVE_MISMATCH),
+                           b(NAME_FULL, TRUE_POSITIVE)));
   }
 }
 

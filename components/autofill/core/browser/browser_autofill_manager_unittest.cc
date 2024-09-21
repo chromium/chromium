@@ -845,7 +845,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     autofill_client_.set_test_form_data_importer(
         std::make_unique<autofill::TestFormDataImporter>(
             &autofill_client_, std::move(credit_card_save_manager),
-            /*iban_save_manager=*/nullptr, "en-US"));
+            std::make_unique<IbanSaveManager>(&autofill_client_), "en-US"));
 
     ResetBrowserAutofillManager();
     // By default, if we offer single field form fill, suggestions should be
@@ -3304,13 +3304,23 @@ TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
   for (const char* valid_match : kValidMatches) {
     SCOPED_TRACE(valid_match);
     FormData form;
-    form.set_fields({CreateTestFormField("Name", "Name", "Test",
+    form.set_fields({CreateTestFormField("Name", "Name", /*value=*/"",
                                          FormControlType::kInputText),
-                     CreateTestFormField("State", "state", valid_match,
+                     CreateTestFormField("State", "state", /*value=*/"",
                                          FormControlType::kInputText)});
 
     FormStructure form_structure(form);
-    EXPECT_EQ(form_structure.field_count(), 2U);
+    ASSERT_EQ(form_structure.field_count(), 2U);
+    form_structure.fields()[0]->set_value(u"Test");
+    form_structure.fields()[1]->set_value(base::UTF8ToUTF16(valid_match));
+    if (base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
+      // If kAutofillFixValueSemantics is disabled, there's no distinction
+      // between the current and initial value.
+      ASSERT_EQ(form_structure.fields()[0]->value(ValueSemantics::kInitial),
+                u"");
+      ASSERT_EQ(form_structure.fields()[1]->value(ValueSemantics::kInitial),
+                u"");
+    }
 
     test_api(*browser_autofill_manager_)
         .PreProcessStateMatchingTypes({profile}, &form_structure);
@@ -3345,13 +3355,21 @@ TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
                        "", "US", "");
 
   FormData form;
-  form.set_fields(
-      {CreateTestFormField("Name", "Name", "Test", FormControlType::kInputText),
-       CreateTestFormField("State", "state", "CA",
-                           FormControlType::kInputText)});
+  form.set_fields({CreateTestFormField("Name", "Name", /*value=*/"",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("State", "state", /*value=*/"",
+                                       FormControlType::kInputText)});
 
   FormStructure form_structure(form);
-  EXPECT_EQ(form_structure.field_count(), 2U);
+  ASSERT_EQ(form_structure.field_count(), 2U);
+  form_structure.fields()[0]->set_value(u"Test");
+  form_structure.fields()[1]->set_value(u"CA");
+  if (base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
+    // If kAutofillFixValueSemantics is disabled, there's no distinction between
+    // the current and initial value.
+    ASSERT_EQ(form_structure.fields()[0]->value(ValueSemantics::kInitial), u"");
+    ASSERT_EQ(form_structure.fields()[1]->value(ValueSemantics::kInitial), u"");
+  }
 
   test_api(*browser_autofill_manager_)
       .PreProcessStateMatchingTypes({profile}, &form_structure);
@@ -4655,8 +4673,6 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
 // with the IBAN field.
 TEST_F(BrowserAutofillManagerWithLogEventsTest, LogIBANField) {
   FormData form = CreateTestIbanFormData();
-  FormStructure form_structure{form};
-  test_api(form_structure).SetFieldTypes({IBAN_VALUE}, {IBAN_VALUE});
   FormsSeen({form});
 
   browser_autofill_manager_->FillOrPreviewField(

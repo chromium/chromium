@@ -2024,6 +2024,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AutofillFixCurrentValueInImport",
                         "AutofillFixInitialValueOfSelect",
                         "AutofillFixValueSemantics"
                     ]

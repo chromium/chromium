@@ -20,11 +20,27 @@
 namespace autofill {
 namespace {
 
-using test::CreateTestFormField;
-using test::CreateTestSelectOrSelectListField;
+using ::autofill::test::CreateTestFormField;
+using ::autofill::test::CreateTestSelectOrSelectListField;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Not;
+
+// Fakes that a `form` has been seen (without its field value) and parsed and
+// then values have been entered. Returns the resulting FormStructure.
+std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
+    const FormData& form) {
+  auto cached_form_structure =
+      std::make_unique<FormStructure>(test::WithoutValues(form));
+  cached_form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
+                                                 nullptr);
+
+  auto form_structure = std::make_unique<FormStructure>(form);
+  form_structure->RetrieveFromCache(
+      *cached_form_structure,
+      FormStructure::RetrieveFromCacheReason::kFormImport);
+  return form_structure;
+}
 
 void CheckThatOnlyFieldByIndexHasThisPossibleType(
     const FormStructure& form_structure,
@@ -298,14 +314,15 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   test_api(form).Append(CreateTestFormField("", "1", test_case.input_value,
                                             FormControlType::kInputText));
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  ASSERT_EQ(1U, form_structure.field_count());
+  ASSERT_EQ(1U, form_structure->field_count());
 
-  FieldTypeSet possible_types = form_structure.field(0)->possible_types();
+  FieldTypeSet possible_types = form_structure->field(0)->possible_types();
   EXPECT_EQ(possible_types, expected_possible_types);
 }
 
@@ -343,14 +360,15 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceCVCFieldByValue) {
        CreateTestFormField("c_v_c", "c_v_c", kCvc,
                            FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, kCvc16, "en-us",
-                                       &form_structure);
+                                       &*form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(
-      form_structure, 2, CREDIT_CARD_VERIFICATION_CODE,
+      *form_structure, 2, CREDIT_CARD_VERIFICATION_CODE,
       FieldPropertiesFlags::kKnownValue);
 }
 
@@ -375,12 +393,13 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
                    CreateTestFormField("cvc_number", "cvc_number", cvc,
                                        FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -394,9 +413,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
+  CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
                                                FieldPropertiesFlags::kNoFlags);
 }
@@ -422,12 +441,13 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
        CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
                            FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -441,9 +461,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
+  CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
                                                FieldPropertiesFlags::kNoFlags);
 }
@@ -468,12 +488,13 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
                                        user_entered_credit_card_exp_year,
                                        FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure.field(1)->set_possible_types({UNKNOWN_TYPE});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  form_structure->field(1)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -487,9 +508,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 1,
+  CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 1,
                                                CREDIT_CARD_VERIFICATION_CODE,
                                                FieldPropertiesFlags::kNoFlags);
 }
@@ -514,12 +535,13 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
                    CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
                                        FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({UNKNOWN_TYPE});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -533,8 +555,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
-  CheckThatNoFieldHasThisPossibleType(form_structure,
+                                       "en-us", &*form_structure);
+  CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
 }
 
@@ -556,13 +578,14 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
        CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
                            FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types(
+  form_structure->field(0)->set_possible_types(
       {CREDIT_CARD_NUMBER, UNKNOWN_TYPE});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -576,9 +599,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatNoFieldHasThisPossibleType(form_structure,
+  CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
 }
 

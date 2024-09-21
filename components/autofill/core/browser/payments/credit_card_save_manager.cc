@@ -281,15 +281,16 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   found_cvc_value_in_non_cvc_field_ = false;
 
   for (const auto& field : submitted_form) {
-    const bool is_valid_cvc = IsValidCreditCardSecurityCode(
-        field->value(ValueSemantics::kCurrent), upload_request_.card.network());
+    const std::u16string& value = field->value_for_import();
+    const bool is_valid_cvc =
+        IsValidCreditCardSecurityCode(value, upload_request_.card.network());
     if (field->Type().GetStorableType() == CREDIT_CARD_VERIFICATION_CODE) {
       found_cvc_field_ = true;
-      if (!field->value(ValueSemantics::kCurrent).empty()) {
+      if (!value.empty()) {
         found_value_in_cvc_field_ = true;
       }
       if (is_valid_cvc) {
-        upload_request_.cvc = field->value(ValueSemantics::kCurrent);
+        upload_request_.cvc = value;
         break;
       }
     } else if (is_valid_cvc &&
