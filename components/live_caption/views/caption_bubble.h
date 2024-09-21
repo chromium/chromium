@@ -39,10 +39,6 @@ class ImageView;
 class Label;
 }  // namespace views
 
-namespace ui {
-struct AXNodeData;
-}
-
 namespace {
 class CaptionBubbleEventObserver;
 }
@@ -136,6 +132,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void UpdateControlsVisibility(bool show_controls);
   void OnMouseEnteredOrExitedWindow(bool entered);
 
+  void SetTitleTextForTesting(const std::u16string title_text) {
+    title_->SetText(title_text);
+  }
+
  protected:
   // views::BubbleDialogDelegateView:
   void Init() override;
@@ -151,7 +151,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   void OnLiveTranslateEnabledChanged();
   void OnLiveCaptionLanguageChanged();
   void OnLiveTranslateTargetLanguageChanged();
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetAccessibleWindowTitle() const override;
   void OnThemeChanged() override;
 
@@ -251,6 +250,10 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   std::vector<raw_ptr<views::View, VectorExperimental>> GetButtons();
 
+  void OnTitleTextChanged();
+
+  void UpdateAccessibleName();
+
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Unowned. Owned by views hierarchy.
@@ -325,6 +328,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   bool render_active_ = false;
   bool mouse_inside_window_ = false;
   std::unique_ptr<CaptionBubbleEventObserver> caption_bubble_event_observer_;
+
+  base::CallbackListSubscription title_text_changed_callback_;
 
   base::WeakPtrFactory<CaptionBubble> weak_ptr_factory_{this};
 };

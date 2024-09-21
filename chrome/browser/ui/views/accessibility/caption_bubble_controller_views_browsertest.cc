@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/live_caption/views/caption_bubble_controller_views.h"
+
 #include <memory>
 
 #include "base/functional/callback_forward.h"
@@ -23,9 +25,9 @@
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble.h"
-#include "components/live_caption/views/caption_bubble_controller_views.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -33,6 +35,7 @@
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -1034,10 +1037,38 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, PinAndUnpin) {
       prefs::kLiveCaptionBubblePinned));
 
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  EXPECT_EQ(GetBubble()->GetViewAccessibility().GetCachedRole(),
-            ax::mojom::Role::kDialog);
+  // The bubble should hide after 15 seconds.
   test_task_runner->FastForwardBy(base::Seconds(15));
   EXPECT_TRUE(IsWidgetVisible());
+
+  SetTickClockForTesting(nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleProperties) {
+  base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
+  SetTickClockForTesting(test_task_runner->GetMockTickClock());
+  OnPartialTranscription(
+      "Sea otters have the densest fur of any mammal at about 1 million "
+      "hairs "
+      "per square inch.");
+  ClickButton(GetPinButton());
+
+  ui::AXNodeData data;
+  GetBubble()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
+  EXPECT_EQ(GetBubble()->GetViewAccessibility().GetCachedRole(),
+            ax::mojom::Role::kDialog);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_TITLE));
+
+  GetBubble()->SetTitleTextForTesting(u"Sample Accessible Name");
+
+  data = ui::AXNodeData();
+  GetBubble()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample Accessible Name");
+  EXPECT_EQ(GetBubble()->GetViewAccessibility().GetCachedName(),
+            u"Sample Accessible Name");
 
   SetTickClockForTesting(nullptr);
 }

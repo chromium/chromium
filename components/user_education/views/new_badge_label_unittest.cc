@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
@@ -61,6 +62,23 @@ class NewBadgeLabelTest : public views::ViewsTestBase {
   raw_ptr<views::Label, DanglingUntriaged> control_label_ = nullptr;
   raw_ptr<NewBadgeLabel, DanglingUntriaged> new_badge_label_ = nullptr;
 };
+
+TEST_F(NewBadgeLabelTest, AccessibleName) {
+  ui::AXNodeData data;
+  new_badge_label()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            new_badge_label()->GetText() + u" " +
+                l10n_util::GetStringUTF16(IDS_NEW_BADGE_SCREEN_READER_MESSAGE));
+
+  data = ui::AXNodeData();
+  new_badge_label()->SetText(u"Sample text");
+  new_badge_label()->GetViewAccessibility().GetAccessibleNodeData(&data);
+
+  EXPECT_EQ(new_badge_label()->GetText(), u"Sample text");
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            new_badge_label()->GetText() + u" " +
+                l10n_util::GetStringUTF16(IDS_NEW_BADGE_SCREEN_READER_MESSAGE));
+}
 
 TEST_F(NewBadgeLabelTest, NoBadgeReportsSameSizes) {
   new_badge_label()->SetDisplayNewBadgeForTesting(false);

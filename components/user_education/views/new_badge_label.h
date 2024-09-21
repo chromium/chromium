@@ -70,13 +70,13 @@ class NewBadgeLabel : public views::Label {
   std::u16string GetAccessibleDescription() const;
 
   // Label:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void SetText(const std::u16string& text) override;
 
   void SetDisplayNewBadgeForTesting(bool display_new_badge);
 
@@ -87,6 +87,8 @@ class NewBadgeLabel : public views::Label {
   // Hide the SetBorder() method so that external callers can't use it since we
   // rely on it to add padding. This won't prevent access via downcast, however.
   void SetBorder(std::unique_ptr<views::Border> b) override;
+
+  void UpdateAccessibleName();
 
   // Specifies whether the badge should be displayed. Defaults to false, which
   // behaves like a normal label.

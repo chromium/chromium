@@ -50,16 +50,20 @@ class SubtleNotificationView : public views::View {
   static views::Widget* CreatePopupWidget(
       gfx::NativeView parent_view,
       std::unique_ptr<SubtleNotificationView> view);
-  // views::View
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   std::u16string GetInstructionTextForTest() const;
 
  private:
   class InstructionView;
 
+  void OnInstructionViewTextChanged();
+
+  void UpdateAccessibleName();
+
   // Text displayed in the bubble, with optional keyboard keys.
   raw_ptr<InstructionView> instruction_view_;
+
+  base::CallbackListSubscription text_changed_callback_;
 };
 
 #endif  // COMPONENTS_FULLSCREEN_CONTROL_SUBTLE_NOTIFICATION_VIEW_H_

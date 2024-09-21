@@ -111,6 +111,8 @@ MediaProgressView::MediaProgressView(
   straight_progress_stroke_width_ = kStrokeWidth;
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
   GetViewAccessibility().SetValue(GetFormattedDuration(current_position_));
   GetViewAccessibility().AddAction(ax::mojom::Action::kIncrement);
   GetViewAccessibility().AddAction(ax::mojom::Action::kDecrement);
@@ -135,12 +137,6 @@ gfx::Size MediaProgressView::CalculatePreferredSize(
   const int height = (use_squiggly_line_ ? kSquigglyProgressViewHeight
                                          : kStraightProgressViewHeight);
   return gfx::Size(GetContentsBounds().size().width(), height);
-}
-
-void MediaProgressView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  node_data->SetNameChecked(l10n_util::GetStringUTF16(
-      IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_TIME_SCRUBBER));
 }
 
 bool MediaProgressView::HandleAccessibleAction(

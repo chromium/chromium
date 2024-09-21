@@ -858,6 +858,10 @@ void CaptionBubble::Init() {
   }
 
   UpdateContentSize();
+  UpdateAccessibleName();
+  title_text_changed_callback_ =
+      title_->AddTextChangedCallback(base::BindRepeating(
+          &CaptionBubble::OnTitleTextChanged, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CaptionBubble::OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
@@ -946,10 +950,6 @@ void CaptionBubble::OnLiveTranslateTargetLanguageChanged() {
   OnLanguageChanged();
   SetTextColor();
   Redraw();
-}
-
-void CaptionBubble::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetNameChecked(title_->GetText());
 }
 
 std::u16string CaptionBubble::GetAccessibleWindowTitle() const {
@@ -1675,6 +1675,14 @@ views::Button* CaptionBubble::GetBackToTabButtonForTesting() {
 
 views::View* CaptionBubble::GetHeaderForTesting() {
   return header_container_.get();
+}
+
+void CaptionBubble::OnTitleTextChanged() {
+  UpdateAccessibleName();
+}
+
+void CaptionBubble::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(title_->GetText());
 }
 
 BEGIN_METADATA(CaptionBubble)
