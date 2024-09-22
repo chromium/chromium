@@ -209,6 +209,16 @@
   },
 
   {
+    "prefix": "atomic-move-auto",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/atomic-move-auto"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=AtomicMoveAuto"],
+    "owners": ["nrosenthal@chromium.org", "dom@chromium.org"],
+    "expires": "Apr 1, 2025"
+  },
+
+  {
     "prefix": "attribution-reporting-in-browser-migration",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["http/tests/inspector-protocol/attribution-reporting"],
