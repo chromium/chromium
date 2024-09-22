@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">ดูข้อมูลร้านค้า</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ย้ายแท็บไปทางซ้าย</translation>
+<translation id="6590332670428149473">เปิดเมนูการทำงานกลุ่มแท็บสำหรับกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" ที่แชร์ สี<ph name="COLOR_NAME" /></translation>
 <translation id="6615455863669487791">แสดงให้ฉันเห็น</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{เปลี่ยนแล้ว <ph name="ONE_CHANGED" /> แท็บ}other{เปลี่ยนแล้ว <ph name="MANY_CHANGED" /> แท็บ}}</translation>
 <translation id="6694634756612002311">จัดการการแชร์</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บที่มีอยู่ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ขยายกลุ่มแท็บที่มีอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="9090098097337832354">ปิดข้อมูลเกี่ยวกับร้านนี้แล้ว</translation>
 <translation id="9111228330448174435">แสดงกล่องโต้ตอบเมื่อสร้างกลุ่มแท็บใหม่</translation>
+<translation id="9114502155681725011">เปิดเมนูการทำงานกลุ่มแท็บสำหรับกลุ่มแท็บ "<ph name="TITLE_OF_GROUP" />" สี<ph name="COLOR_NAME" /></translation>
 <translation id="9150694013019234766">สลับไปมาระหว่างแท็บในกลุ่มแท็บบริเวณด้านล่างของหน้าจอ</translation>
 <translation id="9169594135889675189">เพิ่มแท็บใหม่ลงในกลุ่ม</translation>
 <translation id="9216898458513705996">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>

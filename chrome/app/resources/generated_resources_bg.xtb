@@ -2226,6 +2226,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2546991196809436099">Увеличете мащаба, за да уголемите елементите на екрана. Използвайте клавиша „търсене“ + Ctrl + M, за да включите или изключите лупата.</translation>
 <translation id="2548347166720081527">„<ph name="PERMISSION" />“ е разрешено</translation>
 <translation id="2548545707296594436">Нулиране на кеша на потребителските профили на електронната SIM карта</translation>
+<translation id="2549766998450508148">Натиснете от 1 до 4 модифициращи клавиша (Ctrl, Alt, Shift или клавиша „търсене“) и още 1 клавиш. Можете също да изберете един клавиш.</translation>
 <translation id="2549985041256363841">Старт на записа</translation>
 <translation id="2550212893339833758">Резервна памет</translation>
 <translation id="2550596535588364872">Да се разреши ли на <ph name="EXTENSION_NAME" /> да отвори <ph name="FILE_NAME" />?</translation>
@@ -10637,6 +10638,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8715480913140015283">Раздел на заден план използва камерата ви</translation>
 <translation id="8716931980467311658">Да се изтрият ли всички приложения за Linux и данни в папката с файлове за Linux от това устройство <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Копиране на връзката</translation>
+<translation id="8718560545710680911">Запитване чрез тази страница</translation>
 <translation id="8718994464069323380">Открит е сензорен екран</translation>
 <translation id="8719472795285728850">В очакване на активности от разширения...</translation>
 <translation id="8719665168401479425">Използване на мимики с лице за извършване на действия</translation>

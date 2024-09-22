@@ -297,6 +297,7 @@
 <translation id="2450083983707403292">Искате ли да започнете да изтегляте „<ph name="FILE_NAME" />“ още веднъж?</translation>
 <translation id="2451607499823206582">Проследяване</translation>
 <translation id="2453860139492968684">Край</translation>
+<translation id="2461378706168271257">Търсете в разделите</translation>
 <translation id="2461822463642141190">Ток</translation>
 <translation id="2468444275314013497">Всичко е наред с браузъра ви</translation>
 <translation id="2472163211318554013">Влезте в профила си, за да се възползвате максимално от Chrome</translation>
@@ -601,6 +602,7 @@
 <translation id="3847319713229060696">Помогнете за всеобщото подобряване на сигурността в мрежата</translation>
 <translation id="3856096718352044181">Моля, проверете дали този доставчик е валиден или опитайте отново по-късно</translation>
 <translation id="3858860766373142691">Име</translation>
+<translation id="3873174561423636563">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт вашите <ph name="FIELDS_STRING" />. Вижте <ph name="BEGIN_LINK1" />общите условия<ph name="END_LINK1" /> на сайта.</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
 <translation id="3899682235662194879">Затваряне на всички раздели в режим „инкогнито“</translation>
 <translation id="3900966090527141178">Експортиране на паролите</translation>
@@ -1458,6 +1460,7 @@
 <translation id="7656721520530864426">Няма сайтове</translation>
 <translation id="7656862631699126784">Включване на заключването в режим „инкогнито“</translation>
 <translation id="7658239707568436148">Отказ</translation>
+<translation id="7663320421139257046">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт вашите <ph name="FIELDS_STRING" />. Вижте <ph name="BEGIN_LINK1" />декларацията за поверителност<ph name="END_LINK1" /> на сайта.</translation>
 <translation id="7665369617277396874">Добавяне на профил</translation>
 <translation id="766587987807204883">Тук се показват статии, които можете да четете дори когато сте офлайн</translation>
 <translation id="7666185984446444960">Затворихте <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
