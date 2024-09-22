@@ -241,16 +241,21 @@ void ModelExecutionManager::ExecuteModel(
         request_metadata.SerializeToString(any.mutable_value());
         auto tab_request = optimization_guide::ParsedAnyMetadata<
             optimization_guide::proto::TabOrganizationRequest>(any);
-        std::string titles = "";
+        std::string tabs = "";
         for (const auto& tab : tab_request->tabs()) {
-          titles += base::StringPrintf("%s\"%s\"", titles.empty() ? "" : ",",
-                                       tab.title().c_str());
+          tabs += base::StringPrintf("%s\"%s\"", tabs.empty() ? "" : ",",
+                                     tab.title().c_str());
         }
         OPTIMIZATION_GUIDE_LOGGER(
             optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
             optimization_guide_logger_)
             << "TabOrganization Request: "
-            << base::StringPrintf("{\"titles\" : [%s]}", titles.c_str());
+            << base::StringPrintf(
+                   "{\"model_strategy\": \"%s\", \"tabs\" : [%s]}",
+                   optimization_guide::proto::
+                       TabOrganizationRequest_TabOrganizationModelStrategy_Name(
+                           tab_request->model_strategy()),
+                   tabs.c_str());
 
         break;
       }
