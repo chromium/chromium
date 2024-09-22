@@ -56,6 +56,9 @@ AuthenticatorSupportedOptions AuthenticatorOptions() {
   options.user_verification_availability = AuthenticatorSupportedOptions::
       UserVerificationAvailability::kSupportedAndConfigured;
   options.supports_user_presence = true;
+  if (@available(macOS 15.0, *)) {
+    options.supports_prf = true;
+  }
   return options;
 }
 
