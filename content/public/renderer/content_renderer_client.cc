@@ -235,6 +235,11 @@ media::ExternalMemoryAllocator* ContentRendererClient::GetMediaAllocator() {
 bool ContentRendererClient::IsSupportedBitstreamAudioCodec(
     media::AudioCodec codec) {
   switch (codec) {
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+    case media::AudioCodec::kAC3:
+    case media::AudioCodec::kEAC3:
+      return true;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
     case media::AudioCodec::kDTS:
     case media::AudioCodec::kDTSXP2:
