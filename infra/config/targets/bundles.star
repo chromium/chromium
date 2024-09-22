@@ -56,6 +56,7 @@ targets.bundle(
         "chrome_public_test_apk",
         "chrome_public_unit_test_apk",
         "extensions_unittests",
+        "unit_tests",
     ],
     mixins = [
         "has_native_resultdb_integration",
@@ -78,6 +79,12 @@ targets.bundle(
         "android_browsertests": targets.mixin(
             swarming = targets.swarming(
                 shards = 5,
+            ),
+            experiment_percentage = 100,
+        ),
+        "unit_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
             ),
             experiment_percentage = 100,
         ),
