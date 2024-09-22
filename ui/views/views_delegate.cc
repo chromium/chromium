@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/native_widget_private.h"
 
 #if defined(USE_AURA)
@@ -49,13 +50,14 @@ ViewsDelegate* ViewsDelegate::GetInstance() {
 void ViewsDelegate::SaveWindowPlacement(const Widget* widget,
                                         const std::string& window_name,
                                         const gfx::Rect& bounds,
-                                        ui::WindowShowState show_state) {}
+                                        ui::mojom::WindowShowState show_state) {
+}
 
 bool ViewsDelegate::GetSavedWindowPlacement(
     const Widget* widget,
     const std::string& window_name,
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   return false;
 }
 

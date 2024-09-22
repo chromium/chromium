@@ -23,6 +23,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_types.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_source.h"
@@ -337,7 +338,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     bool remove_standard_frame = false;
 
     // Whether the widget should be maximized or minimized.
-    ui::WindowShowState show_state = ui::SHOW_STATE_DEFAULT;
+    ui::mojom::WindowShowState show_state =
+        ui::mojom::WindowShowState::kDefault;
 
     // The native *view* (not native *window*) to which this widget should be
     // parented. If this widget has a parent, then:
@@ -1184,7 +1186,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   void GetHitTestMask(SkPath* mask) const override;
   Widget* AsWidget() override;
   const Widget* AsWidget() const override;
-  bool SetInitialFocus(ui::WindowShowState show_state) override;
+  bool SetInitialFocus(ui::mojom::WindowShowState show_state) override;
   bool ShouldDescendIntoChildForEventHandling(
       ui::Layer* root_layer,
       gfx::NativeView child,
@@ -1322,7 +1324,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Returns the bounds and "show" state from the delegate. Returns true if
   // the delegate wants to use a specified bounds.
   bool GetSavedWindowPlacement(gfx::Rect* bounds,
-                               ui::WindowShowState* show_state);
+                               ui::mojom::WindowShowState* show_state);
 
   // Returns the Views whose layers are parented directly to the Widget's
   // layer.
@@ -1439,7 +1441,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // The saved "show" state for this window. See note in SetInitialBounds
   // that explains why we save this.
-  ui::WindowShowState saved_show_state_ = ui::SHOW_STATE_DEFAULT;
+  ui::mojom::WindowShowState saved_show_state_ =
+      ui::mojom::WindowShowState::kDefault;
 
   // The restored bounds used for the initial show. This is only used if
   // |saved_show_state_| is maximized. initial_restored_bounds_ is in DIP units

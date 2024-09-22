@@ -31,6 +31,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #import "ui/base/test/scoped_fake_full_keyboard_access.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/compositor/layer.h"
@@ -638,8 +639,8 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
   EXPECT_EQ(3, view->paint_count());
 }
 
-// Tests that NativeWidgetMac::Show(ui::SHOW_STATE_MINIMIZED) minimizes the
-// widget (previously it ordered its window out).
+// Tests that NativeWidgetMac::Show(ui::mojom::WindowShowState::kMinimized)
+// minimizes the widget (previously it ordered its window out).
 TEST_F(NativeWidgetMacTest, MinimizeByNativeShow) {
   WidgetAutoclosePtr widget(new Widget);
   Widget::InitParams init_params(Widget::InitParams::TYPE_WINDOW);
@@ -674,7 +675,7 @@ TEST_F(NativeWidgetMacTest, MinimizeByNativeShow) {
     NativeWidgetMac* native_widget =
         static_cast<views::NativeWidgetMac*>(widget->native_widget());
     gfx::Rect restore_bounds(100, 100, 300, 300);
-    native_widget->Show(ui::SHOW_STATE_MINIMIZED, restore_bounds);
+    native_widget->Show(ui::mojom::WindowShowState::kMinimized, restore_bounds);
 
     EXPECT_TRUE(minimize_waiter.Wait());
   }
@@ -1383,7 +1384,7 @@ TEST_F(NativeWidgetMacTest, ConfirmMinimizedWindowRestoration) {
   params.native_widget =
       CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
   // Start the window off in the dock.
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   params.workspace = kDummyWindowRestorationData;
   widget->Init(std::move(params));
 
@@ -1404,7 +1405,7 @@ TEST_F(NativeWidgetMacTest, ConfirmVisibleWindowRestoration) {
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params.native_widget =
       CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
-  params.show_state = ui::SHOW_STATE_NORMAL;
+  params.show_state = ui::mojom::WindowShowState::kNormal;
   params.workspace = kDummyWindowRestorationData;
   widget->Init(std::move(params));
 

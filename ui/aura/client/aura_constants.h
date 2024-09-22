@@ -12,6 +12,7 @@
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 namespace gfx {
@@ -143,9 +144,9 @@ AURA_EXPORT extern const WindowProperty<int>* const kResizeBehaviorKey;
 // window.
 AURA_EXPORT extern const WindowProperty<gfx::Rect*>* const kRestoreBoundsKey;
 
-// A property key to store ui::WindowShowState for a window.
+// A property key to store ui::mojom::WindowShowState for a window.
 // See ui/base/ui_base_types.h for its definition.
-AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
+AURA_EXPORT extern const WindowProperty<ui::mojom::WindowShowState>* const
     kShowStateKey;
 
 // A property key to store the display id on which to put the fullscreen window.
@@ -153,9 +154,9 @@ AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
 AURA_EXPORT extern const WindowProperty<int64_t>* const
     kFullscreenTargetDisplayIdKey;
 
-// A property key to store ui::WindowShowState for a window to restore back to
-// from the current window show state.
-AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
+// A property key to store ui::mojom::WindowShowState for a window to restore
+// back to from the current window show state.
+AURA_EXPORT extern const WindowProperty<ui::mojom::WindowShowState>* const
     kRestoreShowStateKey;
 
 // A property key to store the raster scale. This affects the scale that exo

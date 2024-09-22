@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/events/event.h"
@@ -240,7 +241,7 @@ TEST_F(NativeWidgetAuraTest, CreateMinimized) {
                             Widget::InitParams::TYPE_WINDOW);
   params.parent = nullptr;
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   params.bounds.SetRect(0, 0, 1024, 800);
   auto widget = std::make_unique<Widget>();
   widget->Init(std::move(params));
@@ -273,7 +274,7 @@ TEST_F(NativeWidgetAuraTest, GetWorkspace) {
                             Widget::InitParams::TYPE_WINDOW);
   params.parent = nullptr;
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   params.bounds.SetRect(0, 0, 1024, 800);
   auto widget = std::make_unique<Widget>();
   widget->Init(std::move(params));
@@ -318,13 +319,13 @@ class TestWindowObserver : public aura::WindowObserver {
   }
 
   int count() const { return count_; }
-  ui::WindowShowState state() const { return state_; }
+  ui::mojom::WindowShowState state() const { return state_; }
   void Reset() { count_ = 0; }
 
  private:
   gfx::NativeWindow window_;
   int count_ = 0;
-  ui::WindowShowState state_ = ui::SHOW_STATE_DEFAULT;
+  ui::mojom::WindowShowState state_ = ui::mojom::WindowShowState::kDefault;
 };
 
 // Tests that window transitions from normal to minimized and back do not
@@ -334,7 +335,7 @@ TEST_F(NativeWidgetAuraTest, ToggleState) {
                             Widget::InitParams::TYPE_WINDOW);
   params.parent = nullptr;
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_NORMAL;
+  params.show_state = ui::mojom::WindowShowState::kNormal;
   params.bounds.SetRect(0, 0, 1024, 800);
   auto widget = std::make_unique<Widget>();
   widget->Init(std::move(params));
@@ -343,18 +344,18 @@ TEST_F(NativeWidgetAuraTest, ToggleState) {
   widget->Show();
   EXPECT_FALSE(widget->IsMinimized());
   EXPECT_EQ(0, observer->count());
-  EXPECT_EQ(ui::SHOW_STATE_DEFAULT, observer->state());
+  EXPECT_EQ(ui::mojom::WindowShowState::kDefault, observer->state());
 
   widget->Minimize();
   EXPECT_TRUE(widget->IsMinimized());
   EXPECT_EQ(1, observer->count());
-  EXPECT_EQ(ui::SHOW_STATE_MINIMIZED, observer->state());
+  EXPECT_EQ(ui::mojom::WindowShowState::kMinimized, observer->state());
   observer->Reset();
 
   widget->Show();
   widget->Restore();
   EXPECT_EQ(1, observer->count());
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL, observer->state());
+  EXPECT_EQ(ui::mojom::WindowShowState::kNormal, observer->state());
 
   observer.reset();
   EXPECT_FALSE(widget->IsMinimized());
@@ -438,7 +439,7 @@ TEST_F(NativeWidgetAuraTest, ShowMaximizedDoesntBounceAround) {
                             Widget::InitParams::TYPE_WINDOW);
   params.parent = nullptr;
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_MAXIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMaximized;
   params.bounds = gfx::Rect(10, 10, 100, 200);
   widget->Init(std::move(params));
   EXPECT_FALSE(
@@ -905,14 +906,14 @@ TEST_F(NativeWidgetAuraTest, MinimizedWidgetRestoreBounds) {
   Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                             Widget::InitParams::TYPE_WINDOW);
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   params.bounds = restore_bounds;
 
   widget->Init(std::move(params));
   widget->Show();
 
   aura::Window* window = widget->GetNativeWindow();
-  EXPECT_EQ(ui::SHOW_STATE_MINIMIZED,
+  EXPECT_EQ(ui::mojom::WindowShowState::kMinimized,
             window->GetProperty(aura::client::kShowStateKey));
   EXPECT_EQ(restore_bounds,
             *window->GetProperty(aura::client::kRestoreBoundsKey));
@@ -930,7 +931,7 @@ TEST_F(NativeWidgetAuraTest, WorkspaceUuid) {
                             Widget::InitParams::TYPE_WINDOW);
   params.parent = nullptr;
   params.context = root_window();
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   params.bounds.SetRect(0, 0, 1024, 800);
   const std::string uuid = "e1b6731b-2a99-48be-bcb7-54e3ba274d05";
   params.workspace = base::Uuid::ParseLowercase(uuid).AsLowercaseString();
@@ -949,7 +950,7 @@ TEST_F(NativeWidgetAuraTest, WorkspaceUuid) {
                              Widget::InitParams::TYPE_WINDOW);
   params2.parent = nullptr;
   params2.context = root_window();
-  params2.show_state = ui::SHOW_STATE_MINIMIZED;
+  params2.show_state = ui::mojom::WindowShowState::kMinimized;
   params2.bounds.SetRect(0, 0, 1024, 800);
   params2.workspace = "2";
   auto widget2 = std::make_unique<Widget>();

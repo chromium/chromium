@@ -29,6 +29,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
@@ -489,7 +490,7 @@ void Widget::Init(InitParams params) {
   // Copy the elements of params that will be used after it is moved.
   const InitParams::Type type = params.type;
   const gfx::Rect bounds = params.bounds;
-  const ui::WindowShowState show_state = params.show_state;
+  const ui::mojom::WindowShowState show_state = params.show_state;
   WidgetDelegate* delegate = params.delegate;
   bool should_set_initial_bounds = true;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -527,11 +528,11 @@ void Widget::Init(InitParams params) {
     // views won't have a dirty Layout state, so won't do any work.
     root_view_->LayoutImmediately();
 
-    if (show_state == ui::SHOW_STATE_MAXIMIZED) {
+    if (show_state == ui::mojom::WindowShowState::kMaximized) {
       Maximize();
-    } else if (show_state == ui::SHOW_STATE_MINIMIZED) {
+    } else if (show_state == ui::mojom::WindowShowState::kMinimized) {
       Minimize();
-      saved_show_state_ = ui::SHOW_STATE_MINIMIZED;
+      saved_show_state_ = ui::mojom::WindowShowState::kMinimized;
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -876,15 +877,17 @@ void Widget::Show() {
   const ui::Layer* layer = GetLayer();
   TRACE_EVENT1("views", "Widget::Show", "layer",
                layer ? layer->name() : "none");
-  ui::WindowShowState preferred_show_state =
-      CanActivate() ? ui::SHOW_STATE_NORMAL : ui::SHOW_STATE_INACTIVE;
+  ui::mojom::WindowShowState preferred_show_state =
+      CanActivate() ? ui::mojom::WindowShowState::kNormal
+                    : ui::mojom::WindowShowState::kInactive;
   if (non_client_view_) {
     // While initializing, the kiosk mode will go to full screen before the
     // widget gets shown. In that case we stay in full screen mode, regardless
     // of the |saved_show_state_| member.
-    if (saved_show_state_ == ui::SHOW_STATE_MAXIMIZED &&
+    if (saved_show_state_ == ui::mojom::WindowShowState::kMaximized &&
         !initial_restored_bounds_.IsEmpty() && !IsFullscreen()) {
-      native_widget_->Show(ui::SHOW_STATE_MAXIMIZED, initial_restored_bounds_);
+      native_widget_->Show(ui::mojom::WindowShowState::kMaximized,
+                           initial_restored_bounds_);
     } else {
       native_widget_->Show(saved_show_state_, gfx::Rect());
     }
@@ -909,16 +912,16 @@ void Widget::Hide() {
 void Widget::ShowInactive() {
   if (!native_widget_)
     return;
-  // If this gets called with saved_show_state_ == ui::SHOW_STATE_MAXIMIZED,
-  // call SetBounds()with the restored bounds to set the correct size. This
-  // normally should not happen, but if it does we should avoid showing unsized
-  // windows.
-  if (saved_show_state_ == ui::SHOW_STATE_MAXIMIZED &&
+  // If this gets called with saved_show_state_ ==
+  // ui::mojom::WindowShowState::kMaximized, call SetBounds()with the restored
+  // bounds to set the correct size. This normally should not happen, but if it
+  // does we should avoid showing unsized windows.
+  if (saved_show_state_ == ui::mojom::WindowShowState::kMaximized &&
       !initial_restored_bounds_.IsEmpty()) {
     SetBounds(initial_restored_bounds_);
-    saved_show_state_ = ui::SHOW_STATE_NORMAL;
+    saved_show_state_ = ui::mojom::WindowShowState::kNormal;
   }
-  native_widget_->Show(ui::SHOW_STATE_INACTIVE, gfx::Rect());
+  native_widget_->Show(ui::mojom::WindowShowState::kInactive, gfx::Rect());
 
   HandleShowRequested();
 }
@@ -1980,13 +1983,14 @@ const Widget* Widget::AsWidget() const {
   return this;
 }
 
-bool Widget::SetInitialFocus(ui::WindowShowState show_state) {
+bool Widget::SetInitialFocus(ui::mojom::WindowShowState show_state) {
   FocusManager* focus_manager = GetFocusManager();
   if (!focus_manager || !widget_delegate_)
     return false;
   View* v = widget_delegate_->GetInitiallyFocusedView();
-  if (!focus_on_creation_ || show_state == ui::SHOW_STATE_INACTIVE ||
-      show_state == ui::SHOW_STATE_MINIMIZED) {
+  if (!focus_on_creation_ ||
+      show_state == ui::mojom::WindowShowState::kInactive ||
+      show_state == ui::mojom::WindowShowState::kMinimized) {
     // If not focusing the window now, tell the focus manager which view to
     // focus when the window is restored.
     if (v)
@@ -2209,7 +2213,7 @@ void Widget::SaveWindowPlacement() {
   if (!widget_delegate_ || !widget_delegate_->ShouldSaveWindowPlacement() ||
       !native_widget_)
     return;
-  ui::WindowShowState show_state = ui::SHOW_STATE_NORMAL;
+  ui::mojom::WindowShowState show_state = ui::mojom::WindowShowState::kNormal;
   gfx::Rect bounds;
   native_widget_->GetWindowPlacement(&bounds, &show_state);
   widget_delegate_->SaveWindowPlacement(bounds, show_state);
@@ -2226,7 +2230,7 @@ void Widget::SetInitialBounds(const gfx::Rect& bounds) {
 
   gfx::Rect saved_bounds;
   if (GetSavedWindowPlacement(&saved_bounds, &saved_show_state_)) {
-    if (saved_show_state_ == ui::SHOW_STATE_MAXIMIZED) {
+    if (saved_show_state_ == ui::mojom::WindowShowState::kMaximized) {
       // If we're going to maximize, wait until Show is invoked to set the
       // bounds. That way we avoid a noticeable resize.
       initial_restored_bounds_ = saved_bounds;
@@ -2300,7 +2304,7 @@ void Widget::SetParent(Widget* parent) {
 }
 
 bool Widget::GetSavedWindowPlacement(gfx::Rect* bounds,
-                                     ui::WindowShowState* show_state) {
+                                     ui::mojom::WindowShowState* show_state) {
   // First we obtain the window's saved show-style and store it. We need to do
   // this here, rather than in Show() because by the time Show() is called,
   // the window's size will have been reset (below) and the saved maximized

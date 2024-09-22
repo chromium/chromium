@@ -14,6 +14,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
@@ -188,13 +189,16 @@ TEST_F(ShadowControllerTest, ShowState) {
   ASSERT_TRUE(shadow != NULL);
   EXPECT_EQ(kShadowElevationInactiveWindow, shadow->desired_elevation());
 
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kMaximized);
   EXPECT_FALSE(shadow->layer()->visible());
 
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_NORMAL);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kNormal);
   EXPECT_TRUE(shadow->layer()->visible());
 
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   EXPECT_FALSE(shadow->layer()->visible());
 }
 

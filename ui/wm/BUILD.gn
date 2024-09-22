@@ -81,6 +81,7 @@ component("wm") {
     "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/mojom:mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/color",
     "//ui/compositor",
     "//ui/display",

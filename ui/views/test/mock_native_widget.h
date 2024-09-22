@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/widget/native_widget_private.h"
 
 namespace views {
@@ -59,7 +60,7 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
   MOCK_METHOD(void, CenterWindow, (const gfx::Size& size), (override));
   MOCK_METHOD(void,
               GetWindowPlacement,
-              (gfx::Rect * bounds, ui::WindowShowState* show_state),
+              (gfx::Rect * bounds, ui::mojom::WindowShowState* show_state),
               (const override));
   MOCK_METHOD(bool, SetWindowTitle, (const std::u16string& title), (override));
   MOCK_METHOD(void,
@@ -94,7 +95,8 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
   MOCK_METHOD(void, CloseNow, (), (override));
   MOCK_METHOD(void,
               Show,
-              (ui::WindowShowState show_state, const gfx::Rect& restore_bounds),
+              (ui::mojom::WindowShowState show_state,
+               const gfx::Rect& restore_bounds),
               (override));
   MOCK_METHOD(void, Hide, (), (override));
   MOCK_METHOD(bool, IsVisible, (), (const override));

@@ -143,6 +143,7 @@ component("aura") {
     "//ui/base/ime",
     "//ui/base/metadata",
     "//ui/base/mojom:mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/compositor",
   ]
 

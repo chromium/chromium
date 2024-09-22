@@ -16,7 +16,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -214,13 +214,14 @@ class VIEWS_EXPORT WidgetDelegate {
   // process' local state keyed by window name (See GetWindowName above). This
   // behavior can be overridden to provide additional functionality.
   virtual void SaveWindowPlacement(const gfx::Rect& bounds,
-                                   ui::WindowShowState show_state);
+                                   ui::mojom::WindowShowState show_state);
 
   // Retrieves the window's bounds and "show" states.
   // This behavior can be overridden to provide additional functionality.
-  virtual bool GetSavedWindowPlacement(const Widget* widget,
-                                       gfx::Rect* bounds,
-                                       ui::WindowShowState* show_state) const;
+  virtual bool GetSavedWindowPlacement(
+      const Widget* widget,
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const;
 
   // Hooks for the end of the Widget/Window lifecycle. As of this writing, these
   // callbacks happen like so:

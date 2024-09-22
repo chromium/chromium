@@ -12,7 +12,7 @@
 #include <optional>
 #include <string>
 
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/views_export.h"
@@ -41,8 +41,9 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   gfx::Rect GetClientAreaBoundsInScreen() const override;
   gfx::Rect GetRestoredBounds() const override;
 
-  void GetWindowPlacement(gfx::Rect* bounds,
-                          ui::WindowShowState* show_state) const override;
+  void GetWindowPlacement(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override;
 
   void SetSize(const gfx::Size& size) override;
   void CenterWindow(const gfx::Size& size) override;
@@ -52,7 +53,7 @@ class VIEWS_EXPORT HWNDMessageHandlerHeadless : public HWNDMessageHandler {
   void StackAbove(HWND other_hwnd) override;
   void StackAtTop() override;
 
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& pixel_restore_bounds) override;
   void Hide() override;
 

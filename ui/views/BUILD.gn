@@ -1152,6 +1152,7 @@ source_set("test_support") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base/mojom:mojom",
+    "//ui/base/mojom:ui_base_types",
   ]
 
   if (is_win) {

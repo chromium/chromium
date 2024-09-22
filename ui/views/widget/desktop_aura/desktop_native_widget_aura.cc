@@ -33,6 +33,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
@@ -244,7 +245,7 @@ class DesktopNativeWidgetAuraWindowParentingClient
     // APIs provide the required functionality.
 #if !BUILDFLAG(IS_FUCHSIA)
     bool is_fullscreen = window->GetProperty(aura::client::kShowStateKey) ==
-                         ui::SHOW_STATE_FULLSCREEN;
+                         ui::mojom::WindowShowState::kFullscreen;
     bool is_menu = window->GetType() == aura::client::WINDOW_TYPE_MENU;
 
     if (is_fullscreen || is_menu) {
@@ -810,7 +811,7 @@ void DesktopNativeWidgetAura::CenterWindow(const gfx::Size& size) {
 
 void DesktopNativeWidgetAura::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* maximized) const {
+    ui::mojom::WindowShowState* maximized) const {
   if (desktop_window_tree_host_)
     desktop_window_tree_host_->GetWindowPlacement(bounds, maximized);
 }
@@ -917,7 +918,7 @@ void DesktopNativeWidgetAura::CloseNow() {
     desktop_window_tree_host_->CloseNow();
 }
 
-void DesktopNativeWidgetAura::Show(ui::WindowShowState show_state,
+void DesktopNativeWidgetAura::Show(ui::mojom::WindowShowState show_state,
                                    const gfx::Rect& restore_bounds) {
   if (!desktop_window_tree_host_)
     return;

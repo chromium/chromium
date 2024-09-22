@@ -16,6 +16,7 @@
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/aura/window_tree_host_observer.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display_switches.h"
@@ -539,7 +540,7 @@ TEST_F(DesktopWindowTreeHostPlatformTest, ShowInitiallyMinimizedWidget) {
   params.delegate = nullptr;
   params.remove_standard_frame = true;
   params.bounds = gfx::Rect(100, 100, 100, 100);
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   std::unique_ptr<ScopedPlatformWindowFactoryDelegate>
       scoped_platform_window_factory_delegate(
           new ScopedPlatformWindowFactoryDelegate);
@@ -555,7 +556,7 @@ TEST_F(DesktopWindowTreeHostPlatformTest, ShowInitiallyMinimizedWidget) {
   // to pass to the native widget and window tree host. Essentially this is
   // testing that `DesktopWindowTreeHostPlatform` does not get activated if
   // `DesktopWindowTreeHostPlatform::Show()` is called with
-  // `ui::SHOW_STATE_MINIMIZED`.
+  // `ui::mojom::WindowShowState::kMinimized`.
   widget->Show();
   EXPECT_FALSE(widget->IsActive());
 

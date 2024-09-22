@@ -24,6 +24,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_processor.h"
 #include "ui/events/event_utils.h"
@@ -553,7 +554,7 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
     owned_window_->SetName("TestTopLevelWindow");
     if (fullscreen) {
       owned_window_->SetProperty(aura::client::kShowStateKey,
-                                 ui::SHOW_STATE_FULLSCREEN);
+                                 ui::mojom::WindowShowState::kFullscreen);
     } else {
       owned_window_->SetType(aura::client::WINDOW_TYPE_MENU);
     }
@@ -785,7 +786,7 @@ TEST_F(DesktopNativeWidgetAuraTest, MAYBE_WindowMouseModalityTest) {
   Widget top_level_widget;
   Widget::InitParams init_params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
-  init_params.show_state = ui::SHOW_STATE_NORMAL;
+  init_params.show_state = ui::mojom::WindowShowState::kNormal;
   gfx::Rect initial_bounds(0, 0, 500, 500);
   init_params.bounds = initial_bounds;
   top_level_widget.Init(std::move(init_params));

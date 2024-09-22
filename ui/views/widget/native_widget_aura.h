@@ -17,6 +17,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/native_widget_private.h"
@@ -100,7 +101,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   ui::InputMethod* GetInputMethod() override;
   void CenterWindow(const gfx::Size& size) override;
   void GetWindowPlacement(gfx::Rect* bounds,
-                          ui::WindowShowState* maximized) const override;
+                          ui::mojom::WindowShowState* maximized) const override;
   bool SetWindowTitle(const std::u16string& title) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
@@ -120,7 +121,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   void SetShape(std::unique_ptr<Widget::ShapeRects> shape) override;
   void Close() override;
   void CloseNow() override;
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& restore_bounds) override;
   void Hide() override;
   bool IsVisible() const override;
@@ -242,7 +243,7 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
   internal::NativeWidgetDelegate* delegate() { return delegate_.get(); }
 
  private:
-  void SetInitialFocus(ui::WindowShowState show_state);
+  void SetInitialFocus(ui::mojom::WindowShowState show_state);
 
   // Set the bounds with target 'display_id'. This will place the widget in that
   // 'display' even if the more than half of bounds are outside of the display.

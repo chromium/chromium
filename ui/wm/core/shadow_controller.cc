@@ -19,7 +19,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/class_property.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -185,7 +185,7 @@ void ShadowController::Impl::OnWindowPropertyChanged(aura::Window* window,
 
   if (key == aura::client::kShowStateKey) {
     shadow_will_change = window->GetProperty(aura::client::kShowStateKey) !=
-                         static_cast<ui::WindowShowState>(old);
+                         static_cast<ui::mojom::WindowShowState>(old);
   }
 
   if (key == aura::client::kWindowCornerRadiusKey) {
@@ -264,10 +264,10 @@ bool ShadowController::Impl::ShouldShowShadowForWindow(
     return should_show;
   }
 
-  ui::WindowShowState show_state =
+  ui::mojom::WindowShowState show_state =
       window->GetProperty(aura::client::kShowStateKey);
-  if (show_state == ui::SHOW_STATE_FULLSCREEN ||
-      show_state == ui::SHOW_STATE_MAXIMIZED) {
+  if (show_state == ui::mojom::WindowShowState::kFullscreen ||
+      show_state == ui::mojom::WindowShowState::kMaximized) {
     return false;
   }
 

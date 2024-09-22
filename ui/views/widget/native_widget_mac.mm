@@ -26,6 +26,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -464,14 +465,14 @@ void NativeWidgetMac::CenterWindow(const gfx::Size& size) {
 
 void NativeWidgetMac::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   *bounds = GetRestoredBounds();
   if (IsFullscreen())
-    *show_state = ui::SHOW_STATE_FULLSCREEN;
+    *show_state = ui::mojom::WindowShowState::kFullscreen;
   else if (IsMinimized())
-    *show_state = ui::SHOW_STATE_MINIMIZED;
+    *show_state = ui::mojom::WindowShowState::kMinimized;
   else
-    *show_state = ui::SHOW_STATE_NORMAL;
+    *show_state = ui::mojom::WindowShowState::kNormal;
 }
 
 bool NativeWidgetMac::SetWindowTitle(const std::u16string& title) {
@@ -647,31 +648,31 @@ void NativeWidgetMac::CloseNow() {
   // here when ownership_ == NATIVE_WIDGET_OWNS_WIDGET,
 }
 
-void NativeWidgetMac::Show(ui::WindowShowState show_state,
+void NativeWidgetMac::Show(ui::mojom::WindowShowState show_state,
                            const gfx::Rect& restore_bounds) {
   if (!GetNSWindowHost() || !delegate_) {
     return;
   }
 
   switch (show_state) {
-    case ui::SHOW_STATE_DEFAULT:
-    case ui::SHOW_STATE_NORMAL:
-    case ui::SHOW_STATE_INACTIVE:
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kDefault:
+    case ui::mojom::WindowShowState::kNormal:
+    case ui::mojom::WindowShowState::kInactive:
+    case ui::mojom::WindowShowState::kMinimized:
       break;
-    case ui::SHOW_STATE_MAXIMIZED:
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kMaximized:
+    case ui::mojom::WindowShowState::kFullscreen:
       NOTIMPLEMENTED();
       break;
-    case ui::SHOW_STATE_END:
+    case ui::mojom::WindowShowState::kEnd:
       NOTREACHED();
   }
   auto window_state = WindowVisibilityState::kShowAndActivateWindow;
-  if (show_state == ui::SHOW_STATE_INACTIVE) {
+  if (show_state == ui::mojom::WindowShowState::kInactive) {
     window_state = WindowVisibilityState::kShowInactive;
-  } else if (show_state == ui::SHOW_STATE_MINIMIZED) {
+  } else if (show_state == ui::mojom::WindowShowState::kMinimized) {
     window_state = WindowVisibilityState::kMiniaturizeWindow;
-  } else if (show_state == ui::SHOW_STATE_DEFAULT) {
+  } else if (show_state == ui::mojom::WindowShowState::kDefault) {
     window_state = delegate_->CanActivate()
                        ? window_state
                        : WindowVisibilityState::kShowInactive;

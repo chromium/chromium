@@ -27,7 +27,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/win/window_event_target.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
@@ -114,7 +114,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   virtual gfx::Rect GetClientAreaBounds() const;
 
   virtual void GetWindowPlacement(gfx::Rect* bounds,
-                                  ui::WindowShowState* show_state) const;
+                                  ui::mojom::WindowShowState* show_state) const;
 
   // Sets the bounds of the HWND to |bounds_in_pixels|. If the HWND size is not
   // changed, |force_size_changed| determines if we should pretend it is.
@@ -135,7 +135,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   // Shows the window. If |show_state| is maximized, |pixel_restore_bounds| is
   // the bounds to restore the window to when going back to normal.
-  virtual void Show(ui::WindowShowState show_state,
+  virtual void Show(ui::mojom::WindowShowState show_state,
                     const gfx::Rect& pixel_restore_bounds);
   virtual void Hide();
 

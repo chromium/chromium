@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
@@ -132,7 +133,7 @@ gfx::Rect HWNDMessageHandlerHeadless::GetRestoredBounds() const {
 
 void HWNDMessageHandlerHeadless::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   if (bounds) {
     if (window_state_ == WindowState::kNormal) {
       *bounds = bounds_;
@@ -144,16 +145,16 @@ void HWNDMessageHandlerHeadless::GetWindowPlacement(
   if (show_state) {
     switch (window_state_) {
       case WindowState::kNormal:
-        *show_state = ui::SHOW_STATE_NORMAL;
+        *show_state = ui::mojom::WindowShowState::kNormal;
         break;
       case WindowState::kMinimized:
-        *show_state = ui::SHOW_STATE_MINIMIZED;
+        *show_state = ui::mojom::WindowShowState::kMinimized;
         break;
       case WindowState::kMaximized:
-        *show_state = ui::SHOW_STATE_MAXIMIZED;
+        *show_state = ui::mojom::WindowShowState::kMaximized;
         break;
       case WindowState::kFullscreen:
-        *show_state = ui::SHOW_STATE_FULLSCREEN;
+        *show_state = ui::mojom::WindowShowState::kFullscreen;
         break;
     }
   }
@@ -207,18 +208,18 @@ void HWNDMessageHandlerHeadless::StackAbove(HWND other_hwnd) {}
 
 void HWNDMessageHandlerHeadless::StackAtTop() {}
 
-void HWNDMessageHandlerHeadless::Show(ui::WindowShowState show_state,
+void HWNDMessageHandlerHeadless::Show(ui::mojom::WindowShowState show_state,
                                       const gfx::Rect& pixel_restore_bounds) {
   TRACE_EVENT0("views", "HWNDMessageHandlerHeadless::Show");
 
   bool activate = true;
 
   switch (show_state) {
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       Minimize();
       activate = false;
       break;
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       if (window_state_ != WindowState::kMaximized) {
         if (!pixel_restore_bounds.IsEmpty()) {
           bounds_ = pixel_restore_bounds;
@@ -226,10 +227,10 @@ void HWNDMessageHandlerHeadless::Show(ui::WindowShowState show_state,
         Maximize();
       }
       break;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       SetFullscreen(true, display::kInvalidDisplayId);
       break;
-    case ui::SHOW_STATE_INACTIVE:
+    case ui::mojom::WindowShowState::kInactive:
       activate = false;
       break;
     default:

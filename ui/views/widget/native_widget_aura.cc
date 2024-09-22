@@ -37,6 +37,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
@@ -511,11 +512,11 @@ void NativeWidgetAura::CenterWindow(const gfx::Size& size) {
 
 void NativeWidgetAura::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   // The interface specifies returning restored bounds, not current bounds.
   *bounds = GetRestoredBounds();
   *show_state = window_ ? window_->GetProperty(aura::client::kShowStateKey)
-                        : ui::SHOW_STATE_DEFAULT;
+                        : ui::mojom::WindowShowState::kDefault;
 }
 
 bool NativeWidgetAura::SetWindowTitle(const std::u16string& title) {
@@ -713,45 +714,48 @@ void NativeWidgetAura::CloseNow() {
   // Therefore, we should NOT attempt to set `window_` to `nullptr`.
 }
 
-void NativeWidgetAura::Show(ui::WindowShowState show_state,
+void NativeWidgetAura::Show(ui::mojom::WindowShowState show_state,
                             const gfx::Rect& restore_bounds) {
   if (!window_)
     return;
 
-  if ((show_state == ui::SHOW_STATE_MAXIMIZED ||
-       show_state == ui::SHOW_STATE_MINIMIZED) &&
+  if ((show_state == ui::mojom::WindowShowState::kMaximized ||
+       show_state == ui::mojom::WindowShowState::kMinimized) &&
       !restore_bounds.IsEmpty()) {
     SetRestoreBounds(window_, restore_bounds);
   }
-  if (show_state == ui::SHOW_STATE_MAXIMIZED ||
-      show_state == ui::SHOW_STATE_FULLSCREEN) {
+  if (show_state == ui::mojom::WindowShowState::kMaximized ||
+      show_state == ui::mojom::WindowShowState::kFullscreen) {
     window_->SetProperty(aura::client::kShowStateKey, show_state);
   }
   // Disable the window animation for an initially minimized widget, because it
   // will create a detached layer tree for minimizing animation, which can be
   // briefly visible.
   std::optional<wm::ScopedAnimationDisabler> disabler;
-  if (show_state == ui::SHOW_STATE_MINIMIZED) {
+  if (show_state == ui::mojom::WindowShowState::kMinimized) {
     disabler.emplace(window_);
   }
 
   window_->Show();
   if (delegate_->CanActivate()) {
-    if (show_state != ui::SHOW_STATE_INACTIVE)
+    if (show_state != ui::mojom::WindowShowState::kInactive) {
       Activate();
+    }
     // SetInitialFocus() should be always be called, even for
     // SHOW_STATE_INACTIVE. If the window has to stay inactive, the method will
     // do the right thing.
     // Activate() might fail if the window is non-activatable. In this case, we
     // should pass SHOW_STATE_INACTIVE to SetInitialFocus() to stop the initial
     // focused view from getting focused. See crbug.com/515594 for example.
-    SetInitialFocus(IsActive() ? show_state : ui::SHOW_STATE_INACTIVE);
+    SetInitialFocus(IsActive() ? show_state
+                               : ui::mojom::WindowShowState::kInactive);
   }
 
   // On desktop aura, a window is activated first even when it is shown as
   // minimized. Do the same for consistency.
-  if (show_state == ui::SHOW_STATE_MINIMIZED)
+  if (show_state == ui::mojom::WindowShowState::kMinimized) {
     Minimize();
+  }
 }
 
 void NativeWidgetAura::Hide() {
@@ -811,22 +815,24 @@ bool NativeWidgetAura::IsVisibleOnAllWorkspaces() const {
 
 void NativeWidgetAura::Maximize() {
   if (window_)
-    window_->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MAXIMIZED);
+    window_->SetProperty(aura::client::kShowStateKey,
+                         ui::mojom::WindowShowState::kMaximized);
 }
 
 void NativeWidgetAura::Minimize() {
   if (window_)
-    window_->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_MINIMIZED);
+    window_->SetProperty(aura::client::kShowStateKey,
+                         ui::mojom::WindowShowState::kMinimized);
 }
 
 bool NativeWidgetAura::IsMaximized() const {
   return window_ && window_->GetProperty(aura::client::kShowStateKey) ==
-                        ui::SHOW_STATE_MAXIMIZED;
+                        ui::mojom::WindowShowState::kMaximized;
 }
 
 bool NativeWidgetAura::IsMinimized() const {
   return window_ && window_->GetProperty(aura::client::kShowStateKey) ==
-                        ui::SHOW_STATE_MINIMIZED;
+                        ui::mojom::WindowShowState::kMinimized;
 }
 
 void NativeWidgetAura::Restore() {
@@ -844,7 +850,7 @@ void NativeWidgetAura::SetFullscreen(bool fullscreen,
 
 bool NativeWidgetAura::IsFullscreen() const {
   return window_ && window_->GetProperty(aura::client::kShowStateKey) ==
-                        ui::SHOW_STATE_FULLSCREEN;
+                        ui::mojom::WindowShowState::kFullscreen;
 }
 
 void NativeWidgetAura::SetCanAppearInExistingFullscreenSpaces(
@@ -1317,7 +1323,7 @@ NativeWidgetAura::~NativeWidgetAura() {
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetAura, private:
 
-void NativeWidgetAura::SetInitialFocus(ui::WindowShowState show_state) {
+void NativeWidgetAura::SetInitialFocus(ui::mojom::WindowShowState show_state) {
   // The window does not get keyboard messages unless we focus it.
   if (!GetWidget()->SetInitialFocus(show_state))
     window_->Focus();

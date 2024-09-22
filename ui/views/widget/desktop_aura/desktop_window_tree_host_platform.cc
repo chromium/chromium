@@ -22,6 +22,7 @@
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
@@ -72,17 +73,17 @@ namespace {
 // destroyed.
 std::list<gfx::AcceleratedWidget>* open_windows_ = nullptr;
 
-bool DetermineInactivity(ui::WindowShowState show_state) {
-  if (show_state != ui::SHOW_STATE_DEFAULT &&
-      show_state != ui::SHOW_STATE_NORMAL &&
-      show_state != ui::SHOW_STATE_INACTIVE &&
-      show_state != ui::SHOW_STATE_MAXIMIZED) {
+bool DetermineInactivity(ui::mojom::WindowShowState show_state) {
+  if (show_state != ui::mojom::WindowShowState::kDefault &&
+      show_state != ui::mojom::WindowShowState::kNormal &&
+      show_state != ui::mojom::WindowShowState::kInactive &&
+      show_state != ui::mojom::WindowShowState::kMaximized) {
     // It will behave like SHOW_STATE_NORMAL.
     NOTIMPLEMENTED_LOG_ONCE();
   }
 
   // See comment in PlatformWindow::Show().
-  return show_state == ui::SHOW_STATE_INACTIVE;
+  return show_state == ui::mojom::WindowShowState::kInactive;
 }
 
 ui::PlatformWindowOpacity GetPlatformWindowOpacity(
@@ -433,7 +434,7 @@ aura::WindowTreeHost* DesktopWindowTreeHostPlatform::AsWindowTreeHost() {
   return this;
 }
 
-void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
+void DesktopWindowTreeHostPlatform::Show(ui::mojom::WindowShowState show_state,
                                          const gfx::Rect& restore_bounds) {
   OnAcceleratedWidgetMadeVisible(true);
   if (compositor())
@@ -442,7 +443,7 @@ void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
   platform_window()->Show(DetermineInactivity(show_state));
 
   switch (show_state) {
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       platform_window()->Maximize();
       if (!restore_bounds.IsEmpty()) {
         // Enforce |restored_bounds_in_pixels_| since calling Maximize() could
@@ -450,10 +451,10 @@ void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
         platform_window()->SetRestoredBoundsInDIP(restore_bounds);
       }
       break;
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       platform_window()->Minimize();
       break;
-    case ui::SHOW_STATE_FULLSCREEN:
+    case ui::mojom::WindowShowState::kFullscreen:
       SetFullscreen(true, display::kInvalidDisplayId);
       break;
     default:
@@ -461,8 +462,8 @@ void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
   }
 
   if (native_widget_delegate_->CanActivate()) {
-    if (show_state != ui::SHOW_STATE_INACTIVE &&
-        show_state != ui::SHOW_STATE_MINIMIZED) {
+    if (show_state != ui::mojom::WindowShowState::kInactive &&
+        show_state != ui::mojom::WindowShowState::kMinimized) {
       Activate();
     }
 
@@ -474,7 +475,7 @@ void DesktopWindowTreeHostPlatform::Show(ui::WindowShowState show_state,
     // focused view from getting focused. See https://crbug.com/515594 for
     // example.
     native_widget_delegate_->SetInitialFocus(
-        IsActive() ? show_state : ui::SHOW_STATE_INACTIVE);
+        IsActive() ? show_state : ui::mojom::WindowShowState::kInactive);
   }
 
   // compositor()->SetVisible(true) might have already led to content_window
@@ -534,19 +535,19 @@ void DesktopWindowTreeHostPlatform::CenterWindow(const gfx::Size& size) {
 
 void DesktopWindowTreeHostPlatform::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   *bounds = GetRestoredBounds();
 
   if (IsFullscreen())
-    *show_state = ui::SHOW_STATE_FULLSCREEN;
+    *show_state = ui::mojom::WindowShowState::kFullscreen;
   else if (IsMinimized())
-    *show_state = ui::SHOW_STATE_MINIMIZED;
+    *show_state = ui::mojom::WindowShowState::kMinimized;
   else if (IsMaximized())
-    *show_state = ui::SHOW_STATE_MAXIMIZED;
+    *show_state = ui::mojom::WindowShowState::kMaximized;
   else if (!IsActive())
-    *show_state = ui::SHOW_STATE_INACTIVE;
+    *show_state = ui::mojom::WindowShowState::kInactive;
   else
-    *show_state = ui::SHOW_STATE_NORMAL;
+    *show_state = ui::mojom::WindowShowState::kNormal;
 }
 
 gfx::Rect DesktopWindowTreeHostPlatform::GetWindowBoundsInScreen() const {
@@ -619,7 +620,7 @@ bool DesktopWindowTreeHostPlatform::IsActive() const {
 void DesktopWindowTreeHostPlatform::Maximize() {
   platform_window()->Maximize();
   if (IsMinimized())
-    Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+    Show(ui::mojom::WindowShowState::kNormal, gfx::Rect());
 }
 
 void DesktopWindowTreeHostPlatform::Minimize() {
@@ -629,7 +630,7 @@ void DesktopWindowTreeHostPlatform::Minimize() {
 
 void DesktopWindowTreeHostPlatform::Restore() {
   platform_window()->Restore();
-  Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+  Show(ui::mojom::WindowShowState::kNormal, gfx::Rect());
 }
 
 bool DesktopWindowTreeHostPlatform::IsMaximized() const {
@@ -886,7 +887,7 @@ gfx::Transform DesktopWindowTreeHostPlatform::GetRootTransform() const {
 }
 
 void DesktopWindowTreeHostPlatform::ShowImpl() {
-  Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+  Show(ui::mojom::WindowShowState::kNormal, gfx::Rect());
 }
 
 void DesktopWindowTreeHostPlatform::HideImpl() {

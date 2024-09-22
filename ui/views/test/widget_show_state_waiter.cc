@@ -5,7 +5,7 @@
 #include "ui/views/test/widget_show_state_waiter.h"
 
 #include "base/run_loop.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -13,11 +13,12 @@ namespace views::test {
 
 namespace {
 
-bool IsWidgetInShowState(Widget* widget, ui::WindowShowState show_state) {
+bool IsWidgetInShowState(Widget* widget,
+                         ui::mojom::WindowShowState show_state) {
   switch (show_state) {
-    case ui::SHOW_STATE_MINIMIZED:
+    case ui::mojom::WindowShowState::kMinimized:
       return widget->IsMinimized();
-    case ui::SHOW_STATE_MAXIMIZED:
+    case ui::mojom::WindowShowState::kMaximized:
       return widget->IsMaximized();
     default:
       NOTIMPLEMENTED();
@@ -29,10 +30,10 @@ bool IsWidgetInShowState(Widget* widget, ui::WindowShowState show_state) {
 // value. To use create and call Wait().
 class WidgetShowStateWaiter : public WidgetObserver {
  public:
-  WidgetShowStateWaiter(Widget* widget, ui::WindowShowState show_state)
+  WidgetShowStateWaiter(Widget* widget, ui::mojom::WindowShowState show_state)
       : show_state_(show_state) {
-    CHECK(show_state == ui::SHOW_STATE_MINIMIZED ||
-          show_state == ui::SHOW_STATE_MAXIMIZED)
+    CHECK(show_state == ui::mojom::WindowShowState::kMinimized ||
+          show_state == ui::mojom::WindowShowState::kMaximized)
         << "WidgetShowStateWaiter only supports minimized or maximized state "
            "for now.";
     if (IsWidgetInShowState(widget, show_state_)) {
@@ -68,7 +69,7 @@ class WidgetShowStateWaiter : public WidgetObserver {
   }
 
   bool observed_ = false;
-  ui::WindowShowState show_state_;
+  ui::mojom::WindowShowState show_state_;
 
   base::RunLoop run_loop_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
@@ -76,7 +77,8 @@ class WidgetShowStateWaiter : public WidgetObserver {
 
 }  // namespace
 
-void WaitForWidgetShowState(Widget* widget, ui::WindowShowState show_state) {
+void WaitForWidgetShowState(Widget* widget,
+                            ui::mojom::WindowShowState show_state) {
   WidgetShowStateWaiter waiter(widget, show_state);
   waiter.Wait();
 }

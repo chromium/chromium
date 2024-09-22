@@ -10,6 +10,7 @@
 
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/native_widget.h"
@@ -154,8 +155,9 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
 
   // Retrieves the window's current restored bounds and "show" state, for
   // persisting.
-  virtual void GetWindowPlacement(gfx::Rect* bounds,
-                                  ui::WindowShowState* show_state) const = 0;
+  virtual void GetWindowPlacement(
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const = 0;
 
   // Sets the NativeWindow title. Returns true if the title changed.
   virtual bool SetWindowTitle(const std::u16string& title) = 0;
@@ -187,7 +189,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual void SetShape(std::unique_ptr<Widget::ShapeRects> shape) = 0;
   virtual void Close() = 0;
   virtual void CloseNow() = 0;
-  virtual void Show(ui::WindowShowState show_state,
+  virtual void Show(ui::mojom::WindowShowState show_state,
                     const gfx::Rect& restore_bounds) = 0;
   virtual void Hide() = 0;
   virtual bool IsVisible() const = 0;

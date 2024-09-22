@@ -17,6 +17,7 @@
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/wm/core/compound_event_filter.h"
@@ -144,7 +145,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   ui::InputMethod* GetInputMethod() override;
   void CenterWindow(const gfx::Size& size) override;
   void GetWindowPlacement(gfx::Rect* bounds,
-                          ui::WindowShowState* maximized) const override;
+                          ui::mojom::WindowShowState* maximized) const override;
   bool SetWindowTitle(const std::u16string& title) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
@@ -164,7 +165,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void SetShape(std::unique_ptr<Widget::ShapeRects> shape) override;
   void Close() override;
   void CloseNow() override;
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& restore_bounds) override;
   void Hide() override;
   bool IsVisible() const override;
