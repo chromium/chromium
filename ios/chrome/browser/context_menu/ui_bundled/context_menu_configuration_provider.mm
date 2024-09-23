@@ -582,7 +582,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   __weak __typeof(self) weakSelf = self;
 
   std::set<const TabGroup*> groups =
-      GetAllGroupsForBrowserState(self.browser->GetBrowserState());
+      GetAllGroupsForProfile(self.browser->GetBrowserState());
 
   auto actionResult = ^(const TabGroup* group) {
     ContextMenuConfigurationProvider* strongSelf = weakSelf;

@@ -214,8 +214,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   if (IsTabGroupInGridEnabled()) {
-    std::set<const TabGroup*> groups =
-        GetAllGroupsForBrowserState(_browserState);
+    std::set<const TabGroup*> groups = GetAllGroupsForProfile(_browserState);
 
     auto actionResult = ^(const TabGroup* group) {
       [weakSelf handleAddWebState:tabID toGroup:group];

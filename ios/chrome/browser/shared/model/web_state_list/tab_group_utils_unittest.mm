@@ -33,29 +33,28 @@ using tab_groups::TabGroupId;
 class GroupUtilsTest : public PlatformTest {
  public:
   GroupUtilsTest() {
-    TestChromeBrowserState::Builder browser_state_builder;
-    browser_state_builder.AddTestingFactory(
+    TestProfileIOS::Builder profile_builder;
+    profile_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
-    browser_state_builder.AddTestingFactory(
+    profile_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
 
-    browser_state_ = std::move(browser_state_builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    other_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    incognito_browser_ = std::make_unique<TestBrowser>(
-        browser_state_->GetOffTheRecordChromeBrowserState());
-    other_incognito_browser_ = std::make_unique<TestBrowser>(
-        browser_state_->GetOffTheRecordChromeBrowserState());
+    profile_ = std::move(profile_builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    other_browser_ = std::make_unique<TestBrowser>(profile_.get());
+    incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
+    other_incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
 
     SnapshotBrowserAgent::CreateForBrowser(browser_.get());
     SnapshotBrowserAgent::CreateForBrowser(other_browser_.get());
     SnapshotBrowserAgent::CreateForBrowser(incognito_browser_.get());
     SnapshotBrowserAgent::CreateForBrowser(other_incognito_browser_.get());
 
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(browser_.get());
     browser_list_->AddBrowser(incognito_browser_.get());
 
@@ -69,12 +68,12 @@ class GroupUtilsTest : public PlatformTest {
   // Adds a new web state to `web_state_list`.
   void AddWebStateToList(WebStateList* web_state_list) {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     SnapshotTabHelper::CreateForWebState(web_state.get());
     favicon::WebFaviconDriver::CreateForWebState(
         web_state.get(),
-        ios::FaviconServiceFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+        ios::FaviconServiceFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
 
     web_state_list->InsertWebState(
         std::move(web_state),
@@ -125,7 +124,7 @@ class GroupUtilsTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestBrowser> other_browser_;
   std::unique_ptr<TestBrowser> incognito_browser_;
@@ -189,12 +188,11 @@ TEST_F(GroupUtilsTest, AllGroupsSingleWindow) {
       u"Third title", tab_groups::TabGroupColorId::kCyan);
   incognito_web_state_list_->CreateGroup({3}, visual_data3, tab_group_id_3);
 
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_.get());
-  const bool incognito = browser_state_->IsOffTheRecord();
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  const bool incognito = profile_->IsOffTheRecord();
   std::set<const TabGroup*> groups =
       GetAllGroupsForBrowserList(browser_list, incognito);
-  EXPECT_EQ(groups, GetAllGroupsForBrowserState(browser_state_.get()));
+  EXPECT_EQ(groups, GetAllGroupsForProfile(profile_.get()));
 
   std::vector<TabGroupId> tab_group_ids;
   std::vector<tab_groups::TabGroupVisualData> visual_data;
@@ -213,13 +211,12 @@ TEST_F(GroupUtilsTest, AllGroupsSingleWindow) {
   EXPECT_TRUE(std::find(tab_group_ids.begin(), tab_group_ids.end(),
                         tab_group_id_2) != tab_group_ids.end());
 
-  ChromeBrowserState* otr_browser_state =
-      browser_state_->GetOffTheRecordChromeBrowserState();
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
   BrowserList* incognito_browser_list =
-      BrowserListFactory::GetForBrowserState(otr_browser_state);
+      BrowserListFactory::GetForProfile(otr_profile);
   std::set<const TabGroup*> incognito_groups =
       GetAllGroupsForBrowserList(incognito_browser_list, true);
-  EXPECT_EQ(incognito_groups, GetAllGroupsForBrowserState(otr_browser_state));
+  EXPECT_EQ(incognito_groups, GetAllGroupsForProfile(otr_profile));
 
   EXPECT_EQ(1u, incognito_groups.size());
   for (const TabGroup* group : incognito_groups) {
@@ -258,12 +255,11 @@ TEST_F(GroupUtilsTest, AllGroupsMultipleWindows) {
       u"Fifth title", tab_groups::TabGroupColorId::kYellow);
   other_web_state_list_->CreateGroup({0}, visual_data5, tab_group_id_5);
 
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_.get());
-  const bool incognito = browser_state_->IsOffTheRecord();
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  const bool incognito = profile_->IsOffTheRecord();
   std::set<const TabGroup*> groups =
       GetAllGroupsForBrowserList(browser_list, incognito);
-  EXPECT_EQ(groups, GetAllGroupsForBrowserState(browser_state_.get()));
+  EXPECT_EQ(groups, GetAllGroupsForProfile(profile_.get()));
 
   std::vector<TabGroupId> tab_group_ids;
   std::vector<tab_groups::TabGroupVisualData> visual_data;
@@ -290,13 +286,12 @@ TEST_F(GroupUtilsTest, AllGroupsMultipleWindows) {
   EXPECT_TRUE(std::find(tab_group_ids.begin(), tab_group_ids.end(),
                         tab_group_id_5) != tab_group_ids.end());
 
-  ChromeBrowserState* otr_browser_state =
-      browser_state_->GetOffTheRecordChromeBrowserState();
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
   BrowserList* incognito_browser_list =
-      BrowserListFactory::GetForBrowserState(otr_browser_state);
+      BrowserListFactory::GetForProfile(otr_profile);
   std::set<const TabGroup*> incognito_groups =
       GetAllGroupsForBrowserList(incognito_browser_list, true);
-  EXPECT_EQ(incognito_groups, GetAllGroupsForBrowserState(otr_browser_state));
+  EXPECT_EQ(incognito_groups, GetAllGroupsForProfile(otr_profile));
 
   EXPECT_EQ(1u, incognito_groups.size());
   for (const TabGroup* group : incognito_groups) {
@@ -319,7 +314,7 @@ TEST_F(GroupUtilsTest, MoveToGroupSingleWindow) {
   ASSERT_EQ(nullptr, web_state_list_->GetGroupOfWebStateAt(0));
 
   const TabGroup* destination_group = web_state_list_->GetGroupOfWebStateAt(1);
-  MoveTabToGroup(web_state_id, destination_group, browser_state_.get());
+  MoveTabToGroup(web_state_id, destination_group, profile_.get());
 
   int new_index = GetWebStateIndex(
       web_state_list_, WebStateSearchCriteria{.identifier = web_state_id});
@@ -337,7 +332,7 @@ TEST_F(GroupUtilsTest, MoveToGroupSingleWindow) {
   ASSERT_EQ(nullptr, incognito_web_state_list_->GetGroupOfWebStateAt(1));
 
   MoveTabToGroup(incognito_web_state_id, destination_group,
-                 browser_state_->GetOffTheRecordChromeBrowserState());
+                 profile_->GetOffTheRecordProfile());
 
   EXPECT_EQ(nullptr, incognito_web_state_list_->GetGroupOfWebStateAt(1));
 }
@@ -361,7 +356,7 @@ TEST_F(GroupUtilsTest, MoveToGroupMultipleWindow) {
 
   const TabGroup* destination_group =
       other_web_state_list_->GetGroupOfWebStateAt(0);
-  MoveTabToGroup(web_state_id, destination_group, browser_state_.get());
+  MoveTabToGroup(web_state_id, destination_group, profile_.get());
 
   // The web state is removed from the original list.
   EXPECT_EQ(2, web_state_list_->count());
@@ -399,8 +394,7 @@ TEST_F(GroupUtilsTest, GetBrowserForGroupSingleWindow) {
   const TabGroup* incognito_group3 = incognito_web_state_list_->CreateGroup(
       {3}, visual_data3, TabGroupId::GenerateNew());
 
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_.get());
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
 
   // Looking in the correct location should return the expected browser.
   EXPECT_EQ(browser_.get(), GetBrowserForGroup(browser_list, group1, false));
@@ -446,8 +440,7 @@ TEST_F(GroupUtilsTest, GetBrowserForGroupMultipleWindows) {
   const TabGroup* other_group5 = other_web_state_list_->CreateGroup(
       {0}, visual_data5, TabGroupId::GenerateNew());
 
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_.get());
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
 
   // Looking in the correct location should return the expected browser.
   EXPECT_EQ(browser_.get(), GetBrowserForGroup(browser_list, group1, false));

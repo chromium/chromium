@@ -80,8 +80,7 @@ std::vector<Token> TokenizeWebStateListDescription(
 }
 
 // Creates a fake WebState with navigation items.
-std::unique_ptr<web::WebState> CreateWebState(
-    ChromeBrowserState* browser_state) {
+std::unique_ptr<web::WebState> CreateWebState(ProfileIOS* profile) {
   const GURL url = GURL(kChromeUIVersionURL);
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   navigation_manager->AddItem(url, ui::PAGE_TRANSITION_TYPED);
@@ -91,7 +90,7 @@ std::unique_ptr<web::WebState> CreateWebState(
   web_state->SetNavigationManager(std::move(navigation_manager));
   web_state->SetNavigationItemCount(1);
   web_state->SetVisibleURL(url);
-  web_state->SetBrowserState(browser_state);
+  web_state->SetBrowserState(profile);
   web_state->SetWebFramesManager(web::ContentWorld::kAllContentWorlds,
                                  std::make_unique<web::FakeWebFramesManager>());
   web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
@@ -117,10 +116,10 @@ WebStateListBuilderFromDescription::~WebStateListBuilderFromDescription() {
 
 bool WebStateListBuilderFromDescription::BuildWebStateListFromDescription(
     std::string_view description,
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   return BuildWebStateListFromDescription(
       description,
-      base::BindRepeating(CreateWebState, base::Unretained(browser_state)));
+      base::BindRepeating(CreateWebState, base::Unretained(profile)));
 }
 
 bool WebStateListBuilderFromDescription::BuildWebStateListFromDescription(

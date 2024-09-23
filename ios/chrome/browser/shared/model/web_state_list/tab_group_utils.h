@@ -22,14 +22,13 @@ std::set<const TabGroup*> GetAllGroupsForBrowserList(BrowserList* browser_list,
                                                      bool incognito);
 
 // Returns all the TabGroups on all windows for the chosen mode (`incognito`).
-std::set<const TabGroup*> GetAllGroupsForBrowserState(
-    ChromeBrowserState* browser_state);
+std::set<const TabGroup*> GetAllGroupsForProfile(ProfileIOS* profile);
 
 // Move the web state associated with `web_state_identifier` to
 // `destination_group`, potentially moving the web state to a different window.
 void MoveTabToGroup(web::WebStateID web_state_identifier,
                     const TabGroup* destination_group,
-                    ChromeBrowserState* browser_state);
+                    ProfileIOS* profile);
 
 // Returns the Browser with `group` in its WebStateList. If `is_otr_group` is
 // `true` then this will look for `group` inside Incognito browsers - otherwise

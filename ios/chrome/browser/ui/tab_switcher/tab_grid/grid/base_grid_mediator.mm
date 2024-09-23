@@ -1601,7 +1601,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
       [weakSelf addSelectedElementsToGroup:group];
     };
     UIMenuElement* addToGroup = [actionFactory
-        menuToAddTabToGroupWithGroups:GetAllGroupsForBrowserState(_browserState)
+        menuToAddTabToGroupWithGroups:GetAllGroupsForProfile(_browserState)
                          numberOfTabs:_selectedEditingItems.tabsCount
                                 block:addToGroupBlock];
     [actions addObject:[UIMenu menuWithTitle:@""

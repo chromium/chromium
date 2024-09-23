@@ -57,7 +57,7 @@ class WebStateListBuilderFromDescription : public WebStateListObserver {
   // `web_state_list_` is unspecified.
   [[nodiscard]] bool BuildWebStateListFromDescription(
       std::string_view description,
-      ChromeBrowserState* browser_state = nullptr);
+      ProfileIOS* profile = nullptr);
   [[nodiscard]] bool BuildWebStateListFromDescription(
       std::string_view description,
       base::RepeatingCallback<std::unique_ptr<web::WebState>()>
