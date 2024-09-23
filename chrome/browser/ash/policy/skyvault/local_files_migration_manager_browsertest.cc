@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 
 #include <memory>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
@@ -29,6 +31,7 @@
 #include "chromeos/ash/components/dbus/userdataauth/mock_userdataauth_client.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/browser_context.h"
@@ -66,12 +69,21 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
  public:
   LocalFilesMigrationManagerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSkyVault, features::kSkyVaultV2},
+        /*enabled_features=*/{features::kSkyVault, features::kSkyVaultV2,
+                              chromeos::features::kUploadOfficeToCloud},
         /*disabled_features=*/{});
   }
   ~LocalFilesMigrationManagerTest() override = default;
 
   void SetUpOnMainThread() override {
+    policy::PolicyTest::SetUpOnMainThread();
+
+    browser()
+        ->profile()
+        ->GetProfilePolicyConnector()
+        ->OverrideIsManagedForTesting(true);
+    SetOneDrivePolicy("allowed");
+
     statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                              kTestDeviceSerialNumber);
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
@@ -95,6 +107,8 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
         MigrationNotificationManagerFactory::GetInstance()
             ->GetForBrowserContext(browser()->profile()));
     notification_manager_.reset();
+
+    policy::PolicyTest::TearDownOnMainThread();
   }
 
  protected:
@@ -107,6 +121,15 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
     policy::PolicyTest::SetPolicy(
         &policies, policy::key::kLocalUserFilesMigrationDestination,
         base::Value(destination));
+    provider_.UpdateChromePolicy(policies);
+  }
+
+  // Sets the value of MicrosoftOneDriveMount policy to `mount`, which should be
+  // one of 'allowed', 'automated', 'disallowed'.
+  void SetOneDrivePolicy(const std::string& mount) {
+    policy::PolicyMap policies;
+    policy::PolicyTest::SetPolicy(
+        &policies, policy::key::kMicrosoftOneDriveMount, base::Value(mount));
     provider_.UpdateChromePolicy(policies);
   }
 
@@ -227,6 +250,31 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/MigrationDestination());
+}
+
+// Tests that if cloud provider for which migration is turned on is disallowed
+// by other policies, a notification is shown and no migration happens.
+IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
+                       NoMigrationIfMisconfigured) {
+  EXPECT_CALL(observer_, OnMigrationSucceeded).Times(0);
+
+  std::string destination = MigrationDestination();
+  CloudProvider provider;
+  // Disable the cloud storage before setting SkyVault policies.
+  if (destination == download_dir_util::kLocationGoogleDrive) {
+    drive::DriveIntegrationServiceFactory::FindForProfile(browser()->profile())
+        ->SetEnabled(false);
+    provider = CloudProvider::kGoogleDrive;
+  } else {
+    SetOneDrivePolicy("disallowed");
+    provider = CloudProvider::kOneDrive;
+  }
+
+  EXPECT_CALL(*notification_manager_.get(),
+              ShowConfigurationErrorNotification(provider))
+      .Times(1);
+
+  SetMigrationPolicies(/*local_user_files_allowed=*/false, destination);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,

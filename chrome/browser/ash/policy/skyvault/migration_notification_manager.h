@@ -69,7 +69,8 @@ class MigrationNotificationManager : public KeyedService {
       std::map<base::FilePath, MigrationUploadError> errors);
 
   // Shows the policy configuration error notification.
-  void ShowConfigurationErrorNotification(CloudProvider provider);
+  // Virtual to override in tests.
+  virtual void ShowConfigurationErrorNotification(CloudProvider provider);
 
   // Displays a single notification prompting the user to sign in to OneDrive.
   // Queues any subsequent sign-in requests until the user responds which

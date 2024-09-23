@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
+#include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/chrome_features.h"
@@ -217,14 +218,22 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
     MaybeStopMigration();
   }
 
-  // TODO(b/354716629): Confirm under which conditions we fail here.
+  // Check if the destination cloud provider is enabled.
   Profile* profile = Profile::FromBrowserContext(context_);
   const bool google_drive_disabled =
       !drive::DriveIntegrationServiceFactory::FindForProfile(profile)
            ->is_enabled();
-  // TODO(b/354716629): Confirm conditions. Add OneDrive.
+  const bool one_drive_disabled =
+      !chromeos::cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAllowed(
+          profile);
   if ((cloud_provider_ == CloudProvider::kGoogleDrive &&
-       google_drive_disabled)) {
+       google_drive_disabled) ||
+      (cloud_provider_ == CloudProvider::kOneDrive && one_drive_disabled)) {
+    LOG(WARNING) << "Local files migration policy is set to use "
+                 << (cloud_provider_ == CloudProvider::kGoogleDrive
+                         ? "Google Drive"
+                         : "OneDrive")
+                 << ", but it is not enabled for this user.";
     notification_manager_->ShowConfigurationErrorNotification(cloud_provider_);
     return;
   }

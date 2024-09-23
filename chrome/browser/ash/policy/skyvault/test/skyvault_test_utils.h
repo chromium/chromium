@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace policy::local_user_files {
@@ -46,6 +47,11 @@ class MockMigrationNotificationManager : public MigrationNotificationManager {
   MOCK_METHOD(void,
               ShowMigrationInfoDialog,
               (CloudProvider, base::Time, base::OnceClosure),
+              (override));
+
+  MOCK_METHOD(void,
+              ShowConfigurationErrorNotification,
+              (CloudProvider),
               (override));
 };
 

@@ -20,6 +20,7 @@ include_rules = [
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/chromeos/extensions/login_screen/login/cleanup",
+  "+chrome/browser/chromeos/upload_office_to_cloud",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
