@@ -49,6 +49,10 @@ fun:*internal_default_instance*
 # CAtlArray<T> casts to uninitialized T*.
 src:*atlcoll.h
 
+# Temporarily disable CFI check in std::__allocate_unique_temporary_buffer
+# until upstream adds an annotation, crbug.com/367439556
+fun:*__allocate_unique_temporary_buffer*
+
 # https://github.com/grpc/grpc/issues/19375
 src:*third_party/grpc/src/src/core/lib/gprpp/inlined_vector.h
 
