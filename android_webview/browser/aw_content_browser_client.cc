@@ -155,7 +155,7 @@ bool g_check_cleartext_permitted = false;
 
 BASE_FEATURE(kWebViewOptimizeXrwNavigationFlow,
              "WebViewOptimizeXrwNavigationFlow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A throttle which checks if the XRW origin trial is enabled for this
 // navigation, and forwards it to the proxying loader factory.

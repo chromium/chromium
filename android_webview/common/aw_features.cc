@@ -230,7 +230,7 @@ BASE_FEATURE(kWebViewAsyncDns,
 // Preloads expensive classes during WebView startup.
 BASE_FEATURE(kWebViewPreloadClasses,
              "WebViewPreloadClasses",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled TYPE_SCROLLED accessibility events are sent every 100ms when user
 // is scrolling irrespective of GestureScrollUpdate being consumed or not.
@@ -250,7 +250,7 @@ BASE_FEATURE(kWebViewHyperlinkContextMenu,
 // Creates a spare renderer on browser context creation.
 BASE_FEATURE(kCreateSpareRendererOnBrowserContextCreation,
              "CreateSpareRendererOnBrowserContextCreation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for WebAuthn usage in WebViews.
 BASE_FEATURE(kWebViewWebauthn,

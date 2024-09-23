@@ -236,7 +236,10 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
     @Feature({"AndroidWebView"})
     @SmallTest
     @OnlyRunIn(MULTI_PROCESS)
-    @CommandLineFlags.Add({"enable-features=CreateSpareRendererOnBrowserContextCreation"})
+    @CommandLineFlags.Add({
+        "enable-features=CreateSpareRendererOnBrowserContextCreation"
+                + ":create_spare_renderer_for_default_if_multi_profile/true"
+    })
     public void testTerminateBeforeRenderProcessCreated() throws Throwable {
         AwRenderProcess process =
                 ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());
@@ -264,7 +267,10 @@ public class AwContentsClientOnRenderProcessGoneTest extends AwParameterizedTest
     @Feature({"AndroidWebView"})
     @SmallTest
     @OnlyRunIn(MULTI_PROCESS)
-    @CommandLineFlags.Add({"enable-features=CreateSpareRendererOnBrowserContextCreation"})
+    @CommandLineFlags.Add({
+        "enable-features=CreateSpareRendererOnBrowserContextCreation"
+                + ":create_spare_renderer_for_default_if_multi_profile/true"
+    })
     public void testSetNetworkAvailableAfterSpareRenderTerminate() throws Throwable {
         AwRenderProcess process =
                 ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.getRenderProcess());

@@ -43,7 +43,7 @@ bool g_initialized = false;
 
 const base::FeatureParam<bool> kCreateSpareRendererForDefaultIfMultiProfile{
     &features::kCreateSpareRendererOnBrowserContextCreation,
-    "create_spare_renderer_for_default_if_multi_profile", true};
+    "create_spare_renderer_for_default_if_multi_profile", false};
 
 }  // namespace
 

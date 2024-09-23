@@ -278,4 +278,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // TODO(crbug.com/41492947): See crrev.com/c/5744034 for details, but I was
   // unable to add this feature to fieldtrial_testing_config and pass all tests.
   aw_feature_overrides.EnableFeature(blink::features::kElementGetInnerHTML);
+
+  // These features have shown performance improvements in WebView but not some
+  // other platforms.
+  aw_feature_overrides.EnableFeature(features::kEnsureExistingRendererAlive);
+  aw_feature_overrides.EnableFeature(blink::features::kThreadedBodyLoader);
+  aw_feature_overrides.EnableFeature(blink::features::kThreadedPreloadScanner);
+  aw_feature_overrides.EnableFeature(blink::features::kPrecompileInlineScripts);
 }
