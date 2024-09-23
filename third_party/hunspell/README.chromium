@@ -1,14 +1,14 @@
 Name: hunspell
 URL: http://hunspell.sourceforge.net/
-Version: 1.6.1
-CPEPrefix: cpe:/a:hunspell_project:hunspell:1.6.1
+Version: 1.6.2
+CPEPrefix: cpe:/a:hunspell_project:hunspell:1.6.2
 License: MPL 1.1/GPL 2.0/LGPL 2.1
 License File: COPYING.MPL
 Security Critical: yes
 Shipped: yes
 
 Description:
-This is a partial copy of Hunspell 1.6.1 with the following changes:
+This is a partial copy of Hunspell 1.6.2 with the following changes:
 * Move README.md onto the README symlink.
 * Change src/hunspell/filemgr.hxx and src/hunspell/filemgr.cxx to use
   LineIterator.
@@ -32,7 +32,7 @@ steps, or simply run update_google_patch.sh from the commandline.
 1) Checkout hunspell:
    $ git clone https://github.com/hunspell/hunspell.git
    $ cd hunspell
-   $ git checkout v1.6.1
+   $ git checkout v1.6.2
 2) Apply the existing patch:
    $ patch -p1 -i ~/src/third_party/hunspell/google.patch
 3) Make your new changes inside the git hunspell directory.

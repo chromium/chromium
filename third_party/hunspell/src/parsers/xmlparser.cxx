@@ -188,6 +188,7 @@ bool XMLParser::next_token(const char* PATTERN[][2],
     if (next_char(line[actual].c_str(), &head))
       return false;
   }
+  //FIXME No return, in function returning non-void
 }
 
 bool XMLParser::next_token(std::string& t) {
