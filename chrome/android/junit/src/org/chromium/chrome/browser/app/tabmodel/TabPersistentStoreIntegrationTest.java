@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -275,6 +276,58 @@ public class TabPersistentStoreIntegrationTest {
 
         // Step to test: Commit tabs closure.
         tabModel.commitAllTabClosures();
+        runAllAsyncTasks();
+
+        // Verify that metadata was saved.
+        // 2 times because close the last tab will trigger selecting a null tab
+        // which will trigger another metadata save.
+        assertEquals(timesMetadataSavedBefore + 2, timesMetadataSaved.intValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TabPersistentStore"})
+    public void testSelectTabPersistsState() {
+        AtomicInteger timesMetadataSaved = new AtomicInteger();
+        observeOnMetadataSavedAsynchronously(timesMetadataSaved);
+
+        // Setup the test: Create three tabs
+        TabModel tabModel = mTabModelSelector.getModel(false);
+        Tab tab1 = MockTab.createAndInitialize(1, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        Tab tab2 = MockTab.createAndInitialize(2, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        Tab tab3 = MockTab.createAndInitialize(3, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        int timesMetadataSavedBefore = timesMetadataSaved.intValue();
+        // Step to test: Select the first tab.
+        tabModel.setIndex(0, TabSelectionType.FROM_USER);
+        runAllAsyncTasks();
+
+        // Verify that metadata was saved.
+        assertEquals(timesMetadataSavedBefore + 1, timesMetadataSaved.intValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TabPersistentStore"})
+    public void testMoveTabPersistsState() {
+        AtomicInteger timesMetadataSaved = new AtomicInteger();
+        observeOnMetadataSavedAsynchronously(timesMetadataSaved);
+
+        // Setup the test: Create three tabs
+        TabModel tabModel = mTabModelSelector.getModel(false);
+        Tab tab1 = MockTab.createAndInitialize(1, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        Tab tab2 = MockTab.createAndInitialize(2, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        Tab tab3 = MockTab.createAndInitialize(3, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        int timesMetadataSavedBefore = timesMetadataSaved.intValue();
+        // Step to test: Move the tab3 to the index 0.
+        tabModel.moveTab(3, 0);
         runAllAsyncTasks();
 
         // Verify that metadata was saved.
