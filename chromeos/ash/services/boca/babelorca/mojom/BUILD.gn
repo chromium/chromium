@@ -9,4 +9,6 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 mojom("mojom") {
   sources = [ "tachyon_parsing_service.mojom" ]
+
+  public_deps = [ "//sandbox/policy/mojom" ]
 }
