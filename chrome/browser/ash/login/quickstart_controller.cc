@@ -373,7 +373,6 @@ void QuickStartController::RecordFlowFinished() {
   metrics_->RecordScreenClosed(
       QuickStartMetrics::ScreenName::kQSComplete,
       QuickStartMetrics::ScreenClosedReason::kSetupComplete);
-  metrics_.reset();
 }
 
 void QuickStartController::InitTargetDeviceBootstrapController() {
