@@ -40,6 +40,7 @@ TooltipViewAura::TooltipViewAura()
       kBorderInset - gfx::Insets(kTooltipBorderThickness)));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTooltip);
+  UpdateAccessibleName();
 
   ResetDisplayRect();
 }
@@ -54,6 +55,7 @@ void TooltipViewAura::SetText(const std::u16string& text) {
   std::u16string new_text(text);
   base::ReplaceChars(new_text, u"\t", u"        ", &new_text);
   render_text_->SetText(std::move(new_text));
+  UpdateAccessibleName();
   SchedulePaint();
 }
 
@@ -109,12 +111,19 @@ void TooltipViewAura::OnThemeChanged() {
       GetColorProvider()->GetColor(ui::kColorTooltipForeground));
 }
 
-void TooltipViewAura::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetNameChecked(render_text_->GetDisplayText());
+void TooltipViewAura::UpdateAccessibleName() {
+  if (render_text_->GetDisplayText().empty()) {
+    GetViewAccessibility().SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    return;
+  }
+
+  GetViewAccessibility().SetName(render_text_->GetDisplayText());
 }
 
 void TooltipViewAura::ResetDisplayRect() {
   render_text_->SetDisplayRect(gfx::Rect(0, 0, max_width_, 100000));
+  UpdateAccessibleName();
 }
 
 BEGIN_METADATA(TooltipViewAura)
