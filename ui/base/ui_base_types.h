@@ -7,30 +7,7 @@
 
 #include <cstdint>
 
-#include "ui/base/mojom/window_show_state.mojom.h"
-
 namespace ui {
-
-// Alias until all clients of `WindowShowState` have been migrated.
-// Will be removed once that is complete.
-using WindowShowState = ::ui::mojom::WindowShowState;
-
-// Alias for the old enumerators of `WindowShowState` until all clients have
-// been migrated. Will be removed once that is complete.
-inline constexpr WindowShowState SHOW_STATE_DEFAULT =
-    ui::mojom::WindowShowState::kDefault;
-inline constexpr WindowShowState SHOW_STATE_NORMAL =
-    ui::mojom::WindowShowState::kNormal;
-inline constexpr WindowShowState SHOW_STATE_MINIMIZED =
-    ui::mojom::WindowShowState::kMinimized;
-inline constexpr WindowShowState SHOW_STATE_MAXIMIZED =
-    ui::mojom::WindowShowState::kMaximized;
-inline constexpr WindowShowState SHOW_STATE_INACTIVE =
-    ui::mojom::WindowShowState::kInactive;
-inline constexpr WindowShowState SHOW_STATE_FULLSCREEN =
-    ui::mojom::WindowShowState::kFullscreen;
-inline constexpr WindowShowState SHOW_STATE_END =
-    ui::mojom::WindowShowState::kEnd;
 
 // Specifies which edges of the window are tiled.
 //
