@@ -25,7 +25,6 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//components/send_tab_to_self",
     "//components/sync/base",
     "//components/sync/base:features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

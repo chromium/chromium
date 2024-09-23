@@ -8,7 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -34,16 +33,11 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 // Waits for `entity_count` entities of PREFERENCE type on the fake server,
 // and fails with a GREYAssert if the condition is not met, within a short
 // period of time.
-void WaitForEntitiesOnFakeServer(int entity_count) {
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
-                 kSyncOperationTimeout,
-                 ^{
-                   return
-                       [ChromeEarlGrey
-                           numberOfSyncEntitiesWithType:syncer::PREFERENCES] ==
-                       entity_count;
-                 }),
-             @"Expected %d entities for PREFERENCES.", entity_count);
+void WaitForTestPreferenceOnFakeServer(bool present) {
+  [ChromeEarlGrey waitForSyncServerEntitiesWithType:syncer::PREFERENCES
+                                               name:kTestSyncablePref
+                                              count:static_cast<int>(present)
+                                            timeout:kSyncOperationTimeout];
 }
 
 // Waits for the active pref value to become `pref_value` and fails with a
@@ -71,15 +65,6 @@ void WaitForPreferenceValue(int pref_value) {
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);
   config.features_enabled.push_back(syncer::kEnablePreferencesAccountStorage);
-  // TODO(crbug.com/368056380): Re-enable after fixing failure.
-  // The tests fail when kSendTabToSelfIOSPushNotifications is enabled.
-  // Moreover, the test is already a bit flaky.
-  if ([self isRunningTest:@selector(testAccountPrefValueCleanedUpOnSignout)] ||
-      [self
-          isRunningTest:@selector(testLocalPrefNotUploadedToAccountOnSignIn)]) {
-    config.features_disabled.push_back(
-        send_tab_to_self::kSendTabToSelfIOSPushNotifications);
-  }
   return config;
 }
 
@@ -89,30 +74,28 @@ void WaitForPreferenceValue(int pref_value) {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   [ChromeEarlGrey clearFakeSyncServerData];
-  WaitForEntitiesOnFakeServer(0);
 }
 
 - (void)tearDown {
   [ChromeEarlGrey clearUserPrefWithName:kTestSyncablePref];
   [ChromeEarlGrey clearFakeSyncServerData];
-
-  WaitForEntitiesOnFakeServer(0);
-
   [super tearDown];
 }
 
 #pragma mark - SyncPreferencesTestCase Tests
 
 // Tests that the local pref value is not uploaded to the account.
-- (void)testLocalPrefNotUploadedToAccountOnSignIn {
+- (void)testLocalPrefValueNotUploadedToAccountOnSignIn {
   [ChromeEarlGrey setIntegerValue:kTestPrefValue1
                       forUserPref:kTestSyncablePref];
 
   // Sign in and sign out.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  // No entity is committed to the server.
-  WaitForEntitiesOnFakeServer(0);
+  [ChromeEarlGrey waitForSyncEngineInitialized:YES
+                                   syncTimeout:kSyncOperationTimeout];
+  // Pref is not committed to the server.
+  WaitForTestPreferenceOnFakeServer(false);
   [SigninEarlGrey signOut];
 
   GREYAssertEqual([ChromeEarlGrey userIntegerPref:kTestSyncablePref],
@@ -127,15 +110,43 @@ void WaitForPreferenceValue(int pref_value) {
                      kTestPrefValue1, @"Incorrect account pref value.");
 }
 
+// Tests that the value is written to local and account when signed in.
+- (void)testPrefWrittenToLocalAndAccountIfSignedIn {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  // Pref does not exist on the server.
+  WaitForTestPreferenceOnFakeServer(false);
+
+  [ChromeEarlGrey setIntegerValue:kTestPrefValue1
+                      forUserPref:kTestSyncablePref];
+
+  // Preference is committed to the server.
+  WaitForTestPreferenceOnFakeServer(true);
+
+  [SigninEarlGrey signOut];
+
+  // Pref value is set locally.
+  GREYAssertEqual([ChromeEarlGrey userIntegerPref:kTestSyncablePref],
+                  kTestPrefValue1, @"Incorrect local pref value.");
+
+  // Remove from local store.
+  [ChromeEarlGrey clearUserPrefWithName:kTestSyncablePref];
+
+  // Sign in again to validate the value was set in the server.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  WaitForPreferenceValue(kTestPrefValue1);
+}
+
 // Tests that the account pref value is removed on signout and the local pref
 // value takes effect.
-- (void)testAccountPrefValueCleanedUpOnSignout {
+- (void)testAccountPrefValueRemovedOnSignout {
   // Set a pref value of `kTestPrefValue2` in account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey setIntegerValue:kTestPrefValue2
                       forUserPref:kTestSyncablePref];
-  WaitForEntitiesOnFakeServer(1);
+  WaitForTestPreferenceOnFakeServer(true);
   [SigninEarlGrey signOut];
 
   // Reset local value to `kTestPrefValue1`.
