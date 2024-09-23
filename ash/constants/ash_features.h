@@ -1082,6 +1082,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWifiSyncApplyDeletes);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWindowSplitting);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kWmMode);
 
+// TODO(http://b/367799751): Remove when the issue gets fixed.
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kIgnoreM129Holdback);
+
 // Keep alphabetized.
 
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreCaptureModeDemoToolsEnabled();
@@ -1469,6 +1472,12 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSuspendStateMachineEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemLiveCaptionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemNudgeMigrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemTrayShadowEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsSysUiShouldHoldbackDriveIntegrationEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsSysUiShouldHoldbackFocusModeEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsSysUiShouldHoldbackForestEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsTetheringExperimentalFunctionalityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTilingWindowResizeEnabled();
