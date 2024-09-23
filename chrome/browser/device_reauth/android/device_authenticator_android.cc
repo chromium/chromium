@@ -135,6 +135,33 @@ void DeviceAuthenticatorAndroid::AuthenticateWithMessage(
                      base::Unretained(this)));
 }
 
+device_reauth::BiometricStatus
+DeviceAuthenticatorAndroid::GetBiometricAvailabilityStatus() {
+  BiometricsAvailability availability = bridge_->CanAuthenticateWithBiometric();
+  switch (availability) {
+    case device_reauth::BiometricsAvailability::kRequired:
+    case device_reauth::BiometricsAvailability::kRequiredButHasError:
+      return device_reauth::BiometricStatus::kRequired;
+    case device_reauth::BiometricsAvailability::kAvailable:
+      return device_reauth::BiometricStatus::kAvailable;
+    // TODO (crbug.com/369057610): Probably return status `kAvailable` for
+    // BiometricsAvailability::kAvailableNoFallback case.
+    case device_reauth::BiometricsAvailability::kAvailableNoFallback:
+    case device_reauth::BiometricsAvailability::kNoHardware:
+    case device_reauth::BiometricsAvailability::kHwUnavailable:
+    case device_reauth::BiometricsAvailability::kNotEnrolled:
+    case device_reauth::BiometricsAvailability::kSecurityUpdateRequired:
+    case device_reauth::BiometricsAvailability::kAndroidVersionNotSupported:
+    case device_reauth::BiometricsAvailability::kOtherError:
+      break;
+  }
+  // TODO (crbug.com/368586157): Call just hasScreenLockSetUp here.
+  if (CanAuthenticateWithBiometricOrScreenLock()) {
+    return device_reauth::BiometricStatus::kAvailableLSKF;
+  }
+  return device_reauth::BiometricStatus::kUnavailable;
+}
+
 void DeviceAuthenticatorAndroid::Cancel() {
   // There is no ongoing reauth to cancel.
   if (!callback_) {
