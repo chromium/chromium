@@ -107,6 +107,9 @@ BASE_DECLARE_FEATURE(kFeedContainment);
 // Kill-switch for the web feed feature.
 BASE_DECLARE_FEATURE(kWebFeedKillSwitch);
 
+// Feature that enables feed low-memory improvement.
+BASE_DECLARE_FEATURE(kFeedLowMemoryImprovement);
+
 bool IsWebFeedEnabledForLocale(const std::string& country);
 
 }  // namespace feed
