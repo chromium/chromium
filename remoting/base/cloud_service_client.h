@@ -13,8 +13,11 @@
 
 namespace google::internal::remoting::cloud::v1alpha {
 class Empty;
+class GenerateHostTokenResponse;
 class ProvisionGceInstanceResponse;
+class ReauthorizeHostResponse;
 class RemoteAccessHost;
+class VerifySessionTokenResponse;
 }  // namespace google::internal::remoting::cloud::v1alpha
 
 namespace google::protobuf {
@@ -36,6 +39,10 @@ class ProtobufHttpStatus;
 // A service client that communicates with the directory service.
 class CloudServiceClient {
  public:
+  using GenerateHostTokenCallback = base::OnceCallback<void(
+      const ProtobufHttpStatus&,
+      std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
+                          GenerateHostTokenResponse>)>;
   using LegacyProvisionGceInstanceCallback = base::OnceCallback<void(
       const ProtobufHttpStatus&,
       std::unique_ptr<apis::v1::ProvisionGceInstanceResponse>)>;
@@ -43,6 +50,10 @@ class CloudServiceClient {
       const ProtobufHttpStatus&,
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
                           ProvisionGceInstanceResponse>)>;
+  using ReauthorizeHostCallback = base::OnceCallback<void(
+      const ProtobufHttpStatus&,
+      std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
+                          ReauthorizeHostResponse>)>;
   using SendHeartbeatCallback = base::OnceCallback<void(
       const ProtobufHttpStatus&,
       std::unique_ptr<::google::internal::remoting::cloud::v1alpha::Empty>)>;
@@ -50,6 +61,10 @@ class CloudServiceClient {
       const ProtobufHttpStatus&,
       std::unique_ptr<
           ::google::internal::remoting::cloud::v1alpha::RemoteAccessHost>)>;
+  using VerifySessionTokenCallback = base::OnceCallback<void(
+      const ProtobufHttpStatus&,
+      std::unique_ptr<::google::internal::remoting::cloud::v1alpha::
+                          VerifySessionTokenResponse>)>;
 
   // TODO: joedow - Remove the single param c'tor when we no longer support the
   // legacy provisioning path.
@@ -90,6 +105,15 @@ class CloudServiceClient {
                               std::optional<std::string> os_name,
                               std::optional<std::string> os_version,
                               UpdateRemoteAccessHostCallback callback);
+
+  void GenerateHostToken(GenerateHostTokenCallback callback);
+
+  void VerifySessionToken(const std::string& session_token,
+                          VerifySessionTokenCallback callback);
+
+  void ReauthorizeHost(const std::string& session_reauth_token,
+                       const std::string& session_id,
+                       ReauthorizeHostCallback callback);
 
   void CancelPendingRequests();
 

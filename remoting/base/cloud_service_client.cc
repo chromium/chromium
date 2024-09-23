@@ -16,6 +16,7 @@
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/empty.pb.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_host.pb.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_service.pb.h"
+#include "remoting/proto/google/internal/remoting/cloud/v1alpha/session_authz_service.pb.h"
 #include "remoting/proto/remoting/v1/cloud_messages.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -127,12 +128,18 @@ using LegacyProvisionGceInstanceRequest =
     remoting::apis::v1::ProvisionGceInstanceRequest;
 
 using Empty = google::internal::remoting::cloud::v1alpha::Empty;
+using GenerateHostTokenRequest =
+    google::internal::remoting::cloud::v1alpha::GenerateHostTokenRequest;
 using ProvisionGceInstanceRequest =
     google::internal::remoting::cloud::v1alpha::ProvisionGceInstanceRequest;
+using ReauthorizeHostRequest =
+    google::internal::remoting::cloud::v1alpha::ReauthorizeHostRequest;
 using SendHeartbeatRequest =
     google::internal::remoting::cloud::v1alpha::SendHeartbeatRequest;
 using UpdateRemoteAccessHostRequest =
     google::internal::remoting::cloud::v1alpha::UpdateRemoteAccessHostRequest;
+using VerifySessionTokenRequest =
+    google::internal::remoting::cloud::v1alpha::VerifySessionTokenRequest;
 
 constexpr char kFtlResourceSeparator[] = "/chromoting_ftl_";
 
@@ -252,6 +259,46 @@ void CloudServiceClient::UpdateRemoteAccessHost(
 
   ExecuteRequest(kUpdateRemoteAccessHostTrafficAnnotation, path, /*api_key=*/"",
                  net::HttpRequestHeaders::kPatchMethod, std::move(request),
+                 std::move(callback));
+}
+
+void CloudServiceClient::GenerateHostToken(GenerateHostTokenCallback callback) {
+  constexpr char path[] = "/v1alpha/sessionAuthz:generateHostToken";
+
+  // TODO: joedow - Replace network annotation.
+  ExecuteRequest(kSendHeartbeatTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPostMethod,
+                 std::make_unique<GenerateHostTokenRequest>(),
+                 std::move(callback));
+}
+
+void CloudServiceClient::VerifySessionToken(
+    const std::string& session_token,
+    VerifySessionTokenCallback callback) {
+  constexpr char path[] = "/v1alpha/sessionAuthz:verifySessionToken";
+
+  auto request = std::make_unique<VerifySessionTokenRequest>();
+  request->set_session_token(session_token);
+
+  // TODO: joedow - Replace network annotation.
+  ExecuteRequest(kSendHeartbeatTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
+                 std::move(callback));
+}
+
+void CloudServiceClient::ReauthorizeHost(
+    const std::string& session_reauth_token,
+    const std::string& session_id,
+    ReauthorizeHostCallback callback) {
+  constexpr char path[] = "/v1alpha/sessionAuthz:reauthorizeHost";
+
+  auto request = std::make_unique<ReauthorizeHostRequest>();
+  request->set_session_reauth_token(session_reauth_token);
+  request->set_session_id(session_id);
+
+  // TODO: joedow - Replace network annotation.
+  ExecuteRequest(kSendHeartbeatTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
                  std::move(callback));
 }
 
