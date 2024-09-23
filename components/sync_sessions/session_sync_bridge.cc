@@ -143,8 +143,6 @@ std::optional<syncer::ModelError> SessionSyncBridge::MergeFullSyncData(
   DCHECK(!syncing_);
   DCHECK(change_processor()->IsTrackingMetadata());
 
-  store_->mutable_tracker()->SetLocalSessionStartTime(base::Time::Now());
-
   StartLocalSessionEventHandler(/*is_new_session=*/true);
 
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
