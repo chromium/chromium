@@ -59,6 +59,7 @@ ALIGNMENT_ORDER = [
     'IntrinsicLength',
     'TextBoxEdge',
     'TextDecorationThickness',
+    'StyleAnchorScope',
     'StyleAspectRatio',
     'StyleIntrinsicLength',
     'std::optional<StyleOverflowClipMargin>',

@@ -70,6 +70,7 @@ blink_core_sources_style = [
   "shape_clip_path_operation.h",
   "shape_offset_path_operation.h",
   "shape_value.h",
+  "style_anchor_scope.h",
   "style_aspect_ratio.cc",
   "style_aspect_ratio.h",
   "style_base_data.cc",

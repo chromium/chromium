@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
+#include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -2041,25 +2042,30 @@ ScopedCSSNameList* StyleBuilderConverter::ConvertAnchorName(
   return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
 }
 
-ScopedCSSNameList* StyleBuilderConverter::ConvertAnchorScope(
+StyleAnchorScope StyleBuilderConverter::ConvertAnchorScope(
     StyleResolverState& state,
     const CSSValue& value) {
   CHECK(value.IsScopedValue());
+  if (const auto* scoped_keyword_value =
+          DynamicTo<cssvalue::CSSScopedKeywordValue>(value)) {
+    CHECK_EQ(scoped_keyword_value->GetValueID(), CSSValueID::kAll);
+    state.SetHasTreeScopedReference();
+    return StyleAnchorScope(StyleAnchorScope::Type::kAll,
+                            scoped_keyword_value->GetTreeScope(),
+                            /* names */ nullptr);
+  }
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    if (identifier_value->GetValueID() == CSSValueID::kAll) {
-      // An empty list represents "all".
-      return MakeGarbageCollected<ScopedCSSNameList>(
-          HeapVector<Member<const ScopedCSSName>>());
-    }
     CHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
-    return nullptr;
+    return StyleAnchorScope();
   }
   CHECK(value.IsBaseValueList());
   HeapVector<Member<const ScopedCSSName>> names;
   for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
     names.push_back(ConvertCustomIdent(state, *item));
   }
-  return MakeGarbageCollected<ScopedCSSNameList>(std::move(names));
+  return StyleAnchorScope(
+      StyleAnchorScope::Type::kNames, /* all_tree_scope */ nullptr,
+      /* names */ MakeGarbageCollected<ScopedCSSNameList>(std::move(names)));
 }
 
 StyleInitialLetter StyleBuilderConverter::ConvertInitialLetter(

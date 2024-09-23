@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
+#include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -58,6 +59,11 @@ CSSKeywordValue* CSSKeywordValue::FromCSSValue(const CSSValue& value) {
       return nullptr;
     }
     return MakeGarbageCollected<CSSKeywordValue>(ident_value->Value());
+  }
+  if (auto* scoped_keyword_value =
+          DynamicTo<cssvalue::CSSScopedKeywordValue>(value)) {
+    return MakeGarbageCollected<CSSKeywordValue>(
+        getValueName(scoped_keyword_value->GetValueID()));
   }
   NOTREACHED_IN_MIGRATION();
   return nullptr;

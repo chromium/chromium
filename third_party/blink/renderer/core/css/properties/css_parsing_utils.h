@@ -28,6 +28,7 @@ namespace blink {
 
 namespace cssvalue {
 class CSSFontFeatureValue;
+class CSSScopedKeywordValue;
 class CSSURIValue;
 }  // namespace cssvalue
 class CSSIdentifierValue;
@@ -159,13 +160,23 @@ CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenStream&,
                                       CSSValueID upper);
 template <CSSValueID, CSSValueID...>
 inline bool IdentMatches(CSSValueID id);
+
+template <CSSValueID... allowedIdents>
+bool PeekedIdentMatches(CSSParserTokenStream&);
+
 template <CSSValueID... allowedIdents>
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenStream&);
+
+template <CSSValueID... allowedIdents>
+cssvalue::CSSScopedKeywordValue* ConsumeScopedKeywordValue(
+    CSSParserTokenStream&);
 
 CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenStream&,
                                         const CSSParserContext&);
 CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenStream&,
                                         const CSSParserContext&);
+cssvalue::CSSScopedKeywordValue* ConsumeScopedKeywordValue(
+    CSSParserTokenStream&);
 CSSStringValue* ConsumeString(CSSParserTokenStream&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
                                   const CSSParserContext&);
@@ -607,6 +618,12 @@ inline bool IdentMatches(CSSValueID id) {
   return id == head || IdentMatches<tail...>(id);
 }
 
+template <CSSValueID... allowedIdents>
+bool PeekedIdentMatches(CSSParserTokenStream& stream) {
+  return stream.Peek().GetType() == kIdentToken &&
+         IdentMatches<allowedIdents...>(stream.Peek().Id());
+}
+
 template <typename...>
 bool IsCustomIdent(CSSValueID id) {
   return !IsCSSWideKeyword(id) && id != CSSValueID::kDefault;
@@ -619,11 +636,19 @@ bool IsCustomIdent(CSSValueID id) {
 
 template <CSSValueID... names>
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenStream& stream) {
-  if (stream.Peek().GetType() != kIdentToken ||
-      !IdentMatches<names...>(stream.Peek().Id())) {
+  if (!PeekedIdentMatches<names...>(stream)) {
     return nullptr;
   }
   return CSSIdentifierValue::Create(stream.ConsumeIncludingWhitespace().Id());
+}
+
+template <CSSValueID... names>
+cssvalue::CSSScopedKeywordValue* ConsumeScopedKeywordValue(
+    CSSParserTokenStream& stream) {
+  if (!PeekedIdentMatches<names...>(stream)) {
+    return nullptr;
+  }
+  return ConsumeScopedKeywordValue(stream);
 }
 
 // ConsumeCommaSeparatedList and ConsumeSpaceSeparatedList take a callback

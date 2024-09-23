@@ -275,6 +275,8 @@ blink_core_sources_css = [
   "css_rule_list.h",
   "css_scope_rule.cc",
   "css_scope_rule.h",
+  "css_scoped_keyword_value.cc",
+  "css_scoped_keyword_value.h",
   "css_scroll_value.cc",
   "css_scroll_value.h",
   "css_segmented_font_face.cc",

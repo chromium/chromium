@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
+#include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
@@ -279,6 +280,8 @@ bool CSSValue::operator==(const CSSValue& other) const {
         return CompareCSSValues<cssvalue::CSSRayValue>(*this, other);
       case kIdentifierClass:
         return CompareCSSValues<CSSIdentifierValue>(*this, other);
+      case kScopedKeywordClass:
+        return CompareCSSValues<cssvalue::CSSScopedKeywordValue>(*this, other);
       case kKeyframeShorthandClass:
         return CompareCSSValues<CSSKeyframeShorthandValue>(*this, other);
       case kInitialColorValueClass:
@@ -443,6 +446,8 @@ String CSSValue::CssText() const {
       return To<cssvalue::CSSRayValue>(this)->CustomCSSText();
     case kIdentifierClass:
       return To<CSSIdentifierValue>(this)->CustomCSSText();
+    case kScopedKeywordClass:
+      return To<cssvalue::CSSScopedKeywordValue>(this)->CustomCSSText();
     case kKeyframeShorthandClass:
       return To<CSSKeyframeShorthandValue>(this)->CustomCSSText();
     case kInitialColorValueClass:
@@ -524,6 +529,9 @@ const CSSValue* CSSValue::UntaintedCopy() const {
 const CSSValue& CSSValue::PopulateWithTreeScope(
     const TreeScope* tree_scope) const {
   switch (GetClassType()) {
+    case kScopedKeywordClass:
+      return To<cssvalue::CSSScopedKeywordValue>(this)->PopulateWithTreeScope(
+          tree_scope);
     case kCounterClass:
       return To<cssvalue::CSSCounterValue>(this)->PopulateWithTreeScope(
           tree_scope);
@@ -675,6 +683,9 @@ void CSSValue::Trace(Visitor* visitor) const {
     case kIdentifierClass:
       To<CSSIdentifierValue>(this)->TraceAfterDispatch(visitor);
       return;
+    case kScopedKeywordClass:
+      To<cssvalue::CSSScopedKeywordValue>(this)->TraceAfterDispatch(visitor);
+      return;
     case kKeyframeShorthandClass:
       To<CSSKeyframeShorthandValue>(this)->TraceAfterDispatch(visitor);
       return;
@@ -788,6 +799,8 @@ String CSSValue::ClassTypeToString() const {
       return "MathFunctionClass";
     case kIdentifierClass:
       return "IdentifierClass";
+    case kScopedKeywordClass:
+      return "ScopedKeywordClass";
     case kColorClass:
       return "ColorClass";
     case kColorMixClass:

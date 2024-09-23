@@ -147,15 +147,16 @@ namespace {
 
 bool IsScopedByElement(const ScopedCSSName* lookup_name,
                        const Element& element) {
-  const ScopedCSSNameList* scoped_names =
+  const StyleAnchorScope& anchor_scope =
       element.ComputedStyleRef().AnchorScope();
-  if (!scoped_names) {
+  if (anchor_scope.IsNone()) {
     return false;
   }
-  if (scoped_names->GetNames().empty()) {
-    // An empty list represents anchor-scope:all.
-    return true;
+  if (anchor_scope.IsAll()) {
+    return anchor_scope.AllTreeScope() == lookup_name->GetTreeScope();
   }
+  const ScopedCSSNameList* scoped_names = anchor_scope.Names();
+  CHECK(scoped_names);
   for (const Member<const ScopedCSSName>& scoped_name :
        scoped_names->GetNames()) {
     if (*scoped_name == *lookup_name) {

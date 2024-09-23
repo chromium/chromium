@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/css/css_ray_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_layer_value.h"
 #include "third_party/blink/renderer/core/css/css_revert_value.h"
+#include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
@@ -1619,6 +1620,15 @@ CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenStream& stream,
   }
 
   return ConsumeCustomIdent(stream, context);
+}
+
+cssvalue::CSSScopedKeywordValue* ConsumeScopedKeywordValue(
+    CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() != kIdentToken) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<cssvalue::CSSScopedKeywordValue>(
+      stream.ConsumeIncludingWhitespace().Id());
 }
 
 CSSStringValue* ConsumeString(CSSParserTokenStream& stream) {

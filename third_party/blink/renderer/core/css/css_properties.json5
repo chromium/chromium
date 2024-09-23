@@ -1793,10 +1793,9 @@
     {
       name: "anchor-scope",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal" ],
-      include_paths: ["third_party/blink/renderer/core/style/scoped_css_name.h"],
-      type_name: "ScopedCSSNameList",
-      wrapper_pointer_name: "Member",
-      default_value: "nullptr",
+      include_paths: ["third_party/blink/renderer/core/style/style_anchor_scope.h"],
+      type_name: "StyleAnchorScope",
+      default_value: "StyleAnchorScope()",
       field_group: "*",
       field_template: "external",
       converter: "ConvertAnchorScope",

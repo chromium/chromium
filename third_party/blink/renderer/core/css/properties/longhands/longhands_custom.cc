@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/css/css_ratio_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
+#include "third_party/blink/renderer/core/css/css_scoped_keyword_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -346,7 +347,11 @@ const CSSValue* AnchorScope::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   if (CSSValue* value =
-          css_parsing_utils::ConsumeIdent<CSSValueID::kNone, CSSValueID::kAll>(
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
+    return value;
+  }
+  if (CSSValue* value =
+          css_parsing_utils::ConsumeScopedKeywordValue<CSSValueID::kAll>(
               stream)) {
     return value;
   }
@@ -359,15 +364,17 @@ const CSSValue* AnchorScope::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  if (!style.AnchorScope()) {
+  const StyleAnchorScope& anchor_scope = style.AnchorScope();
+  if (anchor_scope.IsNone()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
-  if (style.AnchorScope()->GetNames().empty()) {
+  if (anchor_scope.IsAll()) {
     return CSSIdentifierValue::Create(CSSValueID::kAll);
   }
+  CHECK(anchor_scope.Names());
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   for (const Member<const ScopedCSSName>& name :
-       style.AnchorScope()->GetNames()) {
+       anchor_scope.Names()->GetNames()) {
     list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(*name));
   }
   return list;
