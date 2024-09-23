@@ -1444,8 +1444,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // flow will continue.
   if (AutofillPredictionImprovementsDelegate* delegate =
           client().GetAutofillPredictionImprovementsDelegate();
-      delegate && delegate->ShouldProvidePredictionImprovements(
-                      client().GetLastCommittedPrimaryMainFrameURL())) {
+      delegate && form_structure && delegate->IsFormEligible(*form_structure)) {
     delegate->HasDataStored(base::BindOnce(
         &BrowserAutofillManager::
             GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI,

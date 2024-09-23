@@ -7247,8 +7247,7 @@ TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsSuggestions) {
   NiceMock<MockAutofillPredictionImprovementsDelegate> delegate;
   ON_CALL(autofill_client_, GetAutofillPredictionImprovementsDelegate)
       .WillByDefault(Return(&delegate));
-  ON_CALL(delegate, ShouldProvidePredictionImprovements)
-      .WillByDefault(Return(true));
+  ON_CALL(delegate, IsFormEligible).WillByDefault(Return(true));
   EXPECT_CALL(delegate, HasDataStored)
       .WillOnce(RunOnceCallback<0>(
           AutofillPredictionImprovementsDelegate::HasData(true)));
