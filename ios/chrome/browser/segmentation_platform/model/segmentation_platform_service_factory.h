@@ -33,8 +33,8 @@ class SegmentationPlatformServiceFactory
 
   // Returns the registry used to manage the home cards for the given `context`.
   // Do not call for OTR context.
-  static home_modules::HomeModulesCardRegistry*
-  GetHomeCardRegistryForBrowserState(ChromeBrowserState* context);
+  static home_modules::HomeModulesCardRegistry* GetHomeCardRegistryForProfile(
+      ProfileIOS* profile);
 
   // Returns the default factory used to build SegmentationPlatformService. Can
   // be registered with SetTestingFactory to use real instances during testing.

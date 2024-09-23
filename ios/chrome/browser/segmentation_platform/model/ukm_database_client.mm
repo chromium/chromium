@@ -97,7 +97,7 @@ UkmDatabaseClientHolder& UkmDatabaseClientHolder::GetInstance() {
 
 // static
 UkmDatabaseClient& UkmDatabaseClientHolder::GetClientInstance(
-    ChromeBrowserState* profile) {
+    ProfileIOS* profile) {
   UkmDatabaseClientHolder& instance = GetInstance();
   base::AutoLock l(instance.lock_);
   if (!instance.clients_for_testing_.empty()) {
@@ -111,7 +111,7 @@ UkmDatabaseClient& UkmDatabaseClientHolder::GetClientInstance(
 
 // static
 void UkmDatabaseClientHolder::SetUkmClientForTesting(
-    ChromeBrowserState* profile,
+    ProfileIOS* profile,
     UkmDatabaseClient* client) {
   UkmDatabaseClientHolder& instance = GetInstance();
   instance.SetUkmClientForTestingInternal(profile, client);
@@ -123,7 +123,7 @@ UkmDatabaseClientHolder::UkmDatabaseClientHolder()
 UkmDatabaseClientHolder::~UkmDatabaseClientHolder() = default;
 
 void UkmDatabaseClientHolder::SetUkmClientForTestingInternal(
-    ChromeBrowserState* profile,
+    ProfileIOS* profile,
     UkmDatabaseClient* client) {
   base::AutoLock l(lock_);
   CHECK(profile);

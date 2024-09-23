@@ -591,7 +591,7 @@
   UMA_HISTOGRAM_ENUMERATION(kMagicStackTopModuleImpressionHistogram, card);
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::
-          GetHomeCardRegistryForBrowserState(self.browser->GetBrowserState());
+          GetHomeCardRegistryForProfile(self.browser->GetProfile());
 
   switch (card) {
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
