@@ -14,17 +14,16 @@ import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import type {GlobalPolicy} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {InhibitReason, SuppressionType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-suite('NetworkSiminfoTest', function() {
+suite('NetworkSiminfoTest', () => {
   let simInfo: NetworkSiminfoElement;
 
-  const TEST_ICCID: string = '11111111111111111';
+  const TEST_ICCID = '11111111111111111';
 
-  setup(async function() {
-    simInfo =
-        document.createElement('network-simInfo') as NetworkSiminfoElement;
+  setup(async () => {
+    simInfo = document.createElement('network-siminfo');
 
     const cellularNetwork =
         OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular');
@@ -32,14 +31,8 @@ suite('NetworkSiminfoTest', function() {
 
     simInfo.networkState = cellularNetwork;
     document.body.appendChild(simInfo);
-    await flushAsync();
+    await flushTasks();
   });
-
-  async function flushAsync() {
-    flush();
-    // Use setTimeout to wait for the next macrotask.
-    return new Promise(resolve => setTimeout(resolve));
-  }
 
   function getGlobalPolicy(allowCellularSimLock: boolean): GlobalPolicy {
     return {
@@ -88,7 +81,7 @@ suite('NetworkSiminfoTest', function() {
       isCarrierLocked: false,
       isFlashing: false,
     };
-    await flushAsync();
+    await flushTasks();
   }
 
   /**
@@ -121,11 +114,11 @@ suite('NetworkSiminfoTest', function() {
 
     // Click the element; this should cause the SIM dialog to be opened.
     element.click();
-    await flushAsync();
+    await flushTasks();
     assertTrue(!!getSimLockDialogElement());
   }
 
-  test('Set focus after dialog close', async function() {
+  test('Set focus after dialog close', async () => {
     const getSimLockDialogs = () =>
         simInfo.shadowRoot!.querySelector<SimLockDialogsElement>(
             'sim-lock-dialogs');
@@ -141,14 +134,14 @@ suite('NetworkSiminfoTest', function() {
     const simLockButton = getSimLockButton();
     assertTrue(!!simLockButton);
     simLockButton.click();
-    await flushAsync();
+    await flushTasks();
 
     assertTrue(!!getSimLockDialogs());
     // Simulate dialog close.
     let simLockDialogs = getSimLockDialogs();
     assertTrue(!!simLockDialogs);
     simLockDialogs.closeDialogsForTest();
-    await flushAsync();
+    await flushTasks();
 
     assertFalse(!!getSimLockDialogs());
     assertEquals(getSimLockButton(), getDeepActiveElement());
@@ -156,38 +149,38 @@ suite('NetworkSiminfoTest', function() {
     // SIM unlock pin button.
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ true);
-    await flushAsync();
+    await flushTasks();
 
     assertFalse(!!getSimLockDialogs());
     const unlockPinButton = getUnlockPinButton();
     assertTrue(!!unlockPinButton);
     unlockPinButton.click();
-    await flushAsync();
+    await flushTasks();
 
     assertTrue(!!getSimLockDialogs());
     // Simulate dialog close.
     simLockDialogs = getSimLockDialogs();
     assertTrue(!!simLockDialogs);
     simLockDialogs.closeDialogsForTest();
-    await flushAsync();
+    await flushTasks();
 
     assertFalse(!!getSimLockDialogs());
     assertEquals(getUnlockPinButton(), getDeepActiveElement());
   });
 
-  test('Show sim lock dialog when unlock button is clicked', async function() {
+  test('Show sim lock dialog when unlock button is clicked', async () => {
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ true);
     verifyExistsAndClickOpensDialog('unlockPinButton');
   });
 
-  test('Show sim lock dialog when toggle is clicked', async function() {
+  test('Show sim lock dialog when toggle is clicked', async () => {
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ false, /*isLocked=*/ false);
     verifyExistsAndClickOpensDialog('simLockButton');
   });
 
-  test('Show sim lock dialog when change button is clicked', function() {
+  test('Show sim lock dialog when change button is clicked', () => {
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ false);
     verifyExistsAndClickOpensDialog('changePinButton');
@@ -207,7 +200,7 @@ suite('NetworkSiminfoTest', function() {
     assertFalse(!!getSimLockPolicyIcon());
 
     simInfo.globalPolicy = getGlobalPolicy(false);
-    await flushAsync();
+    await flushTasks();
 
     // Unlocked primary SIM with lock setting enabled. Change button should not
     // be visible, and toggle should be visible, on, and enabled to allow users
@@ -230,11 +223,11 @@ suite('NetworkSiminfoTest', function() {
     // Policy controlled icon should not show if SIM PIN locking is not
     // restricted.
     simInfo.globalPolicy = getGlobalPolicy(true);
-    await flushAsync();
+    await flushTasks();
     assertFalse(!!getSimLockPolicyIcon());
 
     simInfo.globalPolicy = getGlobalPolicy(false);
-    await flushAsync();
+    await flushTasks();
 
     // Unlocked primary SIM with lock setting disabled. Change button should not
     // be visible, and toggle should be visible, off, and disabled to prevent
@@ -269,7 +262,7 @@ suite('NetworkSiminfoTest', function() {
     assertFalse(!!getSimLockPolicyIcon());
   });
 
-  test('Primary vs. non-primary SIM', function() {
+  test('Primary vs. non-primary SIM', () => {
     const getChangePinButton = () =>
         simInfo.shadowRoot!.querySelector<CrButtonElement>('#changePinButton');
     const getSimLockButton = () =>
