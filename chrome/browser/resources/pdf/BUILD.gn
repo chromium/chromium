@@ -71,6 +71,7 @@ build_webui("build") {
     "internal_plugin.ts",
     "local_storage_proxy.ts",
     "main.ts",
+    "message_converter.ts",
     "metrics.ts",
     "navigator.ts",
     "open_pdf_params_parser.ts",

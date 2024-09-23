@@ -5,6 +5,7 @@
 import {FormFieldFocusType} from './constants.js';
 import type {PinchEventDetail} from './gesture_detector.js';
 import {GestureDetector} from './gesture_detector.js';
+import {convertFormFocusChangeMessage} from './message_converter.js';
 import type {SwipeDirection} from './swipe_detector.js';
 import {SwipeDetector} from './swipe_detector.js';
 
@@ -33,9 +34,8 @@ plugin.addEventListener('message', e => {
     case 'formFocusChange':
       // TODO(crbug.com/40810904): Ideally, the plugin would just consume
       // interesting keyboard events first.
-      isFormFieldFocused =
-          (message as {focused: FormFieldFocusType}).focused !==
-          FormFieldFocusType.NONE;
+      const focusedData = convertFormFocusChangeMessage(message);
+      isFormFieldFocused = focusedData.focused !== FormFieldFocusType.NONE;
       break;
   }
 

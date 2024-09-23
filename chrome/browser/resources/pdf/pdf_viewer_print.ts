@@ -16,12 +16,12 @@ import type {MessageData, PrintPreviewParams} from './controller.js';
 import {PluginController} from './controller.js';
 import type {ViewerPageIndicatorElement} from './elements/viewer_page_indicator.js';
 import type {ViewerZoomToolbarElement} from './elements/viewer_zoom_toolbar.js';
+import {convertDocumentDimensionsMessage, convertLoadProgressMessage} from './message_converter.js';
 import {deserializeKeyEvent, LoadState, serializeKeyEvent} from './pdf_scripting_api.js';
 import type {KeyEventData} from './pdf_viewer_base.js';
 import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {getCss} from './pdf_viewer_print.css.js';
 import {getHtml} from './pdf_viewer_print.html.js';
-import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
@@ -294,13 +294,13 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
     const data = e.detail;
     switch (data.type.toString()) {
       case 'documentDimensions':
-        this.setDocumentDimensions(data as DocumentDimensionsMessageData);
+        this.setDocumentDimensions(convertDocumentDimensionsMessage(data));
         return;
       case 'documentFocusChanged':
         // TODO(crbug.com/40125884): Draw a focus rect around plugin.
         return;
       case 'loadProgress':
-        this.updateProgress((data as {progress: number}).progress);
+        this.updateProgress(convertLoadProgressMessage(data).progress);
         return;
       case 'printPreviewLoaded':
         this.handlePrintPreviewLoaded_();
