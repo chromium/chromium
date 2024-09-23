@@ -4398,7 +4398,7 @@ public class StripLayoutHelper
                                 result, confirmationCallback, shouldRunIfImmediateContinue);
                     });
         } else {
-            mActionConfirmationManager.processRemoveTabAttempt(
+            mActionConfirmationManager.processUngroupTabAttempt(
                     (@ConfirmationResult Integer result) -> {
                         handleUserConfirmation(
                                 result, confirmationCallback, shouldRunIfImmediateContinue);

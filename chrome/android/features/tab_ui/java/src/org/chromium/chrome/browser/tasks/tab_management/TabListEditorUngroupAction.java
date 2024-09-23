@@ -85,7 +85,7 @@ public class TabListEditorUngroupAction extends TabListEditorAction {
         if (relatedTabs.size() <= tabsToUngroup.size()) {
             List<Integer> tabIdList =
                     tabsToUngroup.stream().map(Tab::getId).collect(Collectors.toList());
-            mActionConfirmationManager.processRemoveTabAttempt(
+            mActionConfirmationManager.processUngroupTabAttempt(
                     tabIdList,
                     (@ConfirmationResult Integer result) -> {
                         if (result != ConfirmationResult.CONFIRMATION_NEGATIVE) {

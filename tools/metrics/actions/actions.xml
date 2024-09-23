@@ -41336,6 +41336,62 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action
+    name="TabGroupConfirmation.CollaborationMemberRemoveLastTab.KeepGroupButton">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a collaboration member keeps the group via the button.
+  </description>
+</action>
+
+<action
+    name="TabGroupConfirmation.CollaborationMemberRemoveLastTab.KeepGroupImplicit">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a collaboration member keeps the group via any other dialog
+    dismissal.
+  </description>
+</action>
+
+<action
+    name="TabGroupConfirmation.CollaborationMemberRemoveLastTab.RemoveGroup">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a collaboration member removes the last tab and leaves the
+    group.
+  </description>
+</action>
+
+<action
+    name="TabGroupConfirmation.CollaborationOwnerRemoveLastTab.KeepGroupButton">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a collaboration owner keeps the group via the button.
+  </description>
+</action>
+
+<action
+    name="TabGroupConfirmation.CollaborationOwnerRemoveLastTab.KeepGroupImplicit">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a collaboration owner keeps the group via any other dialog
+    dismissal.
+  </description>
+</action>
+
+<action name="TabGroupConfirmation.CollaborationOwnerRemoveLastTab.RemoveGroup">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a collaboration owner removes the last tab deleting the group.
+  </description>
+</action>
+
 <action name="TabGroupConfirmation.DeleteGroup.Abort">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>

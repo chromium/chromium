@@ -31,10 +31,10 @@ public class ActionConfirmationDialog {
         /**
          * Called when the dialog is dismissed.
          *
-         * @param isPositive If a positive action should be taken as a result.
+         * @param buttonClickResult The button click result from the dialog.
          * @param stopShowing If the user wants to stop showing this dialog in the future.
          */
-        void onDismiss(boolean isPositive, boolean stopShowing);
+        void onDismiss(@ButtonClickResult int buttonClickResult, boolean stopShowing);
     }
 
     private final Context mContext;
@@ -72,7 +72,6 @@ public class ActionConfirmationDialog {
                 positiveButtonRes,
                 R.string.cancel,
                 supportStopShowing,
-                /* defaultDismissIsPositive= */ false,
                 onResult);
     }
 
@@ -85,8 +84,6 @@ public class ActionConfirmationDialog {
      * @param negativeButtonRes The string to show for the negative button.
      * @param supportStopShowing Whether to show a checkbox to permanently disable the dialog via a
      *     pref.
-     * @param defaultDismissIsPositive Whether a default dismissal by something other than a button
-     *     is treated as positive instead of a negative.
      * @param onResult The callback to invoke on exit of the dialog.
      */
     public void showWithCustomNegativeAction(
@@ -95,7 +92,6 @@ public class ActionConfirmationDialog {
             @StringRes int positiveButtonRes,
             @StringRes int negativeButtonRes,
             boolean supportStopShowing,
-            boolean defaultDismissIsPositive,
             @NonNull ConfirmationDialogResult onResult) {
         Resources resources = mContext.getResources();
 
@@ -110,16 +106,12 @@ public class ActionConfirmationDialog {
 
         Callback<Integer> onButtonClick =
                 (buttonClickResult) -> {
-                    boolean isPositive =
-                            defaultDismissIsPositive
-                                    ? buttonClickResult != ButtonClickResult.NEGATIVE
-                                    : buttonClickResult == ButtonClickResult.POSITIVE;
                     // Only remember to stop showing when a button is clicked. Otherwise the user
                     // may have just wanted to cancel.
                     boolean shouldStopShowing =
                             buttonClickResult != ButtonClickResult.NO_CLICK
                                     && stopShowingCheckBox.isChecked();
-                    onResult.onDismiss(isPositive, shouldStopShowing);
+                    onResult.onDismiss(buttonClickResult, shouldStopShowing);
                 };
         ModalDialogProperties.Controller dialogController =
                 new StrictButtonPressController(mModalDialogManager, onButtonClick);

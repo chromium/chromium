@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.StrictButtonPressController.ButtonClickResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.NavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
@@ -568,8 +569,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 descriptionResolver,
                 R.string.archive_dialog_close_all_inactive_tabs_confirmation,
                 /* supportStopShowing= */ false,
-                (isPositive, stopShowing) -> {
-                    if (isPositive) {
+                (buttonClickResult, stopShowing) -> {
+                    if (buttonClickResult == ButtonClickResult.POSITIVE) {
                         mArchivedTabModel.closeTabs(
                                 TabClosureParams.closeTabs(
                                                 TabModelUtils.convertTabListToListOfTabs(

@@ -831,6 +831,24 @@
       <message name="IDS_CLOSE_FROM_GROUP_DIALOG_TITLE" desc="Title of a dialog asking if the user really wants to close a tab and group.">
         Close tab and delete group?
       </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_TITLE" desc="Title of a dialog asking the user if they want to keep the tab group.">
+        Keep tab group?
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_OWNER" desc="Main text content of a dialog asking the owner of a shared group if they want to keep it. The &#10; is a newline character to force formatting.">
+        Keep this group to add tabs later, or delete it if you no longer need it.&#10;&#10;If you delete it, everyone will immediately lose access to the "<ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>" tab group, and it will be deleted from all devices.
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DESCRIPTION_MEMBER" desc="Main text content of a dialog asking a member of a shared group if they want to keep it or leave. The &#10; is a newline character to force formatting.">
+        Keep this group to add tabs later, or leave.&#10;&#10;If you leave, you will immediately lose access to the "<ph name="TITLE_OF_GROUP">%1$s<ex>Shopping cart</ex></ph>" tab group.
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_KEEP_ACTION" desc="Action button to keep the tab group in the keep group dialog.">
+        Keep group
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_DELETE_ACTION" desc="Action button for the owner of a group to delete the tab group in the keep group dialog.">
+        Delete group
+      </message>
+      <message name="IDS_KEEP_TAB_GROUP_DIALOG_LEAVE_ACTION" desc="Action button for a member of a group to leave the tab group in the keep group dialog.">
+        Leave group
+      </message>
       <message name="IDS_CLOSE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will prompt a confirmation dialog to close a tab group.">
         Close
       </message>
