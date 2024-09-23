@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/subresource_filter/core/browser/copying_file_stream.h"
+#include "components/subresource_filter/core/common/copying_file_stream.h"
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"

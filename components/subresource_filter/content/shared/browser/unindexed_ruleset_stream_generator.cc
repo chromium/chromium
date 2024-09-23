@@ -8,7 +8,7 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/not_fatal_until.h"
-#include "components/subresource_filter/core/browser/copying_file_stream.h"
+#include "components/subresource_filter/core/common/copying_file_stream.h"
 #include "components/subresource_filter/core/browser/ruleset_version.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"

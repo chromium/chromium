@@ -13,7 +13,6 @@ static_library("tools_lib") {
     "indexing_tool.h",
   ]
   deps = [
-    "../core/browser",
     "../core/common",
     "//base",
     "//components/url_pattern_index",

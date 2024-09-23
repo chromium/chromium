@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_COPYING_FILE_STREAM_H_
-#define COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_COPYING_FILE_STREAM_H_
+#ifndef COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_COPYING_FILE_STREAM_H_
+#define COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_COPYING_FILE_STREAM_H_
 
 #include "base/files/file.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
@@ -51,4 +51,4 @@ class CopyingFileOutputStream
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CORE_BROWSER_COPYING_FILE_STREAM_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CORE_COMMON_COPYING_FILE_STREAM_H_
