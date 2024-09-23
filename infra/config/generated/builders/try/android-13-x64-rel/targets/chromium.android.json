@@ -3544,7 +3544,6 @@
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
-        "ci_only": true,
         "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
@@ -3626,7 +3625,6 @@
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
-        "ci_only": true,
         "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
