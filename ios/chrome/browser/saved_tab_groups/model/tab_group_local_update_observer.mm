@@ -258,8 +258,7 @@ void TabGroupLocalUpdateObserver::StartObservingBrowser(Browser* browser) {
   // instantiate it.
   if (!session_restoration_service_observation_.IsObserving()) {
     session_restoration_service_observation_.Observe(
-        SessionRestorationServiceFactory::GetForBrowserState(
-            browser->GetBrowserState()));
+        SessionRestorationServiceFactory::GetForProfile(browser->GetProfile()));
   }
 
   WebStateList* web_state_list = browser->GetWebStateList();

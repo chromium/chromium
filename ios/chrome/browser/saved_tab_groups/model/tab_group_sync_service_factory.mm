@@ -37,14 +37,13 @@ namespace tab_groups {
 namespace {
 // Returns a configuration for the Saved Tab Group.
 std::unique_ptr<SyncDataTypeConfiguration>
-CreateSavedTabGroupDataTypeConfiguration(ChromeBrowserState* browser_state) {
+CreateSavedTabGroupDataTypeConfiguration(ProfileIOS* profile) {
   return std::make_unique<SyncDataTypeConfiguration>(
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::SAVED_TAB_GROUP,
           base::BindRepeating(&syncer::ReportUnrecoverableError,
                               ::GetChannel())),
-      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
-          ->GetStoreFactory());
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 }
 }  // namespace
 
@@ -87,32 +86,29 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
   }
 
   auto model = std::make_unique<SavedTabGroupModel>();
-  ChromeBrowserState* browser_state = static_cast<ChromeBrowserState*>(context);
-  CHECK(!browser_state->IsOffTheRecord());
-  auto saved_config = CreateSavedTabGroupDataTypeConfiguration(browser_state);
+  ProfileIOS* profile = static_cast<ProfileIOS*>(context);
+  CHECK(!profile->IsOffTheRecord());
+  auto saved_config = CreateSavedTabGroupDataTypeConfiguration(profile);
 
   syncer::DeviceInfoTracker* device_info_tracker =
-      DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state)
+      DeviceInfoSyncServiceFactory::GetForProfile(profile)
           ->GetDeviceInfoTracker();
   auto metrics_logger =
       std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker);
 
   // Give the opportunity for the test hook to override the factory from
   // the provider (allowing EG tests to use a fake TabGroupSyncService).
-  if (auto sync_service =
-          tests_hook::CreateTabGroupSyncService(browser_state)) {
+  if (auto sync_service = tests_hook::CreateTabGroupSyncService(profile)) {
     return sync_service;
   }
 
-  auto* opt_guide =
-      OptimizationGuideServiceFactory::GetForProfile(browser_state);
+  auto* opt_guide = OptimizationGuideServiceFactory::GetForProfile(profile);
   std::unique_ptr<TabGroupSyncServiceImpl> sync_service =
       std::make_unique<TabGroupSyncServiceImpl>(
           std::move(model), std::move(saved_config), nullptr,
-          browser_state->GetPrefs(), std::move(metrics_logger), opt_guide);
+          profile->GetPrefs(), std::move(metrics_logger), opt_guide);
 
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   std::unique_ptr<TabGroupLocalUpdateObserver> local_update_observer =
       std::make_unique<TabGroupLocalUpdateObserver>(browser_list,
                                                     sync_service.get());

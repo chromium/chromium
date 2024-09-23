@@ -25,26 +25,26 @@ class TabGroupSyncServiceFactoryTest : public PlatformTest {
             kModernTabStrip,
         },
         /*disable_features=*/{});
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests the creation of the service in regular.
 TEST_F(TabGroupSyncServiceFactoryTest, ServiceCreatedInRegularProfile) {
   TabGroupSyncService* service =
-      TabGroupSyncServiceFactory::GetForBrowserState(browser_state_.get());
+      TabGroupSyncServiceFactory::GetForProfile(profile_.get());
   EXPECT_TRUE(service);
 }
 
 // Tests that the factory is returning a nil pointer for incognito.
 TEST_F(TabGroupSyncServiceFactoryTest, ServiceNotCreatedInIncognito) {
-  TabGroupSyncService* service = TabGroupSyncServiceFactory::GetForBrowserState(
-      browser_state_->GetOffTheRecordChromeBrowserState());
+  TabGroupSyncService* service = TabGroupSyncServiceFactory::GetForProfile(
+      profile_->GetOffTheRecordProfile());
   EXPECT_FALSE(service);
 }
 

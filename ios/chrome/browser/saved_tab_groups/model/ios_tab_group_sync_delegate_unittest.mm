@@ -79,48 +79,45 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
   IOSTabGroupSyncDelegateTest() {
     app_state_ = OCMClassMock([AppState class]);
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(TabGroupSyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     mock_service_ = static_cast<MockTabGroupSyncService*>(
-        TabGroupSyncServiceFactory::GetForBrowserState(browser_state_.get()));
+        TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
 
-    scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:browser_state_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
+                                                    profile:profile_.get()];
     browser_ =
         scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     TabInsertionBrowserAgent::CreateForBrowser(browser_);
 
-    scene_state_same_browser_state_ =
+    scene_state_same_profile_ =
         [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:browser_state_.get()];
-    browser_same_browser_state_ =
-        scene_state_same_browser_state_.browserProviderInterface
-            .mainBrowserProvider.browser;
-    TabInsertionBrowserAgent::CreateForBrowser(browser_same_browser_state_);
+                                         profile:profile_.get()];
+    browser_same_profile_ = scene_state_same_profile_.browserProviderInterface
+                                .mainBrowserProvider.browser;
+    TabInsertionBrowserAgent::CreateForBrowser(browser_same_profile_);
 
-    other_browser_state_ = TestChromeBrowserState::Builder().Build();
+    other_profile_ = TestProfileIOS::Builder().Build();
     other_scene_state_ =
         [[FakeSceneState alloc] initWithAppState:app_state_
-                                    browserState:other_browser_state_.get()];
+                                         profile:other_profile_.get()];
     other_browser_ =
         other_scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     TabInsertionBrowserAgent::CreateForBrowser(other_browser_);
     other_inactive_browser_ = other_browser_->CreateInactiveBrowser();
 
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     auto local_observer = std::make_unique<TabGroupLocalUpdateObserver>(
         browser_list_.get(), mock_service_);
 
     browser_list_->AddBrowser(browser_);
-    browser_list_->AddBrowser(browser_same_browser_state_);
+    browser_list_->AddBrowser(browser_same_profile_);
 
     delegate_ = std::make_unique<IOSTabGroupSyncDelegate>(
         browser_list_, mock_service_, std::move(local_observer));
@@ -215,12 +212,12 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   id app_state_;
   FakeSceneState* scene_state_;
-  FakeSceneState* scene_state_same_browser_state_;
+  FakeSceneState* scene_state_same_profile_;
   FakeSceneState* other_scene_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   Browser* browser_;
-  Browser* browser_same_browser_state_;
-  std::unique_ptr<TestChromeBrowserState> other_browser_state_;
+  Browser* browser_same_profile_;
+  std::unique_ptr<TestProfileIOS> other_profile_;
   Browser* other_browser_;
   Browser* other_inactive_browser_;
   raw_ptr<BrowserList> browser_list_;
@@ -244,9 +241,9 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
 };
 
 // Tests adding a tab group when the currently foregrounded active scene is with
-// the same browser state.
+// the same profile.
 TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupSameBrowserStateForeground) {
-  scene_state_same_browser_state_.activationLevel =
+  scene_state_same_profile_.activationLevel =
       SceneActivationLevelForegroundActive;
   scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
   other_scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
@@ -265,7 +262,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupSameBrowserStateForeground) {
       std::make_unique<web::FakeWebState>(web::WebStateID::NewUnique());
   fake_web_state->SetCurrentURL(kFakeUrl);
   WebStateList* target_web_state_list =
-      browser_same_browser_state_->GetWebStateList();
+      browser_same_profile_->GetWebStateList();
   target_web_state_list->InsertWebState(std::move(fake_web_state));
   target_web_state_list->ActivateWebStateAt(0);
 
@@ -285,12 +282,11 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupSameBrowserStateForeground) {
 }
 
 // Tests adding a tab group when the currently foreground active scene is from
-// another browser state.
+// another profile.
 TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupOtherBrowserStateForeground) {
   other_scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
-  scene_state_same_browser_state_.activationLevel =
-      SceneActivationLevelBackground;
+  scene_state_same_profile_.activationLevel = SceneActivationLevelBackground;
 
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
 
@@ -325,13 +321,12 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupOtherBrowserStateForeground) {
 }
 
 // Tests adding a tab group when there is no currently foreground active scene,
-// the only foreground scene is from another browser state and there is one
+// the only foreground scene is from another profile and there is one
 // scene in background.
 TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupBackgroundScene) {
   other_scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
   scene_state_.activationLevel = SceneActivationLevelBackground;
-  scene_state_same_browser_state_.activationLevel =
-      SceneActivationLevelDisconnected;
+  scene_state_same_profile_.activationLevel = SceneActivationLevelDisconnected;
 
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
 
@@ -369,15 +364,15 @@ TEST_F(IOSTabGroupSyncDelegateTest, CreateTabGroupBackgroundScene) {
 TEST_F(IOSTabGroupSyncDelegateTest, CloseLocalTabGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a [0 b* c ] d", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [0 b* c ] d",
+                                                       browser_->GetProfile()));
 
-  WebStateList* web_state_list_same_browser_state =
-      browser_same_browser_state_->GetWebStateList();
-  WebStateListBuilderFromDescription builder_same_browser_state(
-      web_state_list_same_browser_state);
-  ASSERT_TRUE(builder_same_browser_state.BuildWebStateListFromDescription(
-      "| [1 e* f ] g h ", browser_->GetBrowserState()));
+  WebStateList* web_state_list_same_profile =
+      browser_same_profile_->GetWebStateList();
+  WebStateListBuilderFromDescription builder_same_profile(
+      web_state_list_same_profile);
+  ASSERT_TRUE(builder_same_profile.BuildWebStateListFromDescription(
+      "| [1 e* f ] g h ", browser_->GetProfile()));
 
   LocalTabGroupID local_id_group_0 =
       builder.GetTabGroupForIdentifier('0')->tab_group_id();
@@ -385,24 +380,24 @@ TEST_F(IOSTabGroupSyncDelegateTest, CloseLocalTabGroup) {
   EXPECT_EQ("| a d*", builder.GetWebStateListDescription());
 
   LocalTabGroupID local_id_group_1 =
-      builder_same_browser_state.GetTabGroupForIdentifier('1')->tab_group_id();
+      builder_same_profile.GetTabGroupForIdentifier('1')->tab_group_id();
   delegate_->CloseLocalTabGroup(local_id_group_1);
-  EXPECT_EQ("| g* h", builder_same_browser_state.GetWebStateListDescription());
+  EXPECT_EQ("| g* h", builder_same_profile.GetWebStateListDescription());
 }
 
 // Tests `CloseLocalTabGroup` correctly updates all local tabs.
 TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* [0 b c ] d", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* [0 b c ] d",
+                                                       browser_->GetProfile()));
 
-  WebStateList* web_state_list_same_browser_state =
-      browser_same_browser_state_->GetWebStateList();
-  WebStateListBuilderFromDescription builder_same_browser_state(
-      web_state_list_same_browser_state);
-  ASSERT_TRUE(builder_same_browser_state.BuildWebStateListFromDescription(
-      "| [1 e* f ] g h ", browser_->GetBrowserState()));
+  WebStateList* web_state_list_same_profile =
+      browser_same_profile_->GetWebStateList();
+  WebStateListBuilderFromDescription builder_same_profile(
+      web_state_list_same_profile);
+  ASSERT_TRUE(builder_same_profile.BuildWebStateListFromDescription(
+      "| [1 e* f ] g h ", browser_->GetProfile()));
 
   const TabGroup* tab_group = builder.GetTabGroupForIdentifier('0');
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
@@ -495,15 +490,15 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroup) {
 TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroupOneTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* [0 b ] c", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* [0 b ] c",
+                                                       browser_->GetProfile()));
 
-  WebStateList* web_state_list_same_browser_state =
-      browser_same_browser_state_->GetWebStateList();
-  WebStateListBuilderFromDescription builder_same_browser_state(
-      web_state_list_same_browser_state);
-  ASSERT_TRUE(builder_same_browser_state.BuildWebStateListFromDescription(
-      "| [1 e* f ] g h ", browser_->GetBrowserState()));
+  WebStateList* web_state_list_same_profile =
+      browser_same_profile_->GetWebStateList();
+  WebStateListBuilderFromDescription builder_same_profile(
+      web_state_list_same_profile);
+  ASSERT_TRUE(builder_same_profile.BuildWebStateListFromDescription(
+      "| [1 e* f ] g h ", browser_->GetProfile()));
 
   const TabGroup* tab_group = builder.GetTabGroupForIdentifier('0');
   base::Uuid saved_tab_group_id = base::Uuid::GenerateRandomV4();
@@ -535,8 +530,8 @@ TEST_F(IOSTabGroupSyncDelegateTest, UpdateLocalTabGroupOneTab) {
 TEST_F(IOSTabGroupSyncDelegateTest, GetLocalTabGroupIds) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a [0 b* c ] d [1 e ]", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [0 b* c ] d [1 e ]",
+                                                       browser_->GetProfile()));
   auto local_group_ids = delegate_->GetLocalTabGroupIds();
   EXPECT_EQ(2u, local_group_ids.size());
 }
@@ -545,8 +540,8 @@ TEST_F(IOSTabGroupSyncDelegateTest, GetLocalTabGroupIds) {
 TEST_F(IOSTabGroupSyncDelegateTest, GetLocalTabIdsForTabGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a [0 b* c ] d [1 e ]", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [0 b* c ] d [1 e ]",
+                                                       browser_->GetProfile()));
 
   LocalTabGroupID local_id_group_0 =
       builder.GetTabGroupForIdentifier('0')->tab_group_id();
@@ -560,7 +555,7 @@ TEST_F(IOSTabGroupSyncDelegateTest, GetLocalTabIdsForTabGroup) {
 
 // Tests that the service is correctly updated when creating a remote tab group.
 TEST_F(IOSTabGroupSyncDelegateTest, CreateRemoteTabGroup) {
-  WebStateList* web_state_list = browser_same_browser_state_->GetWebStateList();
+  WebStateList* web_state_list = browser_same_profile_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a b c* d e f"));
 
@@ -601,7 +596,7 @@ TEST_F(IOSTabGroupSyncDelegateTest,
        HandleOpenTabGroupRequest_UnopenedSavedTabGroup) {
   // Have another scene as the active one to make sure that the `browser` passed
   // is correctly used.
-  scene_state_same_browser_state_.activationLevel =
+  scene_state_same_profile_.activationLevel =
       SceneActivationLevelForegroundActive;
   scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
 
@@ -663,8 +658,8 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   // Create a local group.
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a [0 b* c ] d", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [0 b* c ] d",
+                                                       browser_->GetProfile()));
   const TabGroup* local_group = builder.GetTabGroupForIdentifier('0');
   LocalTabGroupID local_id_group_0 = local_group->tab_group_id();
   ASSERT_EQ(1u, delegate_->GetLocalTabGroupIds().size());
@@ -712,8 +707,8 @@ TEST_F(IOSTabGroupSyncDelegateTest,
   // Create a local group.
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a [0 b* c ] d", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a [0 b* c ] d",
+                                                       browser_->GetProfile()));
   const TabGroup* local_tab_group = builder.GetTabGroupForIdentifier('0');
   LocalTabGroupID local_id_group_0 = local_tab_group->tab_group_id();
   ASSERT_EQ(1u, delegate_->GetLocalTabGroupIds().size());
@@ -734,7 +729,7 @@ TEST_F(IOSTabGroupSyncDelegateTest,
         [OCMArg checkWithBlock:^BOOL(UISceneSessionActivationRequest* request) {
           return request.session == scene_state.scene.session &&
                  request.options.requestingScene ==
-                     browser_same_browser_state_->GetSceneState().scene;
+                     browser_same_profile_->GetSceneState().scene;
         }];
     OCMStub([app_mock activateSceneSessionForRequest:request_arg
                                         errorHandler:[OCMArg any]])
@@ -759,7 +754,7 @@ TEST_F(IOSTabGroupSyncDelegateTest,
       .WillOnce(Return(saved_group));
   delegate_->HandleOpenTabGroupRequest(
       saved_tab_group_id,
-      std::make_unique<IOSTabGroupActionContext>(browser_same_browser_state_));
+      std::make_unique<IOSTabGroupActionContext>(browser_same_profile_));
 
   // Check that there is still only one tab group opened locally.
   auto local_group_ids = delegate_->GetLocalTabGroupIds();

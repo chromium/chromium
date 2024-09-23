@@ -163,12 +163,11 @@ void MoveTabGroupAcrossBrowsers(const TabGroup* source_tab_group,
 void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
                            Browser* destination_browser,
                            int destination_tab_group_index) {
-  ChromeBrowserState* browser_state = destination_browser->GetBrowserState();
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
+  ProfileIOS* profile = destination_browser->GetProfile();
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   const BrowserList::BrowserType browser_types =
-      browser_state->IsOffTheRecord() ? BrowserList::BrowserType::kIncognito
-                                      : BrowserList::BrowserType::kRegular;
+      profile->IsOffTheRecord() ? BrowserList::BrowserType::kIncognito
+                                : BrowserList::BrowserType::kRegular;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   // Retrieve the `source_browser`.
@@ -204,11 +203,9 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
   }
 
   // Lock tab group sync service observer.
-  CHECK_EQ(source_browser->GetBrowserState(),
-           destination_browser->GetBrowserState());
-  auto* sync_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-          source_browser->GetBrowserState());
+  CHECK_EQ(source_browser->GetProfile(), destination_browser->GetProfile());
+  auto* sync_service = tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+      source_browser->GetProfile());
   auto lock = sync_service->CreateScopedLocalObserverPauser();
 
   MoveTabGroupAcrossBrowsers(source_tab_group, source_browser,
