@@ -397,15 +397,6 @@ void SavedDeskItemView::UpdateSavedDesk(
   name_view_->OnContentsChanged();
 }
 
-void SavedDeskItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // We must set the updated accessible name directly in the cache to override
-  // the one set in `LabelButton::SetText`. This is temporary.
-  //
-  // TODO(crbug.com/325137417): Remove this once the accessible name is set in
-  // the cache as soon as the name is updated.
-  GetViewAccessibility().SetName(ComputeAccessibleName());
-}
-
 void SavedDeskItemView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
@@ -569,6 +560,10 @@ std::u16string SavedDeskItemView::ComputeAccessibleName() const {
 
   return l10n_util::GetStringFUTF16(accessible_text_id,
                                     saved_desk_->template_name());
+}
+
+void SavedDeskItemView::SetTooltipText(const std::u16string& tooltip_text) {
+  NOTREACHED();
 }
 
 void SavedDeskItemView::AnimateHover(ui::Layer* layer_to_show,

@@ -158,7 +158,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   static ButtonState GetButtonStateFrom(ui::NativeTheme::State state);
 
-  void SetTooltipText(const std::u16string& tooltip_text);
+  virtual void SetTooltipText(const std::u16string& tooltip_text);
   const std::u16string& GetTooltipText() const;
 
   // Tag is now a property. These accessors are deprecated. Use GetTag() and

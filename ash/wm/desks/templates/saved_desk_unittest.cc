@@ -1327,6 +1327,35 @@ TEST_F(SavedDeskTest, LaunchTemplateNudgesNewDeskName) {
   EXPECT_EQ(u"template", desk_name_view->GetText());
 }
 
+TEST_F(SavedDeskTest, AccessibleName) {
+  // Save an entry in the templates grid.
+  AddEntry(base::Uuid::GenerateRandomV4(), "template", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+  AddEntry(base::Uuid::GenerateRandomV4(), "save_and_recall_template",
+           base::Time::Now(), DeskTemplateType::kSaveAndRecall);
+
+  // Click on the "Use template" button to launch the template.
+  OpenOverviewAndShowSavedDeskGrid();
+
+  ui::AXNodeData data;
+  GetItemViewFromSavedDeskGrid(0)->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_ITEM_ACCESSIBLE_NAME,
+          u"template"));
+
+  data = ui::AXNodeData();
+  GetItemViewFromSavedDeskGrid(1)->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_ITEM_ACCESSIBLE_NAME,
+          u"save_and_recall_template"));
+}
+
 // Tests that the order of SavedDeskItemView is in order.
 TEST_F(SavedDeskTest, IconsOrder) {
   // Create a `DeskTemplate` using which has 5 apps and each app has 1 window.
