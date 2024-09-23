@@ -27,6 +27,8 @@ buildflag_header("buildflags") {
 
 source_set("base") {
   sources = [
+    "authentication_method.cc",
+    "authentication_method.h",
     "auto_thread.cc",
     "auto_thread.h",
     "auto_thread_task_runner.cc",

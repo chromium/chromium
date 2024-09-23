@@ -40,4 +40,8 @@ CorpSessionAuthzServiceClientFactory::Create() {
                                               oauth_token_getter_task_runner_));
 }
 
+AuthenticationMethod CorpSessionAuthzServiceClientFactory::method() {
+  return AuthenticationMethod::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519;
+}
+
 }  // namespace remoting

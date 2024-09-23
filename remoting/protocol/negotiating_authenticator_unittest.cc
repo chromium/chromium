@@ -94,14 +94,14 @@ class NegotiatingAuthenticatorTest : public AuthenticatorTestBase {
     client_.reset(client_as_negotiating_authenticator_);
   }
 
-  void DisableMethodOnClient(HostAuthenticationConfig::Method method) {
+  void DisableMethodOnClient(AuthenticationMethod method) {
     auto* methods = &(client_as_negotiating_authenticator_->methods_);
     auto iter = base::ranges::find(*methods, method);
     ASSERT_TRUE(iter != methods->end());
     methods->erase(iter);
   }
 
-  void DisableMethodOnHost(HostAuthenticationConfig::Method method) {
+  void DisableMethodOnHost(AuthenticationMethod method) {
     auto* methods = &(host_as_negotiating_authenticator_->methods_);
     auto iter = base::ranges::find(*methods, method);
     ASSERT_TRUE(iter != methods->end());
@@ -169,7 +169,7 @@ class NegotiatingAuthenticatorTest : public AuthenticatorTestBase {
     tester.CheckResults();
   }
 
-  HostAuthenticationConfig::Method current_method() {
+  AuthenticationMethod current_method() {
     return client_as_negotiating_authenticator_->current_method_;
   }
 
@@ -186,8 +186,7 @@ class NegotiatingPairingAuthenticatorTest
  public:
   void VerifyAccepted() override {
     NegotiatingAuthenticatorTest::VerifyAccepted();
-    EXPECT_EQ(current_method(),
-              HostAuthenticationConfig::Method::PAIRED_SPAKE2_CURVE25519);
+    EXPECT_EQ(current_method(), AuthenticationMethod::PAIRED_SPAKE2_CURVE25519);
   }
 };
 
@@ -195,7 +194,7 @@ TEST_F(NegotiatingAuthenticatorTest, SuccessfulAuthSharedSecret) {
   ASSERT_NO_FATAL_FAILURE(
       InitAuthenticators(kNoClientId, kNoPairedSecret, kTestPin, kTestPin));
   VerifyAccepted();
-  EXPECT_EQ(HostAuthenticationConfig::Method::SHARED_SECRET_SPAKE2_CURVE25519,
+  EXPECT_EQ(AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519,
             current_method());
 }
 
@@ -210,10 +209,8 @@ TEST_F(NegotiatingAuthenticatorTest, InvalidSharedSecret) {
 TEST_F(NegotiatingAuthenticatorTest, NoCommonAuthMethod) {
   ASSERT_NO_FATAL_FAILURE(
       InitAuthenticators(kNoClientId, kNoPairedSecret, kTestPin, kTestPinBad));
-  DisableMethodOnClient(
-      HostAuthenticationConfig::Method::SHARED_SECRET_SPAKE2_CURVE25519);
-  DisableMethodOnHost(
-      HostAuthenticationConfig::Method::SHARED_SECRET_SPAKE2_CURVE25519);
+  DisableMethodOnClient(AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519);
+  DisableMethodOnHost(AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519);
 
   ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
 
@@ -225,7 +222,7 @@ TEST_F(NegotiatingAuthenticatorTest, PairingNotSupported) {
       InitAuthenticators(kTestClientId, kTestPairedSecret, kTestPin, kTestPin));
   ASSERT_NO_FATAL_FAILURE(RunAuthExchange());
   VerifyAccepted();
-  EXPECT_EQ(HostAuthenticationConfig::Method::SHARED_SECRET_SPAKE2_CURVE25519,
+  EXPECT_EQ(AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519,
             current_method());
 }
 

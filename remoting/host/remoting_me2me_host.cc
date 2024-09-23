@@ -52,6 +52,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/url_util.h"
 #include "net/socket/client_socket_factory.h"
+#include "remoting/base/authentication_method.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/cloud_session_authz_service_client_factory.h"
 #include "remoting/base/constants.h"
@@ -897,8 +898,7 @@ void HostProcess::CreateAuthenticatorFactory() {
   }
   HOST_LOG << "Host's supported authentication methods: ";
   for (const auto& method : auth_config->GetSupportedMethods()) {
-    HOST_LOG << "  "
-             << protocol::HostAuthenticationConfig::MethodToString(method);
+    HOST_LOG << "  " << AuthenticationMethodToString(method);
   }
   std::unique_ptr<protocol::AuthenticatorFactory> factory =
       std::make_unique<protocol::Me2MeHostAuthenticatorFactory>(

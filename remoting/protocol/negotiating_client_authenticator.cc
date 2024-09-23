@@ -32,8 +32,8 @@ NegotiatingClientAuthenticator::NegotiatingClientAuthenticator(
       local_id_(local_id),
       remote_id_(remote_id),
       config_(config) {
-  AddMethod(Method::PAIRED_SPAKE2_CURVE25519);
-  AddMethod(Method::SHARED_SECRET_SPAKE2_CURVE25519);
+  AddMethod(AuthenticationMethod::PAIRED_SPAKE2_CURVE25519);
+  AddMethod(AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519);
 }
 
 NegotiatingClientAuthenticator::~NegotiatingClientAuthenticator() = default;
@@ -45,13 +45,13 @@ void NegotiatingClientAuthenticator::ProcessMessage(
   state_ = PROCESSING_MESSAGE;
 
   std::string method_attr = message->Attr(kMethodAttributeQName);
-  Method method = HostAuthenticationConfig::ParseMethodString(method_attr);
+  AuthenticationMethod method = ParseAuthenticationMethodString(method_attr);
 
   // The host picked a method different from the one the client had selected.
   if (method != current_method_) {
     // The host must pick a method that is valid and supported by the client,
     // and it must not change methods after it has picked one.
-    if (method_set_by_host_ || method == Method::INVALID ||
+    if (method_set_by_host_ || method == AuthenticationMethod::INVALID ||
         !base::Contains(methods_, method)) {
       state_ = REJECTED;
       rejection_reason_ = RejectionReason::PROTOCOL_ERROR;
@@ -79,7 +79,7 @@ NegotiatingClientAuthenticator::GetNextMessage() {
   DCHECK_EQ(state(), MESSAGE_READY);
 
   // This is the first message to the host, send a list of supported methods.
-  if (current_method_ == Method::INVALID) {
+  if (current_method_ == AuthenticationMethod::INVALID) {
     // If no authentication method has been chosen, see if we can optimistically
     // choose one.
     std::unique_ptr<jingle_xmpp::XmlElement> result;
@@ -101,11 +101,11 @@ NegotiatingClientAuthenticator::GetNextMessage() {
 
     // Include a list of supported methods.
     std::string supported_methods;
-    for (Method method : methods_) {
+    for (AuthenticationMethod method : methods_) {
       if (!supported_methods.empty()) {
         supported_methods += kSupportedMethodsSeparator;
       }
-      supported_methods += HostAuthenticationConfig::MethodToString(method);
+      supported_methods += AuthenticationMethodToString(method);
     }
     result->AddAttr(kSupportedMethodsAttributeQName, supported_methods);
     state_ = WAITING_MESSAGE;
@@ -118,12 +118,12 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
     Authenticator::State preferred_initial_state,
     base::OnceClosure resume_callback) {
   DCHECK_EQ(state(), PROCESSING_MESSAGE);
-  DCHECK(current_method_ != Method::INVALID);
+  DCHECK(current_method_ != AuthenticationMethod::INVALID);
   switch (current_method_) {
-    case Method::INVALID:
+    case AuthenticationMethod::INVALID:
       NOTREACHED();
 
-    case Method::PAIRED_SPAKE2_CURVE25519: {
+    case AuthenticationMethod::PAIRED_SPAKE2_CURVE25519: {
       PairingClientAuthenticator* pairing_authenticator =
           new PairingClientAuthenticator(
               config_,
@@ -135,7 +135,7 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
       break;
     }
 
-    case Method::SHARED_SECRET_SPAKE2_CURVE25519:
+    case AuthenticationMethod::SHARED_SECRET_SPAKE2_CURVE25519:
       config_.fetch_secret_callback.Run(
           false,
           base::BindRepeating(
@@ -144,7 +144,8 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
               base::Passed(std::move(resume_callback))));
       break;
 
-    case Method::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519:
+    case AuthenticationMethod::CLOUD_SESSION_AUTHZ_SPAKE2_CURVE25519:
+    case AuthenticationMethod::CORP_SESSION_AUTHZ_SPAKE2_CURVE25519:
       NOTREACHED();
   }
 

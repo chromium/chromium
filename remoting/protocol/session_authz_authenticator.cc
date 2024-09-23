@@ -11,8 +11,8 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "remoting/base/corp_session_authz_service_client.h"
 #include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/session_authz_service_client.h"
 #include "remoting/proto/session_authz_service.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/credentials_type.h"
@@ -27,8 +27,8 @@ SessionAuthzAuthenticator::SessionAuthzAuthenticator(
     : credentials_type_(credentials_type),
       service_client_(std::move(service_client)),
       create_base_authenticator_callback_(create_base_authenticator_callback) {
-  // CORP_SESSION_AUTHZ is currently the only supported type.
-  DCHECK_EQ(credentials_type, CredentialsType::CORP_SESSION_AUTHZ);
+  DCHECK(credentials_type == CredentialsType::CLOUD_SESSION_AUTHZ ||
+         credentials_type == CredentialsType::CORP_SESSION_AUTHZ);
 }
 
 SessionAuthzAuthenticator::~SessionAuthzAuthenticator() = default;

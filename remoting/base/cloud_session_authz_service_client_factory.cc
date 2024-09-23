@@ -206,4 +206,8 @@ CloudSessionAuthzServiceClientFactory::Create() {
                                                           url_loader_factory_);
 }
 
+AuthenticationMethod CloudSessionAuthzServiceClientFactory::method() {
+  return AuthenticationMethod::CLOUD_SESSION_AUTHZ_SPAKE2_CURVE25519;
+}
+
 }  // namespace remoting
