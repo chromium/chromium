@@ -90,9 +90,20 @@ using base::UserMetricsAction;
   // otherwise it should act exactly like a system button.
   /// Clear button owned by `view` (OmniboxContainerView).
   __weak UIButton* _clearButton;
+
+  /// Whether the view is presented in the lens overlay.
+  BOOL _isLensOverlay;
 }
 
 @dynamic view;
+
+- (instancetype)initWithIsLensOverlay:(BOOL)isLensOverlay {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _isLensOverlay = isLensOverlay;
+  }
+  return self;
+}
 
 #pragma mark - UIViewController
 
@@ -105,7 +116,8 @@ using base::UserMetricsAction;
   self.view = [[OmniboxContainerView alloc] initWithFrame:CGRectZero
                                                 textColor:textColor
                                             textFieldTint:textFieldTintColor
-                                                 iconTint:iconTintColor];
+                                                 iconTint:iconTintColor
+                                            isLensOverlay:_isLensOverlay];
   self.view.layoutGuideCenter = self.layoutGuideCenter;
   _clearButton = self.view.clearButton;
 

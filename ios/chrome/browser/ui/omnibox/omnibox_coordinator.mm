@@ -124,7 +124,8 @@
   _toolbarHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), ToolbarCommands);
 
-  self.viewController = [[OmniboxViewController alloc] init];
+  self.viewController =
+      [[OmniboxViewController alloc] initWithIsLensOverlay:_isLensOverlay];
   self.viewController.defaultLeadingImage =
       GetOmniboxSuggestionIcon(OmniboxSuggestionIconType::kDefaultFavicon);
   self.viewController.textInputDelegate = self;

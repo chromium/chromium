@@ -83,6 +83,13 @@ class OmniboxTextChangeDelegate;
 // The layout guide center to use to refer to the omnibox leading image.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
+- (instancetype)initWithIsLensOverlay:(BOOL)isLensOverlay
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
 - (void)setTextChangeDelegate:(OmniboxTextChangeDelegate*)textChangeDelegate;
 
 // Hides extra chrome, i.e. attributed text, and clears.

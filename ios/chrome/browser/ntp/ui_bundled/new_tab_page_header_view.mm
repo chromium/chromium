@@ -289,7 +289,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       [[OmniboxContainerView alloc] initWithFrame:CGRectZero
                                         textColor:color
                                     textFieldTint:color
-                                         iconTint:color];
+                                         iconTint:color
+                                    isLensOverlay:NO];
   omnibox.textField.placeholder =
       l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
   [omnibox.textField setText:@""];
