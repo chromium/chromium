@@ -469,7 +469,7 @@ class _SetProtoValue:
 
     @classmethod
     def _FieldCase(cls, out, msg: Message, field: Field):
-        if field.type == Type.STRING:
+        if field.type == Type.STRING and not field.is_repeated:
             out.write(f'case {field.tag_number}: {{\n')
             out.write('proto::Any any;\n')
             out.write(
