@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+span {
+  display: ruby-text;
+  ruby-align: space-between;
+}
+</style>
+</head>
+<body>
+<center><span><table></table></span></center>
+<script>
+test(() => {
+}, 'crbug.com/367764861: No crash by a ruby-text with ruby-align:space-between in a <center>');
+</script>
+</body>
