@@ -343,10 +343,6 @@ void AddInputMethodOptionsLoadTimeData(
       base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
           is_physical_keyboard_predictive_writing_allowed);
   html_source->AddBoolean(
-      "allowDiacriticsOnPhysicalKeyboardLongpress",
-      base::FeatureList::IsEnabled(
-          features::kDiacriticsOnPhysicalKeyboardLongpress));
-  html_source->AddBoolean(
       "allowAutocorrectToggle",
       base::FeatureList::IsEnabled(features::kAutocorrectToggle));
   html_source->AddBoolean(

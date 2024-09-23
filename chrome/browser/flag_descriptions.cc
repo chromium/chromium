@@ -7099,12 +7099,6 @@ const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[] =
     "Enables opening the Help App's What's New page immediately instead of "
     "showing a notification to open the help app.";
 
-const char kDiacriticsOnPhysicalKeyboardLongpressName[] =
-    "Enable diacritics and variant character selection on PK longpress.";
-const char kDiacriticsOnPhysicalKeyboardLongpressDescription[] =
-    "Enable diacritics and other varient character selection on physical "
-    "keyboard longpress.";
-
 const char kDiacriticsUseReplaceSurroundingTextName[] =
     "Use ReplaceSurroundingText API for longpress diacritics.";
 const char kDiacriticsUseReplaceSurroundingTextDescription[] =

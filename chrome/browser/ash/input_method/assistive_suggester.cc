@@ -704,9 +704,7 @@ void AssistiveSuggester::OnActivate(const std::string& engine_id) {
     RecordAssistiveUserPrefForMultiWord(
         IsPredictiveWritingPrefEnabled(*profile_->GetPrefs(), engine_id));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kDiacriticsOnPhysicalKeyboardLongpress) &&
-      IsUsEnglishEngine(active_engine_id_)) {
+  if (IsUsEnglishEngine(active_engine_id_)) {
     RecordAssistiveUserPrefForDiacriticsOnLongpress(
         IsDiacriticsOnLongpressPrefEnabled(profile_->GetPrefs(), engine_id));
   }

@@ -8382,7 +8382,6 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "DiacriticsOnPhysicalKeyboardLongpress",
                         "DiacriticsOnPhysicalKeyboardLongpressDefaultOn"
                     ]
                 }

@@ -4099,9 +4099,6 @@ extern const char kHelpAppOnboardingRevampDescription[];
 extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationName[];
 extern const char kHelpAppOpensInsteadOfReleaseNotesNotificationDescription[];
 
-extern const char kDiacriticsOnPhysicalKeyboardLongpressName[];
-extern const char kDiacriticsOnPhysicalKeyboardLongpressDescription[];
-
 extern const char kDiacriticsUseReplaceSurroundingTextName[];
 extern const char kDiacriticsUseReplaceSurroundingTextDescription[];
 

@@ -18,7 +18,6 @@
   </template>
 </template>
 
-<template is=dom-if if="[[shouldShowDiacriticSetting]]">
 <h2 class="subsection-header">$i18n{keyboardHoldingKeys}</h2>
 <div class="subsection">
     <settings-toggle-button
@@ -68,44 +67,6 @@
     </div>
   </iron-collapse>
 </div>
-</template>
-<template is=dom-if if="[[!shouldShowDiacriticSetting]]">
-  <settings-toggle-button class="hr"
-      pref="{{prefs.settings.language.xkb_auto_repeat_enabled_r2}}"
-      label="$i18n{keyboardEnableAutoRepeat}"
-      deep-link-focus-id$="[[Setting.kKeyboardAutoRepeat]]">
-  </settings-toggle-button>
-  <iron-collapse
-      opened="[[prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]">
-    <div class="settings-box continuation embedded">
-      <div class="start" id="repeatDelayLabel" aria-hidden="true">
-        $i18n{keyRepeatDelay}
-      </div>
-      <settings-slider id="delaySlider"
-          pref="{{prefs.settings.language.xkb_auto_repeat_delay_r2}}"
-          ticks="[[autoRepeatDelays]]"
-          disabled="[[
-              !prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
-          label-aria="$i18n{keyRepeatDelay}"
-          label-min="[[getRepeatDelaySliderLabelMin_()]]"
-          label-max="[[getRepeatDelaySliderLabelMax_()]]">
-      </settings-slider>
-    </div>
-    <div class="settings-box continuation embedded">
-      <div class="start" id="repeatRateLabel" aria-hidden="true">
-        $i18n{keyRepeatRate}
-      </div>
-      <settings-slider id="repeatRateSlider"
-          pref="{{prefs.settings.language.xkb_auto_repeat_interval_r2}}"
-          ticks="[[autoRepeatIntervals]]"
-          disabled="[[!prefs.settings.language.xkb_auto_repeat_enabled_r2.value]]"
-          label-aria="$i18n{keyRepeatRate}"
-          label-min="$i18n{keyRepeatRateSlow}"
-          label-max="$i18n{keyRepeatRateFast}">
-      </settings-slider>
-    </div>
-  </iron-collapse>
-</template>
 <cr-link-row id="shortcutCustomizationApp" class="hr"
     on-click="onShowShortcutCustomizationAppClick"
     label="$i18n{showShortcutCustomizationApp}"

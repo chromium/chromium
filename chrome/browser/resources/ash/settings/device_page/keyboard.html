@@ -102,16 +102,13 @@
 </settings-toggle-button>
 <h2>$i18n{keyboardHoldingKeys}</h2>
 <div class="subsection">
-  <template is=dom-if if="[[shouldShowDiacriticSetting_]]">
-    <settings-toggle-button
-        class="hr continuation"
-        pref="{{prefs.settings.language.physical_keyboard_enable_diacritics_on_longpress}}"
-        label="$i18n{keyboardAccentMarks}"
-        sub-label="$i18n{keyboardAccentMarksSubLabel}"
-        deep-link-focus-id$="[[Setting.kShowDiacritic]]"
-        >
-    </settings-toggle-button>
-  </template>
+  <settings-toggle-button
+      class="hr continuation"
+      pref="{{prefs.settings.language.physical_keyboard_enable_diacritics_on_longpress}}"
+      label="$i18n{keyboardAccentMarks}"
+      sub-label="$i18n{keyboardAccentMarksSubLabel}"
+      deep-link-focus-id$="[[Setting.kShowDiacritic]]">
+  </settings-toggle-button>
   <settings-toggle-button
       class="hr continuation"
       pref="{{prefs.settings.language.xkb_auto_repeat_enabled_r2}}"
