@@ -651,12 +651,12 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
     }
   }
 
-  prefs_ =
-      CreatePrefService(pref_registry_, CreateExtensionPrefStore(this, false),
-                        profile_policy_connector_->policy_service(),
-                        g_browser_process->browser_policy_connector(),
-                        std::move(pref_validation_delegate), GetIOTaskRunner(),
-                        key_.get(), path_, async_prefs);
+  prefs_ = CreateProfilePrefService(
+      pref_registry_, CreateExtensionPrefStore(this, false),
+      profile_policy_connector_->policy_service(),
+      g_browser_process->browser_policy_connector(),
+      std::move(pref_validation_delegate), GetIOTaskRunner(), key_.get(), path_,
+      async_prefs);
   key_->SetPrefs(prefs_.get());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // When Chrome crash or gets restarted for other reasons, it loads the policy

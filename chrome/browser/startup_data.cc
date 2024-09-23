@@ -217,7 +217,7 @@ void StartupData::CreateServicesInternal() {
   // The preference tracking and protection is not required on Android.
   DCHECK(!ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking);
 
-  prefs_ = CreatePrefService(
+  prefs_ = ::CreateProfilePrefService(
       pref_registry_, nullptr /* extension_pref_store */,
       profile_policy_connector_->policy_service(), browser_policy_connector,
       std::move(pref_validation_delegate), io_task_runner, key_.get(), path,
