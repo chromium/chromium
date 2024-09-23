@@ -6,7 +6,7 @@ import type {DismissModuleElementEvent, DismissModuleInstanceEvent, MostRelevant
 import {mostRelevantTabResumptionDescriptor, MostRelevantTabResumptionProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {PageHandlerRemote, ScoredURLUserAction} from 'chrome://new-tab-page/most_relevant_tab_resumption.mojom-webui.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {DecorationType, FormFactor} from 'chrome://new-tab-page/url_visit_types.mojom-webui.js';
+import {DecorationType, FormFactor, VisitSource} from 'chrome://new-tab-page/url_visit_types.mojom-webui.js';
 import type {URLVisit} from 'chrome://new-tab-page/url_visit_types.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -41,6 +41,7 @@ function createSampleURLVisit(
         trainingRequestId: 0,
         relativeTime: {microseconds: BigInt(0)},
         relativeTimeText: '0 seconds ago',
+        source: VisitSource.kTab,
       },
       overrides);
 
@@ -161,11 +162,15 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
 
       const dismissEvent: DismissModuleElementEvent = await waitForDismissEvent;
       assertEquals(`Tabs hidden`, dismissEvent.detail.message);
+      assertEquals(
+          1, metrics.count(`NewTabPage.TabResumption.VisitDismissIndex`, 0));
 
       // Act.
       const restoreCallback = dismissEvent.detail.restoreCallback!;
       restoreCallback();
       assertTrue(!!moduleElement);
+      assertEquals(
+          1, metrics.count(`NewTabPage.TabResumption.VisitRestoreIndex`, 0));
     });
 
     test('Tab click fires usage event', async () => {
@@ -180,6 +185,10 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
       urlVisitElement!.removeAttribute('href');
       urlVisitElement!.click();
       assertEquals(1, metrics.count(`NewTabPage.TabResumption.ClickIndex`));
+      assertEquals(
+          1,
+          metrics.count(
+              `NewTabPage.TabResumption.Visit.ClickSource`, VisitSource.kTab));
       assertEquals(
           ScoredURLUserAction.kSeen, handler.getArgs('recordAction')[0][0]);
       assertEquals(

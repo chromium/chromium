@@ -15,7 +15,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import {ScoredURLUserAction} from '../../../most_relevant_tab_resumption.mojom-webui.js';
 import type {URLVisit} from '../../../url_visit_types.mojom-webui.js';
-import {FormFactor} from '../../../url_visit_types.mojom-webui.js';
+import {FormFactor, VisitSource} from '../../../url_visit_types.mojom-webui.js';
 import type {InfoDialogElement} from '../../info_dialog.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
@@ -137,6 +137,8 @@ private shouldShowDeviceIcon_:
     e.preventDefault();
     const urlVisit = (e.target! as HTMLElement).parentElement!;
     const index = e.model.index;
+    chrome.metricsPrivate.recordSmallCount(
+        'NewTabPage.TabResumption.VisitDismissIndex', index);
     urlVisit!.remove();
     MostRelevantTabResumptionProxyImpl.getInstance().handler.dismissURLVisit(
         this.urlVisits[index]);
@@ -148,6 +150,8 @@ private shouldShowDeviceIcon_:
             'dismissModuleToastMessage',
             loadTimeData.getString('modulesTabResumptionSentence')),
         restoreCallback: () => {
+          chrome.metricsPrivate.recordSmallCount(
+              'NewTabPage.TabResumption.VisitRestoreIndex', index);
           this.$.urlVisits.insertBefore(
               urlVisit, this.$.urlVisits.childNodes[index]);
           MostRelevantTabResumptionProxyImpl.getInstance()
@@ -169,6 +173,9 @@ private shouldShowDeviceIcon_:
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
     chrome.metricsPrivate.recordSmallCount(
         'NewTabPage.TabResumption.ClickIndex', e.model.index);
+    chrome.metricsPrivate.recordEnumerationValue(
+        'NewTabPage.TabResumption.Visit.ClickSource',
+        this.urlVisits[e.model.index].source, VisitSource.MAX_VALUE);
 
     // Calculate the number of milliseconds in the difference. Max is 4 days.
     chrome.metricsPrivate.recordValue(

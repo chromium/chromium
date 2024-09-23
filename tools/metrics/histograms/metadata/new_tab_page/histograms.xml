@@ -1453,7 +1453,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.TabResumption.ClickIndex" units="count"
+<histogram name="NewTabPage.TabResumption.ClickIndex" units="index"
     expires_after="2025-03-09">
   <owner>mfacey@google.com</owner>
   <owner>romanarora@google.com</owner>
@@ -1493,8 +1493,9 @@ chromium-metrics-reviews@google.com.
   <owner>romanarora@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
-    Records the time elapsed since the tab that was clicked was last visited.
-    Only logged on the 1P NTP and when the Tab Resumption module is enabled.
+    Records the time elapsed since the url visit that was clicked was last
+    visited. Only logged on the 1P NTP and when the Tab Resumption module is
+    enabled.
   </summary>
 </histogram>
 
@@ -1507,6 +1508,42 @@ chromium-metrics-reviews@google.com.
     Records the data type of each entry shown in the tab resumption module.
     Logged when the module is shown on the NTP. Only logged on the 1P NTP and
     when the Tab Resumption module is enabled.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.TabResumption.Visit.ClickSource"
+    enum="NtpURLVisitAggregateTypes" expires_after="2025-01-05">
+  <owner>mfacey@google.com</owner>
+  <owner>romanarora@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the source (history vs. tab) of the URL visit continuation
+    suggestion that was clicked on the NTP Tab Resumption module. Only logged on
+    the 1P NTP and when the Tab Resumption module is enabled.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.TabResumption.VisitDismissIndex" units="index"
+    expires_after="2025-01-12">
+  <owner>mfacey@google.com</owner>
+  <owner>romanarora@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the position of the visit that was dismissed on the NTP Tab
+    Resumption module. Only logged on the 1P NTP and when the Tab Resumption
+    module is enabled.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.TabResumption.VisitRestoreIndex" units="index"
+    expires_after="2025-01-12">
+  <owner>mfacey@google.com</owner>
+  <owner>romanarora@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the position of the visit that was dismissed and then restored on
+    the NTP Tab Resumption module. Only logged on the 1P NTP and when the Tab
+    Resumption module is enabled.
   </summary>
 </histogram>
 

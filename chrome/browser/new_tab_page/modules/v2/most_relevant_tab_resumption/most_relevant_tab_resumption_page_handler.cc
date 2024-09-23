@@ -189,6 +189,8 @@ void MostRelevantTabResumptionPageHandler::GetURLVisits(
     for (int i = 0; i < kSampleVisitsCount; i++) {
       auto url_visit_mojom = TabToMojom(
           CreateSampleURLVisitAggregateTab(GURL("https://www.google.com")));
+      url_visit_mojom->source =
+          ntp::most_relevant_tab_resumption::mojom::VisitSource::kTab;
       url_visit_mojom->url = GURL("https://www.google.com");
       url_visit_mojom->url_key = "https://www.google.com";
       url_visit_mojom->training_request_id = 0;
@@ -385,6 +387,8 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
     if (tab_data) {
       const URLVisitAggregate::Tab* tab = &tab_data->last_active_tab;
       auto url_visit_mojom = TabToMojom(*tab, tab_data->last_active);
+      url_visit_mojom->source =
+          ntp::most_relevant_tab_resumption::mojom::VisitSource::kTab;
       url_visit_mojom->url = **url_visit_aggregate.GetAssociatedURLs().begin();
       url_visit_mojom->url_key = url_visit_aggregate.url_key;
       url_visit_mojom->training_request_id =
@@ -411,6 +415,8 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
         auto history_url_visit_mojom = HistoryEntryVisitToMojom(
             history_data->last_visited, history_data->visit.client_name,
             history_data->visit.device_type);
+        history_url_visit_mojom->source =
+            ntp::most_relevant_tab_resumption::mojom::VisitSource::kHistory;
         history_url_visit_mojom->url =
             **url_visit_aggregate.GetAssociatedURLs().begin();
         history_url_visit_mojom->url_key = url_visit_aggregate.url_key;

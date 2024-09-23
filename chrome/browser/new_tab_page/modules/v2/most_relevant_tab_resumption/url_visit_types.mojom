@@ -25,6 +25,14 @@ enum DecorationType {
   kFrequentlyVisitedAtTime,
 };
 
+// Used to record where a visit is derived from. Keep in sync with
+// NtpURLVisitAggregateTypes in
+// tools/metrics/histograms/metadata/new_tab_page/enums.xml.
+enum VisitSource {
+  kTab,
+  kHistory,
+};
+
 struct Decoration {
   DecorationType type;
   string display_string;
@@ -35,6 +43,9 @@ struct URLVisit {
   // Type of device for displaying device icon
   // See components/sync_device_info/device_info.h
   FormFactor form_factor;
+
+  // Denotes whether visit is from history or tab.
+  VisitSource source;
 
   // Name of session to be displayed on surfaces such as NTP.
   string? session_name;
