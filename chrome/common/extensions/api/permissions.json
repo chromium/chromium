@@ -154,6 +154,11 @@
                 "type": "number",
                 "optional": true,
                 "description": "The id of the tab where site access requests can be shown. If provided, the request is shown on the specified tab and is removed when the tab navigates to a new origin. Adding a new request will override an existent request for `documentId`. This or `documentId` must be specified."
+              },
+              "pattern": {
+                "type": "string",
+                "optional": true,
+                "description": "The URL pattern where site access requests can be shown. If provided, site access requests will only be shown on URLs that match this pattern."
               }
             }
           }
