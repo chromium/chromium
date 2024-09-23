@@ -221,6 +221,9 @@ const char kOptimizationGuideServiceModelExecutionOAuth2Scope[] =
 // OAuth2 scopes for Lens.
 const char kLensOAuth2Scope[] = "https://www.googleapis.com/auth/lens";
 
+// OAuth2 scope for DevTools GenAI features.
+const char kAidaOAuth2Scope[] = "https://www.googleapis.com/auth/aida";
+
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up
 // the ClientOAuth endpoint protocol.  The comment above each constant explains

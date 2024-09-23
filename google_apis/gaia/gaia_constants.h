@@ -112,6 +112,9 @@ extern const char kOptimizationGuideServiceModelExecutionOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kLensOAuth2Scope[];
 
+// OAuth2 scope for DevTools GenAI features.
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAidaOAuth2Scope[];
+
 // Used by wallet sign in helper.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClientOAuthEmailKey[];
 

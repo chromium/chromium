@@ -23,11 +23,11 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 
 const char kAidaEndpointUrl[] =
     "https://aida.googleapis.com/v1/aida:doConversation";
-const char kAidaScopeUrl[] = "https://www.googleapis.com/auth/aida";
 
 constexpr auto kLoggingDisallowedCountries =
     base::MakeFixedFlatSet<std::string_view>(
@@ -59,7 +59,7 @@ constexpr auto kAidaSupportedCountries =
 AidaClient::AidaClient(Profile* profile)
     : profile_(*profile),
       aida_endpoint_(kAidaEndpointUrl),
-      aida_scope_(kAidaScopeUrl) {}
+      aida_scope_(GaiaConstants::kAidaOAuth2Scope) {}
 
 AidaClient::~AidaClient() = default;
 
@@ -167,7 +167,7 @@ void AidaClient::PrepareRequestOrFail(
     return;
   }
   CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync);
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
       account_id, "AIDA client", signin::ScopeSet{aida_scope_},
       base::BindOnce(&AidaClient::AccessTokenFetchFinished,
