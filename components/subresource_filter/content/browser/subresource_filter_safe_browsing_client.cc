@@ -43,7 +43,8 @@ SubresourceFilterSafeBrowsingClient::SubresourceFilterSafeBrowsingClient(
   CHECK(database_manager_, base::NotFatalUntil::M129);
 }
 
-SubresourceFilterSafeBrowsingClient::~SubresourceFilterSafeBrowsingClient() {}
+SubresourceFilterSafeBrowsingClient::~SubresourceFilterSafeBrowsingClient() =
+    default;
 
 void SubresourceFilterSafeBrowsingClient::CheckUrl(const GURL& url,
                                                    size_t request_id,
@@ -72,11 +73,13 @@ void SubresourceFilterSafeBrowsingClient::OnCheckBrowseUrlResult(
   TRACE_EVENT_NESTABLE_ASYNC_END1(
       TRACE_DISABLED_BY_DEFAULT("loading"), "SubresourceFilterSBCheck",
       TRACE_ID_LOCAL(request), "check_result", check_result.ToTracedValue());
-  if (throttle_) {
-    throttle_->OnCheckUrlResultOnUI(check_result);
-  }
   CHECK(requests_.find(request) != requests_.end(), base::NotFatalUntil::M129);
   requests_.erase(request);
+  if (throttle_) {
+    throttle_->OnCheckUrlResultOnUI(check_result);
+    // `this` may be deleted now. The only safe thing to do is return.
+    return;
+  }
 }
 
 }  // namespace subresource_filter
