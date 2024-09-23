@@ -198,7 +198,7 @@ const char kSyncSettingsURL[] = "settings://open_sync";
     [_HTTPSOnlyModePref setObserver:self];
 
     _incognitoInterstitialPref = [[PrefBackedBoolean alloc]
-        initWithPrefService:browser->GetBrowserState()->GetPrefs()
+        initWithPrefService:GetApplicationContext()->GetLocalState()
                    prefName:prefs::kIncognitoInterstitialEnabled];
     [_incognitoInterstitialPref setObserver:self];
   }

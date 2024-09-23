@@ -2933,7 +2933,7 @@ using UserFeedbackDataCallback =
   // Fallback to NORMAL or INCOGNITO mode if the Incognito interstitial is not
   // available.
   if (targetMode == ApplicationModeForTabOpening::UNDETERMINED) {
-    PrefService* prefs = self.mainInterface.browserState->GetPrefs();
+    PrefService* prefs = GetApplicationContext()->GetLocalState();
     BOOL canShowIncognitoInterstitial =
         prefs->GetBoolean(prefs::kIncognitoInterstitialEnabled);
     if (!canShowIncognitoInterstitial) {

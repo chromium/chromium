@@ -761,6 +761,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(
       prefs::kIdentityConfirmationSnackbarDisplayCount, 0);
+
+  // Register pref storing whether the Incognito interstitial for third-party
+  // intents is enabled.
+  registry->RegisterBooleanPref(prefs::kIncognitoInterstitialEnabled, false);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -878,8 +882,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kHttpsOnlyModeEnabled, false);
   registry->RegisterBooleanPref(prefs::kMixedContentAutoupgradeEnabled, true);
 
-  // Register pref storing whether the Incognito interstitial for third-party
-  // intents is enabled.
+  // Deprecated pref, moved to localState prefs.
   registry->RegisterBooleanPref(prefs::kIncognitoInterstitialEnabled, false);
 
   // Register pref used to determine whether the User Policy notification was
@@ -1348,6 +1351,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
       prefs::kIdentityConfirmationSnackbarDisplayCount, prefs);
+
+  // Added 09/2024.
+  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
+      prefs::kIncognitoInterstitialEnabled, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

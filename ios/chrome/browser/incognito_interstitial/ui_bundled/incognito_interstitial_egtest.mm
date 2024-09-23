@@ -32,7 +32,7 @@ using chrome_test_util::NTPIncognitoView;
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey setBoolValue:YES
-                   forUserPref:prefs::kIncognitoInterstitialEnabled];
+             forLocalStatePref:prefs::kIncognitoInterstitialEnabled];
 
   // Set Incognito Mode to "available",
   // as this is an assumption for most of these tests.
@@ -45,7 +45,7 @@ using chrome_test_util::NTPIncognitoView;
 - (void)tearDown {
   scopedPolicies.Reset();
   [ChromeEarlGrey setBoolValue:NO
-                   forUserPref:prefs::kIncognitoInterstitialEnabled];
+             forLocalStatePref:prefs::kIncognitoInterstitialEnabled];
   [super tearDown];
 }
 
