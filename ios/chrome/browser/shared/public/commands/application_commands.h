@@ -70,6 +70,9 @@ enum class TabGridOpeningMode {
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController
               hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot;
 
+// Shows the settings UI for price tracking notifications.
+- (void)showPriceTrackingNotificationsSettings;
+
 // Presents the Trusted Vault reauth dialog.
 // `baseViewController` presents the sign-in.
 // `securityDomainID` Identifies a particular security domain.

@@ -82,6 +82,15 @@ extern NSString* const kSettingsDoneButtonId;
                             delegate:(id<SettingsNavigationControllerDelegate>)
                                          delegate;
 
+// Creates a new SettingsNavigationController that displays the price tracking
+// notifications UI. `browser` is the browser where settings are being displayed
+// and should not be nil.
++ (instancetype)
+    priceNotificationsControllerForBrowser:(Browser*)browser
+                                  delegate:
+                                      (id<SettingsNavigationControllerDelegate>)
+                                          delegate;
+
 // Creates a new SyncEncryptionPassphraseCollectionViewController and the chrome
 // around it. `browser` is the browser where settings are being displayed and
 // should not be nil. `delegate` may be nil.

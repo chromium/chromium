@@ -4,4 +4,10 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_constants.h"
 
-constexpr NSString* const kPriceTrackingPromoViewID = @"price_tracking_promo";
+constexpr NSString* kPriceTrackingPromoViewID = @"price_tracking_promo";
+
+constexpr NSString* kPriceTrackingSettingsAccessibilityID =
+    @"PriceTrackingSettings";
+
+constexpr NSString* kPriceTrackingSnackbarCategory =
+    @"PriceTrackingPromoSnackbarCategory";

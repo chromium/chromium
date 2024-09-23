@@ -2097,6 +2097,19 @@ using UserFeedbackDataCallback =
                                  completion:nil];
 }
 
+- (void)showPriceTrackingNotificationsSettings {
+  CHECK(!self.settingsNavigationController, base::NotFatalUntil::M134);
+  CHECK(!self.signinCoordinator, base::NotFatalUntil::M134);
+  Browser* browser = self.mainInterface.browser;
+  self.settingsNavigationController = [SettingsNavigationController
+      priceNotificationsControllerForBrowser:browser
+                                    delegate:self];
+  [self.currentInterface.viewController
+      presentViewController:self.settingsNavigationController
+                   animated:YES
+                 completion:nil];
+}
+
 - (void)openNewWindowWithActivity:(NSUserActivity*)userActivity {
   if (!base::ios::IsMultipleScenesSupported()) {
     return;  // silent no-op.
