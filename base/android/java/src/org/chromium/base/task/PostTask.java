@@ -236,7 +236,12 @@ public class PostTask {
                 assert !(t instanceof TaskOriginException)
                         : "Already wrapped: " + Log.getStackTraceString(exception);
             }
-            t.initCause(taskOrigin);
+            try {
+                t.initCause(taskOrigin);
+            } catch (Exception e) {
+                // Can happen if the cause of the exception was explicitly set to "null", which most
+                // commonly happens for exceptions that have been deserialized.
+            }
         }
         return exception;
     }
