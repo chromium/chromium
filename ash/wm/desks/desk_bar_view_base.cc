@@ -951,9 +951,11 @@ void DeskBarViewBase::Layout(PassKey) {
   // needed here.
   scroll_bounds.Inset(gfx::Insets::VH(0, horizontal_padding));
   GetTopLevelViewWithContents().SetBoundsRect(scroll_bounds);
-  // When the bar reaches its max possible size, it's size does not change, but
-  // we still need to layout child UIs to their right positions.
-  GetTopLevelViewWithContents().DeprecatedLayoutImmediately();
+  if (!chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
+    // When the bar reaches its max possible size, it's size does not change,
+    // but we still need to layout child UIs to their right positions.
+    GetTopLevelViewWithContents().DeprecatedLayoutImmediately();
+  }
 
   if (IsScrollingInitialized()) {
     UpdateScrollButtonsVisibility();
@@ -1118,8 +1120,12 @@ void DeskBarViewBase::UpdateButtonsForSavedDeskGrid() {
 }
 
 void DeskBarViewBase::UpdateDeskButtonsVisibility() {
-  const bool is_zero_state = IsZeroState();
-  default_desk_button_->SetVisible(is_zero_state);
+  const bool default_desk_button_new_visibility = IsZeroState();
+  if (default_desk_button_new_visibility !=
+      default_desk_button_->GetVisible()) {
+    default_desk_button_->SetVisible(default_desk_button_new_visibility);
+    contents_view_->InvalidateLayout();
+  }
 
   UpdateNewDeskButtonLabelVisibility(
       new_desk_button_->state() == DeskIconButton::State::kActive,
@@ -1172,7 +1178,7 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
 
   pending_post_layout_operations_.push_back(
       std::make_unique<LibraryButtonVisibilityAnimation>(this));
-  InvalidateLayout();
+  contents_view_->InvalidateLayout();
 }
 
 void DeskBarViewBase::UpdateNewDeskButtonLabelVisibility(
@@ -1191,7 +1197,7 @@ void DeskBarViewBase::UpdateNewDeskButtonLabelVisibility(
   }
 
   if (new_visibility != current_visibility && layout_if_changed) {
-    InvalidateLayout();
+    contents_view_->InvalidateLayout();
   }
 }
 
@@ -1207,7 +1213,7 @@ void DeskBarViewBase::UpdateDeskIconButtonState(
   button->UpdateState(target_state);
   pending_post_layout_operations_.push_back(
       std::make_unique<DeskIconButtonScaleAnimation>(this, button));
-  InvalidateLayout();
+  contents_view_->InvalidateLayout();
 }
 
 void DeskBarViewBase::OnHoverStateMayHaveChanged() {
@@ -1545,7 +1551,7 @@ void DeskBarViewBase::OnDeskRemoved(const Desk* desk) {
   // There is desk removal animatiion for overview bar but not for desk button
   // desk bar.
   if (type_ == Type::kOverview) {
-    InvalidateLayout();
+    contents_view_->InvalidateLayout();
     // Overview bar desk removal will preform mini view removal animation, while
     // desk button bar removes mini view immediately.
   } else {
@@ -1571,7 +1577,7 @@ void DeskBarViewBase::OnDeskReordered(int old_index, int new_index) {
 
   pending_post_layout_operations_.push_back(
       std::make_unique<ReorderDeskAnimation>(this, old_index, new_index));
-  InvalidateLayout();
+  contents_view_->InvalidateLayout();
 }
 
 void DeskBarViewBase::OnDeskActivationChanged(const Desk* activated,
@@ -1663,7 +1669,7 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
         std::make_unique<AddDeskAnimation>(this, old_bar_bounds,
                                            std::move(new_mini_views)));
   }
-  InvalidateLayout();
+  contents_view_->InvalidateLayout();
 }
 
 void DeskBarViewBase::SwitchToExpandedState() {
@@ -2023,7 +2029,7 @@ void DeskBarViewBase::InitScrolling() {
   // If this is not attached to a widget yet, a layout will run automatically
   // when that does happen, so there's no need to call `InvalidateLayout()`.
   if (GetWidget()) {
-    InvalidateLayout();
+    contents_view_->InvalidateLayout();
   }
 }
 

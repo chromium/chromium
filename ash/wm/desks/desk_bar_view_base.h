@@ -176,8 +176,8 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // the active desk's mini view`.
   void UpdateButtonsForSavedDeskGrid();
 
-  // Update the visibility of the `default_desk_button_` on the desk bar's
-  // state.
+  // Updates the visibility of all buttons in the desk bar and schedules a
+  // layout of the desk bar if any button's visibility changes.
   void UpdateDeskButtonsVisibility();
 
   // Update the visibility of the saved desk library button based on whether
