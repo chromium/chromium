@@ -70,7 +70,10 @@ bool RendererExtensionRegistry::Insert(
   if (is_incognito_spanning) {
     CHECK(!base::Contains(worker_activation_tokens_, extension->id()));
   } else {
-    CHECK(base::Contains(worker_activation_tokens_, extension->id()));
+    // TODO(crbug.com/357889496): Convert to CHECK() once we've fixed why this
+    // can be false here.
+    DUMP_WILL_BE_CHECK(
+        base::Contains(worker_activation_tokens_, extension->id()));
   }
 
   return extensions_.Insert(extension);
