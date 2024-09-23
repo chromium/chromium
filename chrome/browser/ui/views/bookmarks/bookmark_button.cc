@@ -76,6 +76,8 @@ BookmarkButtonBase::BookmarkButtonBase(PressedCallback callback,
   } else {
     show_animation_->Show();
   }
+  GetViewAccessibility().SetRoleDescription(
+      l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARK_BUTTON_ROLE_DESCRIPTION));
 }
 
 BookmarkButtonBase::~BookmarkButtonBase() = default;
@@ -95,13 +97,6 @@ bool BookmarkButtonBase::IsTriggerableEvent(const ui::Event& e) {
 std::unique_ptr<views::LabelButtonBorder>
 BookmarkButtonBase::CreateDefaultBorder() const {
   return bookmark_button_util::CreateBookmarkButtonBorder();
-}
-
-void BookmarkButtonBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::LabelButton::GetAccessibleNodeData(node_data);
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kRoleDescription,
-      l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARK_BUTTON_ROLE_DESCRIPTION));
 }
 
 BEGIN_METADATA(BookmarkButtonBase)
@@ -136,11 +131,6 @@ std::u16string BookmarkButton::GetTooltipText(const gfx::Point& p) const {
         max_tooltip_width_, tooltip_manager->GetFontList(), *url_, GetText());
   }
   return tooltip_text_;
-}
-
-void BookmarkButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  BookmarkButtonBase::GetAccessibleNodeData(node_data);
-  const std::u16string name = GetViewAccessibility().GetCachedName();
 }
 
 void BookmarkButton::AdjustAccessibleName(std::u16string& new_name,

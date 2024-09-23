@@ -636,4 +636,16 @@ TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {
   EXPECT_EQ(u"new title\na.com", button->GetTooltipText(p));
 }
 
+TEST_F(BookmarkBarViewTest, AccessibleRoleDescription) {
+  AddNodesToBookmarkBarFromModelString("a b c d e f ");
+  SizeUntilButtonsVisible(1);
+  views::LabelButton* button = test_helper_->GetBookmarkButton(0);
+
+  ui::AXNodeData data;
+  button->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kRoleDescription),
+      l10n_util::GetStringUTF8(IDS_ACCNAME_BOOKMARK_BUTTON_ROLE_DESCRIPTION));
+}
+
 }  // namespace
