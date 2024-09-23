@@ -149241,6 +149241,7 @@
     { "name": "yellowsprings.gov", "policy": "public-suffix-requested", "mode": "force-https", "include_subdomains": true },
     { "name": "yorksc.gov", "policy": "public-suffix-requested", "mode": "force-https", "include_subdomains": true },
     { "name": "yubacity.gov", "policy": "public-suffix-requested", "mode": "force-https", "include_subdomains": true },
+    { "name": "nasa.gov", "policy": "public-suffix-requested", "mode": "force-https", "include_subdomains": true },
     // END OF ETLD-OWNER REQUESTED ENTRIES
 
     // To avoid trailing comma changes from showing up in diffs, we place a
