@@ -8516,9 +8516,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          ash::features::kHelpAppOpensInsteadOfReleaseNotesNotification)},
-    {"media-app-lens", flag_descriptions::kGalleryAppLensName,
-     flag_descriptions::kGalleryAppLensDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kMediaAppLens)},
     {"media-app-pdf-mahi", flag_descriptions::kMediaAppPdfMahiName,
      flag_descriptions::kMediaAppPdfMahiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kMediaAppPdfMahi)},

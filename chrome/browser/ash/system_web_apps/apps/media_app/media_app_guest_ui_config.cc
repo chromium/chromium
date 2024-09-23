@@ -61,9 +61,6 @@ bool PhotosIntegrationSupported(const apps::AppUpdate& update) {
 }
 
 bool IsLensInGalleryEnabled(Profile* profile, PrefService* pref_service) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppLens)) {
-    return false;
-  }
   if (!pref_service->GetBoolean(prefs::kMediaAppLensEnabled)) {
     return false;
   }
