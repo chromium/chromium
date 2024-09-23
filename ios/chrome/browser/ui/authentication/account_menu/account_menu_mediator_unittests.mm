@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_mediator.h"
 
-#import "base/run_loop.h"
 #import "base/test/task_environment.h"
 #import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
@@ -108,8 +107,6 @@ class AccountMenuMediatorTest : public PlatformTest {
   // Set the passphrase required, update the mediator, return the account error
   // ui info.
   AccountErrorUIInfo* setPassphraseRequired() {
-    base::RunLoop run_loop;
-    base::RepeatingClosure closure = run_loop.QuitClosure();
     SyncService()->SetInitialSyncFeatureSetupComplete(false);
     SyncService()->SetPassphraseRequired();
 
@@ -117,11 +114,9 @@ class AccountMenuMediatorTest : public PlatformTest {
     OCMExpect(
         [consumer_ updateErrorSection:[OCMArg checkWithBlock:^BOOL(id value) {
                      errorSentToConsumer = value;
-                     closure.Run();
                      return value;
                    }]]);
     SyncService()->FireStateChanged();
-    run_loop.Run();
     return errorSentToConsumer;
   }
 
@@ -207,13 +202,9 @@ TEST_F(AccountMenuMediatorTest, TestRemoveSecondaryIdentity) {
 TEST_F(AccountMenuMediatorTest, TestRemovePrimaryIdentity) {
   OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
   {
-    base::RunLoop run_loop;
-    base::RepeatingClosure closure = run_loop.QuitClosure();
     authentication_service_->SignOut(signin_metrics::ProfileSignout::kTest,
                                      /*force_clear_browsing_data=*/false, ^() {
-                                       closure.Run();
                                      });
-    run_loop.Run();
   }
 }
 
@@ -378,15 +369,8 @@ TEST_F(AccountMenuMediatorTest, TestDidTapEditAccountList) {
 
 // Tests the effect of didTapAddAccount.
 TEST_F(AccountMenuMediatorTest, TestDidTapAddAccount) {
-  base::RunLoop run_loop;
-  base::RepeatingClosure closure = run_loop.QuitClosure();
-
-  OCMExpect([delegate_ didTapAddAccount:[OCMArg checkWithBlock:^BOOL(id value) {
-                         closure.Run();
-                         return true;
-                       }]]);
+  OCMExpect([delegate_ didTapAddAccount:[OCMArg any]]);
   [mediator_ didTapAddAccount];
-  run_loop.Run();
 }
 
 // Tests the effect of signOutFromTargetRect.
