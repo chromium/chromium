@@ -165,15 +165,15 @@ that, our goal is to pass them actionable reports with little ambiguity.
 * **Add the `Needs-Feedback` hotlist (hotlistID: 5433459) and set a Next Action
   date of 24-48 hours for more information** if there is no response, close the
   issue as `WontFix`.
-* **Determine issue to be theoretical** - and follow the
-  [process for such issues](http://go/chrome-speculative-bug-triage) – theoretical
-  issues are ones that appear to be potentially real bugs, but there the report
-  is lacking evidence of exploitability or reachability. These cases can be
-  shared with engineering teams with a very clear message conveying the
-  speculative nature of the issue. These reports should generally not be
-  prioritized as a Pri-1 as they do not warrant disruption to the engineering
-  teams to investigate and prioritize without more or new information to
-  demonstrate conditions of exploitability.
+* **Determine issue to be theoretical** - and follow the [process for such
+  issues](http://go/chrome-speculative-bug-triage) – theoretical issues are
+  ones that appear to be potentially real bugs, but the report is lacking
+  evidence of exploitability or reachability. These cases can be shared with
+  engineering teams with a very clear message conveying the speculative nature
+  of the issue. These reports should generally not be prioritized as a Pri-1 as
+  they do not warrant disruption to the engineering teams to investigate and
+  prioritize without more or new information to demonstrate conditions of
+  exploitability.
 
 None of these apply? Great – this means the bug may be valid and actionable!
 It can take multiple discussions with a reporter to understand a bug. Try really
