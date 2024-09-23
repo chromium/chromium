@@ -981,8 +981,12 @@ void WebTestControlHost::CompositeNodeQueueThen(
       // The renderer is gone. Frames can also crash the renderer after the test
       // claims to be finished.
       frame = nullptr;
-    } else if (frame->GetParent() && frame->GetParent()->GetSiteInstance() ==
-                                         frame->GetSiteInstance()) {
+    } else if (frame->GetParent() &&
+               static_cast<SiteInstanceImpl*>(
+                   frame->GetParent()->GetSiteInstance())
+                       ->group() ==
+                   static_cast<SiteInstanceImpl*>(frame->GetSiteInstance())
+                       ->group()) {
       // The frame is not a local root, so nothing to do.
       frame = nullptr;
     }
