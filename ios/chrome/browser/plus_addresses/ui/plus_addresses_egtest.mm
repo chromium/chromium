@@ -6,7 +6,6 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
@@ -205,9 +204,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 - (void)testConfirmPlusAddressUsingBottomSheet {
   [self openCreatePlusAddressBottomSheet];
 
-  id<GREYMatcher> plusAddressLabelMatcher =
-      GetMatcherForPlusAddressLabel(base::SysUTF8ToNSString(
-          plus_addresses::FakePlusAddressService::kFakePlusAddress));
+  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
+      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
 
   id<GREYMatcher> confirmButton =
@@ -219,9 +217,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
   [self verifyFieldWithIdHasBeenFilled:kEmailFieldId
                                  value:base::SysUTF8ToNSString(
-                                           plus_addresses::
-                                               FakePlusAddressService::
-                                                   kFakePlusAddress)];
+                                           plus_addresses::test::
+                                               kFakePlusAddress)];
 
   ExpectModalHistogram(
       plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1);
@@ -350,9 +347,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 - (void)testRefresh {
   [self openCreatePlusAddressBottomSheet];
 
-  id<GREYMatcher> plusAddressLabelMatcher =
-      GetMatcherForPlusAddressLabel(base::SysUTF8ToNSString(
-          plus_addresses::FakePlusAddressService::kFakePlusAddress));
+  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
+      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
 
   id<GREYMatcher> refreshButton = grey_allOf(

@@ -63,8 +63,9 @@ void FakePlusAddressService::GetSuggestions(
   }
 
   if (IsPlusAddressFillingEnabled(last_committed_primary_main_frame_origin)) {
-    Suggestion suggestion = Suggestion(
-        kFakePlusAddress16, SuggestionType::kFillExistingPlusAddress);
+    Suggestion suggestion =
+        Suggestion(plus_addresses::test::kFakePlusAddressU16,
+                   SuggestionType::kFillExistingPlusAddress);
     if constexpr (!BUILDFLAG(IS_ANDROID)) {
       suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
           IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
@@ -87,7 +88,7 @@ bool FakePlusAddressService::IsPlusAddressCreationEnabled(
 
 bool FakePlusAddressService::IsPlusAddress(
     const std::string& potential_plus_address) const {
-  return potential_plus_address == kFakePlusAddress;
+  return potential_plus_address == plus_addresses::test::kFakePlusAddress;
 }
 
 void FakePlusAddressService::GetAffiliatedPlusProfiles(
@@ -96,9 +97,9 @@ void FakePlusAddressService::GetAffiliatedPlusProfiles(
   if (should_return_no_affiliated_plus_profiles_) {
     std::move(callback).Run({});
   } else {
-    std::move(callback).Run(std::vector<PlusProfile>{
-        PlusProfile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
-                    PlusAddress(kFakePlusAddress), true)});
+    std::move(callback).Run(std::vector<PlusProfile>{PlusProfile(
+        kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
+        PlusAddress(plus_addresses::test::kFakePlusAddress), true)});
   }
 }
 
@@ -113,7 +114,8 @@ void FakePlusAddressService::ReservePlusAddress(
   }
   std::move(on_completed)
       .Run(PlusProfile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
-                       PlusAddress(kFakePlusAddress), is_confirmed_));
+                       PlusAddress(plus_addresses::test::kFakePlusAddress),
+                       is_confirmed_));
 }
 
 void FakePlusAddressService::ConfirmPlusAddress(

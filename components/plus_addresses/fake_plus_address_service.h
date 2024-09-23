@@ -34,8 +34,6 @@ class FakePlusAddressService : public PlusAddressService {
   ~FakePlusAddressService() override;
 
   static constexpr char kFakeProfileId[] = "123";
-  static constexpr char kFakePlusAddress[] = "plus+remote@plus.plus";
-  static constexpr char16_t kFakePlusAddress16[] = u"plus+remote@plus.plus";
   static constexpr char kFacet[] = "https://facet.bar";
 
   // PlusAddressService:

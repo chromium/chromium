@@ -86,7 +86,7 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
 TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddress) {
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(
-                                FakePlusAddressService::kFakePlusAddress)]);
+                                plus_addresses::test::kFakePlusAddress)]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -106,7 +106,7 @@ TEST_F(PlusAddressBottomSheetMediatorTest, ReservePlusAddressError) {
 TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddress) {
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(
-                                FakePlusAddressService::kFakePlusAddress)]);
+                                plus_addresses::test::kFakePlusAddress)]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
   OCMExpect([consumer_ didConfirmPlusAddress]);
@@ -145,7 +145,7 @@ TEST_F(PlusAddressBottomSheetMediatorTest, NoticeAlreadyAccepted) {
 TEST_F(PlusAddressBottomSheetMediatorTest, ConfirmPlusAddressError) {
   OCMExpect([consumer_
       didReservePlusAddress:base::SysUTF8ToNSString(
-                                FakePlusAddressService::kFakePlusAddress)]);
+                                plus_addresses::test::kFakePlusAddress)]);
   [mediator() reservePlusAddress];
   EXPECT_OCMOCK_VERIFY(consumer_);
   OCMExpect([consumer_

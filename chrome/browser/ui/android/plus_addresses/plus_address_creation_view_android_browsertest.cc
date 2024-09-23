@@ -74,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, OfferUi) {
   EXPECT_FALSE(future.IsReady());
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), FakePlusAddressService::kFakePlusAddress);
+  EXPECT_EQ(future.Get(), plus_addresses::test::kFakePlusAddress);
 }
 
 IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
 
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(future.Get(), FakePlusAddressService::kFakePlusAddress);
+  EXPECT_EQ(future.Get(), plus_addresses::test::kFakePlusAddress);
   EXPECT_FALSE(second_future.IsReady());
 }
 
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
       second_future.GetCallback());
   controller->OnConfirmed();
   EXPECT_TRUE(second_future.IsReady());
-  EXPECT_EQ(second_future.Get(), FakePlusAddressService::kFakePlusAddress);
+  EXPECT_EQ(second_future.Get(), plus_addresses::test::kFakePlusAddress);
 }
 
 // Ensure that closing the web contents with the plus_address creation UI open

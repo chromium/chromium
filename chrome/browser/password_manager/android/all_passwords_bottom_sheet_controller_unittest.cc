@@ -29,6 +29,7 @@
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_test_environment.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
 #include "components/safe_browsing/core/browser/password_protection/stub_password_reuse_detection_manager_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -569,7 +570,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
   // `kPlusAddressAndroidManualFallbackEnabled` is disabled, `IsPlusAddress()`
   // should return `false` even for existing plus addresses.
   EXPECT_FALSE(all_passwords_controller()->IsPlusAddress(
-      plus_addresses::FakePlusAddressService::kFakePlusAddress));
+      plus_addresses::test::kFakePlusAddress));
 }
 
 TEST_F(AllPasswordsBottomSheetControllerTest, IsPlusAddress) {
@@ -585,7 +586,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest, IsPlusAddress) {
   // `kPlusAddressAndroidManualFallbackEnabled` is disabled, `IsPlusAddress()`
   // should return `false` even for existing plus addresses.
   EXPECT_TRUE(all_passwords_controller()->IsPlusAddress(
-      plus_addresses::FakePlusAddressService::kFakePlusAddress));
+      plus_addresses::test::kFakePlusAddress));
 }
 
 class AllPasswordsBottomSheetControllerAccountStoreTest

@@ -7,7 +7,6 @@
 #import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/strings/grit/components_strings.h"
@@ -198,9 +197,8 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
                                   fieldToFill:kNameFieldID];
 
   [[EarlGrey
-      selectElementWithMatcher:
-          manual_fill::ChipButton(
-              plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
+      selectElementWithMatcher:manual_fill::ChipButton(
+                                   plus_addresses::test::kFakePlusAddressU16)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Switch over to passwords.
@@ -208,13 +206,12 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       selectElementWithMatcher:manual_fill::SegmentedControlPasswordTab()]
       performAction:grey_tap()];
   [[EarlGrey
-      selectElementWithMatcher:
-          manual_fill::ChipButton(
-              plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
+      selectElementWithMatcher:manual_fill::ChipButton(
+                                   plus_addresses::test::kFakePlusAddressU16)]
       performAction:grey_tap()];
 
-  [self verifyFieldHasBeenFilledWithValue:
-            plus_addresses::FakePlusAddressService::kFakePlusAddress16];
+  [self verifyFieldHasBeenFilledWithValue:plus_addresses::test::
+                                              kFakePlusAddressU16];
 }
 
 // Tests that the plus address manage action are shown in the address and
@@ -280,8 +277,8 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [[EarlGrey selectElementWithMatcher:createPlusAddressBottomSheetButton]
       performAction:grey_tap()];
 
-  [self verifyFieldHasBeenFilledWithValue:
-            plus_addresses::FakePlusAddressService::kFakePlusAddress16];
+  [self verifyFieldHasBeenFilledWithValue:plus_addresses::test::
+                                              kFakePlusAddressU16];
 }
 
 // Tests that tapping on the create plus address action in the password manual
@@ -426,9 +423,8 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
                                   fieldToFill:kNameFieldID];
 
   [[EarlGrey
-      selectElementWithMatcher:
-          manual_fill::ChipButton(
-              plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
+      selectElementWithMatcher:manual_fill::ChipButton(
+                                   plus_addresses::test::kFakePlusAddressU16)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the overflow menu button.
