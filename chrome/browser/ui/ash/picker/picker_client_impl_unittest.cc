@@ -13,6 +13,7 @@
 #include "ash/picker/picker_controller.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/app_list/search/test/test_ranker_manager.h"
@@ -64,15 +65,11 @@ using ::testing::Contains;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsSupersetOf;
-using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Property;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
-
-using MockSearchResultsCallback =
-    testing::MockFunction<PickerClientImpl::CrosSearchResultsCallback>;
 
 namespace fmp = extensions::api::file_manager_private;
 
@@ -286,12 +283,12 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
   ranker_manager->SetBestMatchString(u"tab");
   client.set_ranker_manager_for_test(std::move(ranker_manager));
 
-  NiceMock<MockSearchResultsCallback> mock_search_callback;
-  EXPECT_CALL(mock_search_callback, Call(_, _)).Times(AnyNumber());
+  base::MockCallback<PickerClientImpl::CrosSearchResultsCallback>
+      mock_search_callback;
+  EXPECT_CALL(mock_search_callback, Run(_, _)).Times(AnyNumber());
   EXPECT_CALL(
       mock_search_callback,
-      Call(
-          ash::AppListSearchResultType::kOmnibox,
+      Run(ash::AppListSearchResultType::kOmnibox,
           IsSupersetOf({
               VariantWith<ash::PickerBrowsingHistoryResult>(AllOf(
                   Field("url", &ash::PickerBrowsingHistoryResult::url,
@@ -314,10 +311,8 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
           })))
       .WillOnce([&]() { test_done.SetValue(); });
 
-  client.StartCrosSearch(
-      u"foo", /*category=*/std::nullopt,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&mock_search_callback)));
+  client.StartCrosSearch(u"foo", /*category=*/std::nullopt,
+                         mock_search_callback.Get());
 
   ASSERT_TRUE(test_done.Wait());
 }
@@ -327,16 +322,15 @@ TEST_F(PickerClientImplTest, IgnoresWhatYouTypedResults) {
   PickerClientImpl client(&controller, user_manager());
   base::test::TestFuture<void> test_done;
 
-  NiceMock<MockSearchResultsCallback> mock_search_callback;
-  EXPECT_CALL(mock_search_callback, Call(_, _)).Times(AnyNumber());
+  base::MockCallback<PickerClientImpl::CrosSearchResultsCallback>
+      mock_search_callback;
+  EXPECT_CALL(mock_search_callback, Run(_, _)).Times(AnyNumber());
   EXPECT_CALL(mock_search_callback,
-              Call(ash::AppListSearchResultType::kOmnibox, IsEmpty()))
+              Run(ash::AppListSearchResultType::kOmnibox, IsEmpty()))
       .WillOnce([&]() { test_done.SetValue(); });
 
-  client.StartCrosSearch(
-      u"a.com", /*category=*/std::nullopt,
-      base::BindRepeating(&MockSearchResultsCallback::Call,
-                          base::Unretained(&mock_search_callback)));
+  client.StartCrosSearch(u"a.com", /*category=*/std::nullopt,
+                         mock_search_callback.Get());
 
   ASSERT_TRUE(test_done.Wait());
 }
