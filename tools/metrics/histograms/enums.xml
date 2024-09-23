@@ -27968,6 +27968,15 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Error parsing server response"/>
 </enum>
 
+<enum name="PasswordAccessLossWarningTriggers">
+  <int value="0" label="Chrome started up"/>
+  <int value="1" label="A password was saved or updated"/>
+  <int value="2" label="A credential was filled via touch to fill sheet"/>
+  <int value="3" label="A credential was filled via keyboard accessory sheet"/>
+  <int value="4" label="A credential was filled via keyboard accessory bar"/>
+  <int value="5" label="A credential was filled via all passwords sheet"/>
+</enum>
+
 <enum name="PasswordBubbleDismissalReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Accepted"/>

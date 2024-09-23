@@ -603,6 +603,34 @@ enum class PasswordManagementBubbleInteractions {
   kMaxValue = kManagePasswordButtonClicked,
 };
 
+// Represents different causes for showing the password access loss warning.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Always keep this enum in sync with the
+// corresponding PasswordAccessLossWarningTriggers in enums.xml.
+enum class PasswordAccessLossWarningTriggers {
+  kChromeStartup = 0,
+  kPasswordSaveUpdateMessage = 1,
+  kTouchToFill = 2,
+  kKeyboardAcessorySheet = 3,
+  kKeyboardAcessoryBar = 4,
+  kAllPasswords = 5,
+  kMaxValue = kAllPasswords,
+};
+
+// Represents different actions that the user can take on the password access
+// loss warning.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Always keep this enum in sync with the
+// corresponding PasswordAccessLossWarningUserActions in enums.xml.
+enum class PasswordAccessLossWarningUserActions {
+  kMainAction = 0,
+  kHelpCenter = 1,
+  kDismissed = 2,
+  kMaxValue = kDismissed,
+};
+
 // Represents different causes for showing the password migration warning.
 //
 // These values are persisted to logs. Entries should not be renumbered and

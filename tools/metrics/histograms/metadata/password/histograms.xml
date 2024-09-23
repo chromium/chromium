@@ -22,6 +22,17 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AccessLossWarningType">
+  <variant name="NewGmsCoreMigrationFailed"
+      summary="with new GMS Core version, but migration to UPM still failed"/>
+  <variant name="NoGmsCore" summary="without GMS Core installed"/>
+  <variant name="NoUPM"
+      summary="with GMS Core version that doesn't support UPM"/>
+  <variant name="OnlyAccountUpm"
+      summary="with GMS Core version that supports only UPM for account
+               passwords"/>
+</variants>
+
 <variants name="CustomPassphraseStatus">
   <variant name=""/>
   <variant name=".WithCustomPassphrase"
@@ -2237,6 +2248,18 @@ chromium-metrics-reviews@google.com.
     The elapsed time between the PasswordManager requesting passkeys for
     conditional UI and receiving the list of available passkeys to offer in the
     password autofill UI.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordAccessLossWarningSheet.{AccessLossWarningType}.Trigger"
+    enum="PasswordMigrationWarningTriggers" expires_after="2025-03-01">
+  <owner>izuzic@google.com</owner>
+  <owner>atsvirchkova@google.com</owner>
+  <summary>
+    This histogram logs the UI surface that led to showing the password access
+    loss warning sheet for users {AccessLossWarningType}. Recorded when the
+    warning sheet is shown. Android only.
   </summary>
 </histogram>
 

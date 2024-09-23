@@ -346,6 +346,22 @@ bool EmptyProfileStore(PrefService* pref_service) {
       password_manager::prefs::kEmptyProfileStoreLoginDatabase);
 }
 
+std::string_view GetAccessLossWarningTypeName(
+    PasswordAccessLossWarningType warning_type) {
+  switch (warning_type) {
+    case PasswordAccessLossWarningType::kNoUpm:
+      return "NoUPM";
+    case PasswordAccessLossWarningType::kOnlyAccountUpm:
+      return "OnlyAccountUpm";
+    case PasswordAccessLossWarningType::kNoGmsCore:
+      return "NoGmsCore";
+    case PasswordAccessLossWarningType::kNewGmsCoreMigrationFailed:
+      return "NewGmsCoreMigrationFailed";
+    case PasswordAccessLossWarningType::kNone:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 UseUpmLocalAndSeparateStoresState GetSplitStoresAndLocalUpmPrefValue(
@@ -455,6 +471,15 @@ PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
 
   // Everything is fine, no warning will be shown.
   return PasswordAccessLossWarningType::kNone;
+}
+
+void RecordPasswordAccessLossWarningTriggerSource(
+    PasswordAccessLossWarningTriggers trigger_source,
+    PasswordAccessLossWarningType warning_type) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"PasswordManager.PasswordAccessLossWarningSheet",
+                    GetAccessLossWarningTypeName(warning_type), "Trigger"}),
+      trigger_source);
 }
 
 }  // namespace password_manager_android_util

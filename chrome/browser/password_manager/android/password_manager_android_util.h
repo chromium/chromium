@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_ANDROID_UTIL_H_
 
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 
 class PrefService;
@@ -26,6 +27,34 @@ enum class PasswordAccessLossWarningType {
   kNoUpm = 2,      // A warning that GMS Core is outdated; updated suggested.
   kOnlyAccountUpm = 3,  // A warning that GMSCore is outdated; update suggested.
   kNewGmsCoreMigrationFailed = 4,  // A warning for fixing the migration error.
+};
+
+// Represents different causes for showing the password access loss warning.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Always keep this enum in sync with the
+// corresponding PasswordAccessLossWarningTriggers in enums.xml.
+enum class PasswordAccessLossWarningTriggers {
+  kChromeStartup = 0,
+  kPasswordSaveUpdateMessage = 1,
+  kTouchToFill = 2,
+  kKeyboardAcessorySheet = 3,
+  kKeyboardAcessoryBar = 4,
+  kAllPasswords = 5,
+  kMaxValue = kAllPasswords,
+};
+
+// Represents different actions that the user can take on the password access
+// loss warning.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Always keep this enum in sync with the
+// corresponding PasswordAccessLossWarningUserActions in enums.xml.
+enum class PasswordAccessLossWarningUserActions {
+  kMainAction = 0,
+  kHelpCenter = 1,
+  kDismissed = 2,
+  kMaxValue = kDismissed,
 };
 
 // Used to prevent static casting issues with
@@ -66,6 +95,13 @@ void SetUsesSplitStoresAndUPMForLocal(PrefService* pref_service,
 // - Otherwise no warning is shown.
 PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
     PrefService* pref_service);
+
+// Records the histogram that tracks when the password access loss warning was
+// shown.
+// TODO: crbug.com/369076084 - Clean-up when the warning UI is no longer used.
+void RecordPasswordAccessLossWarningTriggerSource(
+    PasswordAccessLossWarningTriggers trigger_source,
+    PasswordAccessLossWarningType warning_type);
 
 }  // namespace password_manager_android_util
 

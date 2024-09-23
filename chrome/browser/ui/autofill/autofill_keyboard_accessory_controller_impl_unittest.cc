@@ -384,10 +384,12 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
               ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
                                               /*called_at_startup=*/false))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(
-      *client().access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+  EXPECT_CALL(*client().access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet(
+                  profile()->GetPrefs(), _, profile(),
+                  /*called_at_startup=*/false,
+                  password_manager_android_util::
+                      PasswordAccessLossWarningTriggers::kKeyboardAcessoryBar));
   task_environment()->FastForwardBy(base::Milliseconds(500));
   client().popup_controller(manager()).AcceptSuggestion(0);
 }
@@ -405,10 +407,12 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
               ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
                                               /*called_at_startup=*/false))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(
-      *client().access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+  EXPECT_CALL(*client().access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet(
+                  profile()->GetPrefs(), _, profile(),
+                  /*called_at_startup=*/false,
+                  password_manager_android_util::
+                      PasswordAccessLossWarningTriggers::kKeyboardAcessoryBar));
   task_environment()->FastForwardBy(base::Milliseconds(500));
   client().popup_controller(manager()).AcceptSuggestion(0);
 }

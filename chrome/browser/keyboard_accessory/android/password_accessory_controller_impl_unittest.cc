@@ -1837,8 +1837,11 @@ TEST_F(PasswordAccessoryControllerTest,
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
       *mock_access_loss_warning_bridge_,
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+      MaybeShowAccessLossNoticeSheet(
+          profile()->GetPrefs(), _, profile(),
+          /*called_at_startup=*/false,
+          password_manager_android_util::PasswordAccessLossWarningTriggers::
+              kKeyboardAcessorySheet));
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }
 

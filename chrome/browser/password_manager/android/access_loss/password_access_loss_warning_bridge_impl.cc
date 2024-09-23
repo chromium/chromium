@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "chrome/android/chrome_jni_headers/PasswordAccessLossWarningBridge_jni.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/android/window_android.h"
 
@@ -66,7 +65,9 @@ void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet(
     PrefService* pref_service,
     const gfx::NativeWindow window,
     Profile* profile,
-    bool called_at_startup) {
+    bool called_at_startup,
+    password_manager_android_util::PasswordAccessLossWarningTriggers
+        trigger_source) {
   if (profile == nullptr) {
     return;
   }
@@ -80,11 +81,15 @@ void PasswordAccessLossWarningBridgeImpl::MaybeShowAccessLossNoticeSheet(
   if (!java_bridge) {
     return;
   }
-  Java_PasswordAccessLossWarningBridge_show(
-      env, java_bridge,
-      static_cast<int>(
-          password_manager_android_util::GetPasswordAccessLossWarningType(
-              pref_service)));
+
+  password_manager_android_util::PasswordAccessLossWarningType warning_type =
+      password_manager_android_util::GetPasswordAccessLossWarningType(
+          pref_service);
+  Java_PasswordAccessLossWarningBridge_show(env, java_bridge,
+                                            static_cast<int>(warning_type));
+  password_manager_android_util::RecordPasswordAccessLossWarningTriggerSource(
+      trigger_source, warning_type);
+
   pref_service->SetTime(
       password_manager::prefs::kPasswordAccessLossWarningShownTimestamp,
       base::Time::Now());

@@ -85,7 +85,9 @@ void TryToShowAccessLossWarning(content::WebContents* web_contents,
                        prefs, /*called_at_startup=*/false)) {
       bridge->MaybeShowAccessLossNoticeSheet(
           prefs, web_contents->GetTopLevelNativeWindow(), profile,
-          /*called_at_startup=*/false);
+          /*called_at_startup=*/false,
+          password_manager_android_util::PasswordAccessLossWarningTriggers::
+              kPasswordSaveUpdateMessage);
     }
   }
 }

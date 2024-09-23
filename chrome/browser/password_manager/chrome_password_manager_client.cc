@@ -217,7 +217,9 @@ void MaybeShowAccessLossWarning(
                                              /*called_at_startup=*/true)) {
     bridge.MaybeShowAccessLossNoticeSheet(
         prefs, web_contents->GetTopLevelNativeWindow(), profile,
-        /*called_at_startup=*/true);
+        /*called_at_startup=*/true,
+        password_manager_android_util::PasswordAccessLossWarningTriggers::
+            kChromeStartup);
   }
 }
 

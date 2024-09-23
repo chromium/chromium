@@ -121,6 +121,7 @@ source_set("public") {
     "//chrome/android:chrome_jni_headers",
     "//chrome/browser/password_manager/android:utils",
     "//chrome/browser/profiles:profile",
+    "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser/features:password_features",
     "//components/prefs:prefs",
     "//ui/android:android",

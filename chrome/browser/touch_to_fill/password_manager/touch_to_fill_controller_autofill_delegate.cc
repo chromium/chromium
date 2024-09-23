@@ -325,7 +325,9 @@ void TouchToFillControllerAutofillDelegate::FillCredential(
           prefs, /*called_at_startup=*/false)) {
     access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
         prefs, web_contents_->GetTopLevelNativeWindow(), profile,
-        /*called_at_startup=*/false);
+        /*called_at_startup=*/false,
+        password_manager_android_util::PasswordAccessLossWarningTriggers::
+            kTouchToFill);
   } else {
     // TODO: crbug.com/340437382 - Deprecate the migration warning sheet.
     ShowPasswordMigrationWarningIfNeeded();

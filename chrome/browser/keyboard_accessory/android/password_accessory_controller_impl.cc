@@ -875,7 +875,9 @@ void PasswordAccessoryControllerImpl::FillSelection(
                        profile->GetPrefs(), /*called_at_startup=*/false)) {
       access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
           profile->GetPrefs(), GetWebContents().GetTopLevelNativeWindow(),
-          profile, /*called_at_startup=*/false);
+          profile, /*called_at_startup=*/false,
+          password_manager_android_util::PasswordAccessLossWarningTriggers::
+              kKeyboardAcessorySheet);
     }
   }
 }
