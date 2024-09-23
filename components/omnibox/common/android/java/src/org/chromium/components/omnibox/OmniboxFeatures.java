@@ -32,6 +32,9 @@ public class OmniboxFeatures {
     // session.
     public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
 
+    // Timeout requests after 30 minutes if we somehow fail to remove our listener.
+    private static final int DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN = 30;
+
     // Auto-populated list of Omnibox cached feature flags.
     // Each flag created via newFlag() will be automatically added to this list.
     private static final List<CachedFlag> sCachedFlags = new ArrayList<>();
@@ -82,6 +85,12 @@ public class OmniboxFeatures {
 
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowRichCard =
             newBooleanParam(sOmniboxAnswerActions, "ShowRichCard", false);
+
+    public static final IntCachedFieldTrialParameter sGeolocationRequestTimeoutMinutes =
+            newIntParam(
+                    sUseFusedLocationProvider,
+                    "geolocation_request_timeout_minutes",
+                    DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN);
 
     public static final IntCachedFieldTrialParameter sTouchDownTriggerMaxPrefetchesPerSession =
             newIntParam(
