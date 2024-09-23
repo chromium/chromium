@@ -9,6 +9,7 @@
 
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -211,6 +212,13 @@ ClientSharedImage::ClientSharedImage(
     : mailbox_(mailbox),
       metadata_(metadata),
       creation_sync_token_(sync_token),
+      gpu_memory_buffer_manager_(
+#if BUILDFLAG(IS_WIN)
+          std::make_unique<HelperGpuMemoryBufferManager>(this)
+#else
+          nullptr
+#endif
+              ),
       gpu_memory_buffer_(
           GpuMemoryBufferSupport().CreateGpuMemoryBufferImplFromHandle(
               std::move(handle_info.handle),
@@ -343,6 +351,46 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
 
   return ImportUnowned(ExportedSharedImage(Mailbox::Generate(), metadata,
                                            SyncToken(), texture_target));
+}
+
+ClientSharedImage::HelperGpuMemoryBufferManager::HelperGpuMemoryBufferManager(
+    ClientSharedImage* client_shared_image)
+    : client_shared_image_(client_shared_image) {
+  CHECK(client_shared_image_);
+}
+
+std::unique_ptr<gfx::GpuMemoryBuffer>
+ClientSharedImage::HelperGpuMemoryBufferManager::CreateGpuMemoryBuffer(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    gfx::BufferUsage usage,
+    gpu::SurfaceHandle surface_handle,
+    base::WaitableEvent* shutdown_event) {
+  NOTREACHED();
+}
+
+void ClientSharedImage::HelperGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  // Will be implemented in follow up CLs once IPC changes to perform this
+  // operation are done.
+  NOTIMPLEMENTED();
+}
+
+bool ClientSharedImage::HelperGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region) {
+  // Will be implemented in follow up CLs once IPC changes to perform this
+  // operations are done.
+  NOTIMPLEMENTED();
+  return true;
+}
+
+// Access the SharedImageInterface via the SharedImageInterfaceHolder.
+scoped_refptr<SharedImageInterface>
+ClientSharedImage::HelperGpuMemoryBufferManager::GetSharedImageInterface() {
+  return client_shared_image_->sii_holder_->Get();
 }
 
 ExportedSharedImage::ExportedSharedImage() = default;

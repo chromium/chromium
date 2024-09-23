@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
+#include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -205,6 +206,47 @@ class GPU_EXPORT ClientSharedImage
   friend class SharedImageTexture;
   ~ClientSharedImage();
 
+  // Helper class that implements the GpuMemoryBufferManager interface.
+  // Note that this is primarily needed for transition to MappableSI where some
+  // clients will be using GpuMemoryBufferManager and some will want to use SII
+  // instead.
+  // TODO(crbug.com/368562234): Once all the clients and tests using
+  // GpuMemoryBufferManager are converted to use MappableSI,
+  // GpuMemoryBufferManager and all  its implementations might be removed
+  // including this.
+  class HelperGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
+   public:
+    explicit HelperGpuMemoryBufferManager(
+        ClientSharedImage* client_shared_image);
+
+    // GpuMemoryBufferManager interface implementation.
+    // This method should not be used via this interface. Hence marking it as
+    // NOTREACHED.
+    std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
+        const gfx::Size& size,
+        gfx::BufferFormat format,
+        gfx::BufferUsage usage,
+        gpu::SurfaceHandle surface_handle,
+        base::WaitableEvent* shutdown_event) final;
+
+    void CopyGpuMemoryBufferAsync(
+        gfx::GpuMemoryBufferHandle buffer_handle,
+        base::UnsafeSharedMemoryRegion memory_region,
+        base::OnceCallback<void(bool)> callback) final;
+
+    bool CopyGpuMemoryBufferSync(
+        gfx::GpuMemoryBufferHandle buffer_handle,
+        base::UnsafeSharedMemoryRegion memory_region) final;
+
+   private:
+    // Points to the parent ClientSharedImage. It will be used to access SII via
+    // SII holder.
+    raw_ptr<ClientSharedImage> client_shared_image_;
+
+    // Allows accessing SharedImageInterface from ClientSharedImage.
+    scoped_refptr<SharedImageInterface> GetSharedImageInterface();
+  };
+
   // This constructor is used only when importing an owned ClientSharedImage,
   // which should only be done via implementations of
   // SharedImageInterface::ImportSharedImage().
@@ -255,6 +297,8 @@ class GPU_EXPORT ClientSharedImage
   const SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
   SyncToken destruction_sync_token_;
+  // Helper to hold the instance of GpuMemoryBufferManager.
+  std::unique_ptr<HelperGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   scoped_refptr<SharedImageInterfaceHolder> sii_holder_;
 
