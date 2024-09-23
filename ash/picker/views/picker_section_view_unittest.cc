@@ -20,6 +20,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/unguessable_token.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -206,6 +207,70 @@ TEST_F(PickerSectionViewTest,
   ASSERT_TRUE(list_item);
   EXPECT_EQ(list_item->GetPrimaryTextForTesting(), u"example.com/foo");
   EXPECT_EQ(list_item->GetSecondaryTextForTesting(), u"example.com/foo");
+}
+
+TEST_F(PickerSectionViewTest,
+       TextClipboardHistoryResultsUseDefaultIconIfNotLink) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerPreviewBubbleController preview_controller;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+
+  section_view.AddResult(
+      PickerClipboardResult(base::UnguessableToken(),
+                            PickerClipboardResult::DisplayFormat::kText,
+                            /*file_count=*/0,
+                            /*display_text=*/u"testing",
+                            /*display_image=*/{},
+                            /*is_recent=*/false),
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(1));
+  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  ASSERT_NE(list_item, nullptr);
+  const gfx::VectorIcon* vector_icon =
+      list_item->leading_icon_view_for_testing()
+          .GetImageModel()
+          .GetVectorIcon()
+          .vector_icon();
+  ASSERT_NE(vector_icon, nullptr);
+  EXPECT_THAT(vector_icon->name, StrEq(chromeos::kTextIcon.name));
+}
+
+TEST_F(PickerSectionViewTest,
+       TextClipboardHistoryResultsUsesLinkIconIfValidLink) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerPreviewBubbleController preview_controller;
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
+
+  section_view.AddResult(
+      PickerClipboardResult(base::UnguessableToken(),
+                            PickerClipboardResult::DisplayFormat::kText,
+                            /*file_count=*/0,
+                            /*display_text=*/u"https://example.com/path",
+                            /*display_image=*/{},
+                            /*is_recent=*/false),
+      &preview_controller, PickerSectionView::LocalFileResultStyle::kList,
+      base::DoNothing());
+
+  base::span<const raw_ptr<PickerItemView>> items =
+      section_view.item_views_for_testing();
+  ASSERT_THAT(items, SizeIs(1));
+  auto* list_item = views::AsViewClass<PickerListItemView>(items[0]);
+  ASSERT_NE(list_item, nullptr);
+  const gfx::VectorIcon* vector_icon =
+      list_item->leading_icon_view_for_testing()
+          .GetImageModel()
+          .GetVectorIcon()
+          .vector_icon();
+  ASSERT_NE(vector_icon, nullptr);
+  EXPECT_THAT(vector_icon->name, StrEq(vector_icons::kLinkIcon.name));
 }
 
 TEST_F(PickerSectionViewTest,

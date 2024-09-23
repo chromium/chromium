@@ -155,9 +155,8 @@ const gfx::VectorIcon& GetIconForClipboardData(
     const PickerClipboardResult& data) {
   switch (data.display_format) {
     case PickerClipboardResult::DisplayFormat::kText:
-      return chromeos::kTextIcon;
-    case PickerClipboardResult::DisplayFormat::kUrl:
-      return vector_icons::kLinkIcon;
+      return GURL(data.display_text).is_valid() ? vector_icons::kLinkIcon
+                                                : chromeos::kTextIcon;
     case PickerClipboardResult::DisplayFormat::kImage:
       return chromeos::kFiletypeImageIcon;
     case PickerClipboardResult::DisplayFormat::kFile:
@@ -232,7 +231,6 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
             switch (data.display_format) {
               case PickerClipboardResult::DisplayFormat::kFile:
               case PickerClipboardResult::DisplayFormat::kText:
-              case PickerClipboardResult::DisplayFormat::kUrl:
                 item_view->SetPrimaryText(data.display_text);
                 break;
               case PickerClipboardResult::DisplayFormat::kImage:

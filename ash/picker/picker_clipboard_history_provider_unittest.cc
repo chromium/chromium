@@ -66,34 +66,6 @@ TEST_F(PickerClipboardHistoryProviderTest, FetchesTextResult) {
                   0, u"xyz", std::nullopt, true))));
 }
 
-TEST_F(PickerClipboardHistoryProviderTest, FetchesUrlResult) {
-  base::UnguessableToken expected_item_id;
-  testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
-  EXPECT_CALL(mock_clipboard, GetHistoryValues)
-      .WillOnce(
-          [&](ClipboardHistoryController::GetHistoryValuesCallback callback) {
-            ClipboardHistoryItemBuilder builder;
-            ClipboardHistoryItem item =
-                builder.SetFormat(ui::ClipboardInternalFormat::kText)
-                    .SetText("https://www.google.com/")
-                    .Build();
-            expected_item_id = item.id();
-            std::move(callback).Run({item});
-          });
-
-  base::SimpleTestClock clock;
-  PickerClipboardHistoryProvider provider(&clock);
-  clock.SetNow(base::Time::Now());
-
-  base::test::TestFuture<std::vector<PickerSearchResult>> future;
-  provider.FetchResults(future.GetCallback());
-
-  EXPECT_THAT(future.Get(),
-              ElementsAre(VariantWith<PickerClipboardResult>(FieldsAre(
-                  expected_item_id, PickerClipboardResult::DisplayFormat::kUrl,
-                  0, u"https://www.google.com/", std::nullopt, true))));
-}
-
 TEST_F(PickerClipboardHistoryProviderTest, FetchesImageResult) {
   base::UnguessableToken expected_item_id;
   ui::ImageModel expected_display_image =

@@ -98,7 +98,6 @@ struct ASH_EXPORT PickerClipboardResult {
     kText,
     kImage,
     kHtml,
-    kUrl,
   };
 
   // Unique ID that specifies which item in the clipboard this refers to.

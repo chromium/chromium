@@ -11,7 +11,6 @@
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "base/i18n/case_conversion.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "url/gurl.h"
 
 namespace ash {
 namespace {
@@ -20,14 +19,12 @@ constexpr base::TimeDelta kRecencyThreshold = base::Seconds(60);
 constexpr int kMaxTextLength = 10000;
 
 std::optional<PickerClipboardResult::DisplayFormat> GetDisplayFormat(
-    const ClipboardHistoryItem& item) {
-  switch (item.display_format()) {
+    crosapi::mojom::ClipboardHistoryDisplayFormat format) {
+  switch (format) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       return PickerClipboardResult::DisplayFormat::kFile;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
-      return GURL(item.display_text()).is_valid()
-                 ? PickerClipboardResult::DisplayFormat::kUrl
-                 : PickerClipboardResult::DisplayFormat::kText;
+      return PickerClipboardResult::DisplayFormat::kText;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
       return PickerClipboardResult::DisplayFormat::kImage;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
@@ -85,7 +82,7 @@ void PickerClipboardHistoryProvider::OnFetchHistory(
       continue;
     }
     if (std::optional<PickerClipboardResult::DisplayFormat> display_format =
-            GetDisplayFormat(item);
+            GetDisplayFormat(item.display_format());
         display_format.has_value()) {
       results.push_back(PickerClipboardResult(
           item.id(), *display_format, item.file_count(), item.display_text(),
