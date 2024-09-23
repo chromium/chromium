@@ -92,12 +92,6 @@ class GPU_EXPORT ClientSharedImage
     RAW_PTR_EXCLUSION gfx::GpuMemoryBuffer* buffer_ = nullptr;
   };
 
-  // Tests sometimes "fake" GMBs that are conceptually native with shared
-  // memory GMBs. Via this function, they can instruct ClientSharedImage to
-  // elide its normal CHECK that external sampling is used only when the client
-  // provides a native buffer.
-  static void AllowExternalSamplingWithoutNativeBuffersForTesting(bool allow);
-
   // `sii_holder` must not be null.
   ClientSharedImage(const Mailbox& mailbox,
                     const SharedImageMetadata& metadata,

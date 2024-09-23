@@ -21,8 +21,6 @@ namespace gpu {
 
 namespace {
 
-static bool allow_external_sampling_without_native_buffers_for_testing = false;
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE)
 bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
   return gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::SHARED_MEMORY_BUFFER;
@@ -76,9 +74,7 @@ uint32_t ComputeTextureTargetForSharedImage(
   // have provided a native buffer to back that SI.
   // TODO(crbug.com/332069927): Figure out why this is going off on LaCrOS and
   // turn this into a CHECK.
-  DUMP_WILL_BE_CHECK(
-      GMBIsNative(client_gmb_type) ||
-      allow_external_sampling_without_native_buffers_for_testing);
+  DUMP_WILL_BE_CHECK(GMBIsNative(client_gmb_type));
 
   // See the note at the top of this function wrt Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
@@ -156,12 +152,6 @@ void ClientSharedImage::ScopedMapping::OnMemoryDump(
     uint64_t tracing_process_id,
     int importance) {
   buffer_->OnMemoryDump(pmd, buffer_dump_guid, tracing_process_id, importance);
-}
-
-// static
-void ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(
-    bool allow) {
-  allow_external_sampling_without_native_buffers_for_testing = allow;
 }
 
 ClientSharedImage::ClientSharedImage(
