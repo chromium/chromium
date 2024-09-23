@@ -40,7 +40,6 @@ compile_ts("compile_text_fragments_js") {
   ]
 
   deps = [
-    "//ios/web/public/js_messaging:error_reporting",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
