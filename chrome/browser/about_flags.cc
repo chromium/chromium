@@ -3152,8 +3152,6 @@ const FeatureEntry::FeatureVariation kLensOverlayVariations[] = {
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kContextualSearchboxWithPageContent[] = {
     {"use-pdfs-as-context", "true"},
-    {"use-video-context-for-text-only-requests", "true"},
-    {"use-video-context-for-multimodal-requests", "true"},
 };
 
 const FeatureEntry::FeatureVariation kContextualSearchboxVariations[] = {
