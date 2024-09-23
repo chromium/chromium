@@ -4,35 +4,19 @@
 
 #include "components/search_engines/default_search_manager.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include <memory>
-#include <string_view>
 #include <utility>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/case_conversion.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
-#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
-#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
-#include "components/search_engines/template_url_id.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -41,9 +25,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
-
 bool g_fallback_search_engines_disabled = false;
-
 }  // namespace
 
 const char DefaultSearchManager::kID[] = "id";
@@ -114,12 +96,11 @@ DefaultSearchManager::DefaultSearchManager(
     )
     : pref_service_(pref_service),
       search_engine_choice_service_(search_engine_choice_service),
-      change_observer_(change_observer)
+      change_observer_(change_observer),
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      ,
-      for_lacros_main_profile_(for_lacros_main_profile)
+      for_lacros_main_profile_(for_lacros_main_profile),
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-{
+      prefs_default_search_(pref_service, search_engine_choice_service) {
   if (pref_service_) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
@@ -135,8 +116,7 @@ DefaultSearchManager::DefaultSearchManager(
   LoadDefaultSearchEngineFromPrefs();
 }
 
-DefaultSearchManager::~DefaultSearchManager() {
-}
+DefaultSearchManager::~DefaultSearchManager() = default;
 
 // static
 void DefaultSearchManager::RegisterProfilePrefs(
@@ -162,22 +142,22 @@ const TemplateURLData* DefaultSearchManager::GetDefaultSearchEngine(
   if (default_search_mandatory_by_policy_) {
     if (source)
       *source = FROM_POLICY;
-    return prefs_default_search_.get();
+    return prefs_default_search_.Get();
   }
   if (default_search_recommended_by_policy_) {
     if (source)
       *source = FROM_POLICY_RECOMMENDED;
-    return prefs_default_search_.get();
+    return prefs_default_search_.Get();
   }
   if (extension_default_search_) {
     if (source)
       *source = FROM_EXTENSION;
     return extension_default_search_.get();
   }
-  if (prefs_default_search_) {
+  if (prefs_default_search_.Get()) {
     if (source)
       *source = FROM_USER;
-    return prefs_default_search_.get();
+    return prefs_default_search_.Get();
   }
   if (source)
     *source = FROM_FALLBACK;
@@ -186,8 +166,9 @@ const TemplateURLData* DefaultSearchManager::GetDefaultSearchEngine(
 
 std::unique_ptr<TemplateURLData>
 DefaultSearchManager::GetDefaultSearchEngineIgnoringExtensions() const {
-  if (prefs_default_search_)
-    return std::make_unique<TemplateURLData>(*prefs_default_search_);
+  if (prefs_default_search_.Get()) {
+    return std::make_unique<TemplateURLData>(*prefs_default_search_.Get());
+  }
 
   if (default_search_mandatory_by_policy_ ||
       default_search_recommended_by_policy_) {
@@ -229,8 +210,8 @@ const TemplateURLData* DefaultSearchManager::GetFallbackSearchEngine() const {
 void DefaultSearchManager::SetUserSelectedDefaultSearchEngine(
     const TemplateURLData& data) {
   if (!pref_service_) {
-    prefs_default_search_ = std::make_unique<TemplateURLData>(data);
-    MergePrefsDataWithPrepopulated();
+    prefs_default_search_.SetAndReconcile(
+        std::make_unique<TemplateURLData>(data));
     NotifyObserver();
     return;
   }
@@ -246,7 +227,7 @@ void DefaultSearchManager::ClearUserSelectedDefaultSearchEngine() {
   if (pref_service_) {
     pref_service_->ClearPref(kDefaultSearchProviderDataPrefName);
   } else {
-    prefs_default_search_.reset();
+    prefs_default_search_.SetAndReconcile({});
     NotifyObserver();
   }
 }
@@ -293,121 +274,11 @@ void DefaultSearchManager::OnOverridesPrefChanged() {
   }
 }
 
-std::pair<std::u16string, bool>
-DefaultSearchManager::GetSearchEngineKeywordFromPrefsData() const {
-  std::u16string keyword = prefs_default_search_->keyword();
-
-  if (keyword != u"yahoo.com" ||
-      !prefs_default_search_->created_from_play_api) {
-    return {std::move(keyword), false};
-  }
-
-  // The domain name prefix specifies the regional version of Yahoo's search
-  // engine requests. Until 08.2024 Android EEA Yahoo keywords all pointed
-  // to Yahoo US. See go/chrome:template-url-reconciliation for more
-  // information.
-  // Extract the Country Code from the Yahoo domain name and use it to
-  // construct a keyword that we may find in PrepopulatedEngines.
-  GURL yahoo_search_url(prefs_default_search_->url());
-  std::string_view yahoo_search_host = yahoo_search_url.host_piece();
-  std::string_view country_code =
-      yahoo_search_host.substr(0, yahoo_search_host.find('.'));
-  keyword = base::UTF8ToUTF16(country_code) + u".yahoo.com";
-
-  return {std::move(keyword), true};
-}
-
-void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
-  enum class ReconciliationType {
-    kNone,
-    kByID,
-    kByKeyword,
-    kByDomainBasedKeyword,
-    kMaxValue = kByDomainBasedKeyword
-  };
-
-  if (!prefs_default_search_) {
-    return;
-  }
-
-  // Evaluate whether items should be reconciled.
-  // Permit merging Play entries if feature is enabled.
-  bool reconcile_by_keyword =
-      prefs_default_search_->created_from_play_api &&
-      base::FeatureList::IsEnabled(switches::kTemplateUrlReconciliation);
-
-  // Permit merging by Prepopulated ID (except Play entries).
-  bool reconcile_by_id = prefs_default_search_->prepopulate_id &&
-                         !prefs_default_search_->created_from_play_api;
-
-  // Don't call GetPrepopulatedEngines() if we don't have anything to reconcile.
-  if (!(reconcile_by_id || reconcile_by_keyword)) {
-    base::UmaHistogramEnumeration("Omnibox.TemplateUrl.Reconciliation.Type",
-                                  ReconciliationType::kNone);
-    return;
-  }
-
-  std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
-      TemplateURLPrepopulateData::GetPrepopulatedEngines(
-          pref_service_, search_engine_choice_service_);
-  auto matching_engine = prepopulated_urls.end();
-
-  if (reconcile_by_keyword) {
-    auto [keyword, is_by_domain_based_keyword] =
-        GetSearchEngineKeywordFromPrefsData();
-
-    // Match by keyword.
-    matching_engine = base::ranges::find(prepopulated_urls, keyword,
-                                         &TemplateURLData::keyword);
-
-    base::UmaHistogramBoolean(
-        is_by_domain_based_keyword
-            ? "Omnibox.TemplateUrl.Reconciliation.ByDomainBasedKeyword.Result"
-            : "Omnibox.TemplateUrl.Reconciliation.ByKeyword.Result",
-        matching_engine != prepopulated_urls.end());
-    base::UmaHistogramEnumeration(
-        "Omnibox.TemplateUrl.Reconciliation.Type",
-        is_by_domain_based_keyword ? ReconciliationType::kByDomainBasedKeyword
-                                   : ReconciliationType::kByKeyword);
-  } else if (reconcile_by_id) {
-    // Match by prepopulate_id.
-    matching_engine = base::ranges::find(prepopulated_urls,
-                                         prefs_default_search_->prepopulate_id,
-                                         &TemplateURLData::prepopulate_id);
-    base::UmaHistogramBoolean("Omnibox.TemplateUrl.Reconciliation.ByID.Result",
-                              matching_engine != prepopulated_urls.end());
-    base::UmaHistogramEnumeration("Omnibox.TemplateUrl.Reconciliation.Type",
-                                  ReconciliationType::kByID);
-  }
-
-  if (matching_engine == prepopulated_urls.end()) {
-    return;
-  }
-
-  auto& engine = *matching_engine;
-
-  if (!prefs_default_search_->safe_for_autoreplace) {
-    engine->safe_for_autoreplace = false;
-    engine->SetKeyword(prefs_default_search_->keyword());
-    engine->SetShortName(prefs_default_search_->short_name());
-  }
-
-  engine->id = prefs_default_search_->id;
-  engine->sync_guid = prefs_default_search_->sync_guid;
-  engine->date_created = prefs_default_search_->date_created;
-  engine->last_modified = prefs_default_search_->last_modified;
-  engine->last_visited = prefs_default_search_->last_visited;
-  engine->favicon_url = prefs_default_search_->favicon_url;
-  engine->created_from_play_api = prefs_default_search_->created_from_play_api;
-
-  prefs_default_search_ = std::move(engine);
-}
-
 void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
   if (!pref_service_)
     return;
 
-  prefs_default_search_.reset();
+  prefs_default_search_.SetAndReconcile({});
   extension_default_search_.reset();
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kDefaultSearchProviderDataPrefName);
@@ -434,8 +305,7 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
   if (pref->IsExtensionControlled()) {
     extension_default_search_ = std::move(turl_data);
   } else {
-    prefs_default_search_ = std::move(turl_data);
-    MergePrefsDataWithPrepopulated();
+    prefs_default_search_.SetAndReconcile(std::move(turl_data));
   }
 }
 
@@ -444,7 +314,6 @@ void DefaultSearchManager::LoadPrepopulatedFallbackSearch() {
       TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
           pref_service_, search_engine_choice_service_);
   fallback_default_search_ = std::move(data);
-  MergePrefsDataWithPrepopulated();
 }
 
 void DefaultSearchManager::NotifyObserver() {
