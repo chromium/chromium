@@ -91,12 +91,21 @@ gclient sync
 Once you have checked out the code, run
 
 ```shell
-build/install-build-deps.sh --android
+build/install-build-deps.sh
 ```
 
 to get all of the dependencies you need to build on Linux, *plus* all of the
 Android-specific dependencies (you need some of the regular Linux dependencies
 because an Android build includes a bunch of the Linux tools and utilities).
+
+NOTE: For 32-bit builds, the `--lib32` command line switch could be used.
+You may run into issues where `gperf` or `pkgconf` don't get installed,
+without it. To remedy this, and potentially other missing packages, you will
+have to install them manually using:
+
+```shell
+sudo apt-get install {missing_pkg}
+```
 
 ### Run the hooks
 

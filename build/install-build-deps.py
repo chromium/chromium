@@ -52,14 +52,16 @@ def parse_args(argv):
   parser.add_argument(
       "--android",
       action="store_true",
-      help="Enable installation of android dependencies",
-  )
+      # Deprecated flag retained as functional for backward compatibility:
+      # Enable installation of android dependencies
+      help=argparse.SUPPRESS)
   parser.add_argument(
       "--no-android",
       action="store_false",
       dest="android",
-      help="Disable installation of android dependencies",
-  )
+      # Deprecated flag retained as functional for backward compatibility:
+      # Enable installation of android dependencies
+      help=argparse.SUPPRESS)
   parser.add_argument("--arm",
                       action="store_true",
                       help="Enable installation of arm cross toolchain")
