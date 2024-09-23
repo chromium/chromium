@@ -326,6 +326,7 @@ def check_virtual_test_suites(host, options):
     web_tests_dir = port.web_tests_dir()
     virtual_suites = port.virtual_test_suites()
     virtual_suites.sort(key=lambda s: s.full_prefix)
+    max_suite_length = 48
 
     wpt_tests = set()
     for wpt_dir in port.WPT_DIRS:
@@ -337,6 +338,7 @@ def check_virtual_test_suites(host, options):
     for suite in virtual_suites:
         suite_comps = suite.full_prefix.split(port.TEST_PATH_SEPARATOR)
         prefix = suite_comps[1]
+        owners = suite.owners
         normalized_bases = [port.normalize_test_name(b) for b in suite.bases]
         normalized_bases.sort()
         for i in range(1, len(normalized_bases)):
@@ -400,6 +402,14 @@ def check_virtual_test_suites(host, options):
                 failure = 'Exclusive_tests entry "{}" in virtual suite "{}" is not a subset of bases'.format(
                     exclusive_test, prefix)
                 failures.append(failure)
+
+        if not owners:
+            failure = 'Virtual suite name "{}" has no owner.'.format(prefix)
+            failures.append(failure)
+
+        if len(prefix) > max_suite_length:
+            failures = 'Virtual suite name "{}" is over the "{}" filename length limit'.format(
+                prefix, max_suite_length)
 
     return failures
 
