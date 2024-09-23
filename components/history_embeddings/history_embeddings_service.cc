@@ -30,8 +30,10 @@
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/ml_answerer.h"
 #include "components/history_embeddings/ml_embedder.h"
+#include "components/history_embeddings/ml_intent_classifier.h"
 #include "components/history_embeddings/mock_answerer.h"
 #include "components/history_embeddings/mock_embedder.h"
+#include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/history_embeddings/scheduling_embedder.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
@@ -304,6 +306,17 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
               : nullptr;
     } else {
       answerer_ = std::make_unique<MockAnswerer>();
+    }
+  }
+
+  if (kEnableIntentClassifier.Get()) {
+    if (kUseMlIntentClassifier.Get()) {
+      intent_classifier_ = optimization_guide_model_executor
+                               ? std::make_unique<MlIntentClassifier>(
+                                     optimization_guide_model_executor)
+                               : nullptr;
+    } else {
+      intent_classifier_ = std::make_unique<MockIntentClassifier>();
     }
   }
 

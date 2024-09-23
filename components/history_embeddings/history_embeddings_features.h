@@ -54,6 +54,13 @@ extern const base::FeatureParam<double> kContentVisibilityThreshold;
 // and result inclusion.
 extern const base::FeatureParam<double> kSearchScoreThreshold;
 
+// Specifies whether to use the intent classifier to gate answer generation.
+extern const base::FeatureParam<bool> kEnableIntentClassifier;
+
+// Specifies whether to use the ML intent classifier (if false, the mock is
+// used).
+extern const base::FeatureParam<bool> kUseMlIntentClassifier;
+
 // Specifies whether to answer queries using an answerer (mock or ML). This
 // can be considered a toggle for v2 functionality.
 extern const base::FeatureParam<bool> kEnableAnswers;

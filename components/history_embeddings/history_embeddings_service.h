@@ -25,6 +25,7 @@
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/answerer.h"
+#include "components/history_embeddings/intent_classifier.h"
 #include "components/history_embeddings/passage_embeddings_service_controller.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
@@ -394,6 +395,9 @@ class HistoryEmbeddingsService : public KeyedService,
   // The answerer used to answer queries with context. May be nullptr if
   // the kEnableAnswers parameter is false.
   std::unique_ptr<Answerer> answerer_;
+
+  // The intent classifier used to determine query intent and answerability.
+  std::unique_ptr<IntentClassifier> intent_classifier_;
 
   // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.

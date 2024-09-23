@@ -40,7 +40,7 @@ class MockModelExecutor
   size_t counter_ = 0;
 };
 
-class MlAnswererTest : public testing::Test {
+class HistoryEmbeddingsMlAnswererTest : public testing::Test {
  public:
   void SetUp() override {
     ml_answerer_ = std::make_unique<MlAnswerer>(&model_executor_);
@@ -67,7 +67,7 @@ class MlAnswererTest : public testing::Test {
   testing::NiceMock<optimization_guide::MockSession> session_1_, session_2_;
 };
 
-TEST_F(MlAnswererTest, ComputeAnswerNoSession) {
+TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerNoSession) {
   ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
     return nullptr;
   });
@@ -82,7 +82,7 @@ TEST_F(MlAnswererTest, ComputeAnswerNoSession) {
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
-TEST_F(MlAnswererTest, ComputeAnswerExecutionFailure) {
+TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerExecutionFailure) {
   ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
     return std::make_unique<optimization_guide::MockSessionWrapper>(
         &session_1_);
@@ -121,7 +121,7 @@ TEST_F(MlAnswererTest, ComputeAnswerExecutionFailure) {
 }
 #endif
 
-TEST_F(MlAnswererTest, ComputeAnswerSingleUrl) {
+TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerSingleUrl) {
   ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
     return std::make_unique<optimization_guide::MockSessionWrapper>(
         &session_1_);
@@ -156,7 +156,7 @@ TEST_F(MlAnswererTest, ComputeAnswerSingleUrl) {
   EXPECT_EQ("url_1", answer_result.url);
 }
 
-TEST_F(MlAnswererTest, ComputeAnswerMultipleUrls) {
+TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerMultipleUrls) {
   ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
     if (model_executor_.GetCounter() == 0) {
       model_executor_.IncrementCounter();
@@ -207,7 +207,7 @@ TEST_F(MlAnswererTest, ComputeAnswerMultipleUrls) {
   EXPECT_EQ("url_2", answer_result.url);
 }
 
-TEST_F(MlAnswererTest, ComputeAnswerUnanswerable) {
+TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerUnanswerable) {
   ON_CALL(model_executor_, StartSession(_, _)).WillByDefault([&] {
     return std::make_unique<optimization_guide::MockSessionWrapper>(
         &session_1_);

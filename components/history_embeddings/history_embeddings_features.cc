@@ -67,6 +67,16 @@ const base::FeatureParam<double> kSearchScoreThreshold(&kHistoryEmbeddings,
                                                        "SearchScoreThreshold",
                                                        -1);
 
+// This one defaults true because we generally want it whenever v2 is enabled
+// and it will only be used if applicable (EnableAnswers true).
+const base::FeatureParam<bool> kEnableIntentClassifier(&kHistoryEmbeddings,
+                                                       "EnableIntentClassifier",
+                                                       true);
+
+const base::FeatureParam<bool> kUseMlIntentClassifier(&kHistoryEmbeddings,
+                                                      "UseMlIntentClassifier",
+                                                      false);
+
 const base::FeatureParam<bool> kEnableAnswers(&kHistoryEmbeddings,
                                               "EnableAnswers",
                                               false);

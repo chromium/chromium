@@ -81,6 +81,7 @@ class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
 
   using HistoryEmbeddingsService::answerer_;
   using HistoryEmbeddingsService::embedder_metadata_;
+  using HistoryEmbeddingsService::intent_classifier_;
   using HistoryEmbeddingsService::storage_;
 };
 
@@ -191,6 +192,9 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
   }
 
   Answerer* GetAnswerer() { return service_->answerer_.get(); }
+  IntentClassifier* GetIntentClassifier() {
+    return service_->intent_classifier_.get();
+  }
 
   SearchStringsUpdateListener* listener() {
     return SearchStringsUpdateListener::GetInstance();
@@ -635,6 +639,28 @@ TEST_F(HistoryEmbeddingsServiceTest, AnswerMocked) {
   EXPECT_EQ(result.status, ComputeAnswerStatus::SUCCESS);
   EXPECT_EQ(result.query, "test query");
   EXPECT_EQ(result.answer.text(), "This is the answer to query 'test query'.");
+}
+
+TEST_F(HistoryEmbeddingsServiceTest, IntentClassifierMocked) {
+  auto* intent_classifier = GetIntentClassifier();
+  EXPECT_EQ(intent_classifier->GetModelVersion(), 1);
+  {
+    base::test::TestFuture<ComputeIntentStatus, bool> future;
+    intent_classifier->ComputeQueryIntent(
+        "can this query be answered, please and thank you?",
+        future.GetCallback());
+    auto [status, is_query_answerable] = future.Take();
+    EXPECT_EQ(status, ComputeIntentStatus::SUCCESS);
+    EXPECT_EQ(is_query_answerable, true);
+  }
+  {
+    base::test::TestFuture<ComputeIntentStatus, bool> future;
+    intent_classifier->ComputeQueryIntent("any other query",
+                                          future.GetCallback());
+    auto [status, is_query_answerable] = future.Take();
+    EXPECT_EQ(status, ComputeIntentStatus::SUCCESS);
+    EXPECT_EQ(is_query_answerable, false);
+  }
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, StopWordsExcludedFromQueryTerms) {
