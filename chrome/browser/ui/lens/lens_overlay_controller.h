@@ -644,17 +644,23 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Receives the PDF bytes from the IPC call to the PDF renderer and stores
   // them in initialization data.
-  void OnPdfBytesReceived(const std::vector<uint8_t>& bytes);
+  void OnPdfBytesReceived(
+      std::unique_ptr<OverlayInitializationData> initialization_data,
+      const std::vector<uint8_t>& bytes);
 
   // Callback for when the inner text is retrieved from the underlying page.
   void OnInnerTextReceived(
+      std::unique_ptr<OverlayInitializationData> initialization_data,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
   // Callback for when the inner HTML is retrieved from the underlying page.
-  void OnInnerHtmlReceived(const std::optional<std::string>& result);
+  void OnInnerHtmlReceived(
+      std::unique_ptr<OverlayInitializationData> initialization_data,
+      const std::optional<std::string>& result);
 
   // Adds bounding boxes to the initialization data.
   void AddBoundingBoxesToInitializationData(
+      OverlayInitializationData* initialization_data,
       const std::vector<gfx::Rect>& bounds);
 
   // Enables/disables the background blur updating live. This should be used to
@@ -677,8 +683,13 @@ class LensOverlayController : public LensSearchboxClient,
   void CloseUIPart2(lens::LensOverlayDismissalSource dismissal_source);
 
   // Initializes all parts of our UI and starts the query flow.
-  // Runs once the overlay WebUI and initialization data are ready.
-  void InitializeOverlay();
+  // Runs once the overlay WebUI and initialization data are both ready.
+  // Once initialization_data is ready, it should be passed to this method to be
+  // cached until all parts of the flow are ready. Parts of the initialization
+  // flow (like creating WebUI) that do not touch initialization_data should
+  // pass initialization_data as nullptr.
+  void InitializeOverlay(
+      std::unique_ptr<OverlayInitializationData> initialization_data);
 
   // Initializes the overlay UI after it has been created with data fetched
   // before its creation.

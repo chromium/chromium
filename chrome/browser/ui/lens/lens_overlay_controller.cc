@@ -535,7 +535,7 @@ void LensOverlayController::BindOverlay(
   receiver_.Bind(std::move(receiver));
   page_.Bind(std::move(page));
 
-  InitializeOverlay();
+  InitializeOverlay(/*initialization_data=*/nullptr);
 }
 
 void LensOverlayController::BindSidePanel(
@@ -1296,11 +1296,10 @@ void LensOverlayController::ContinueCreateInitializationData(
         base::UTF16ToUTF8(active_web_contents->GetTitle()));
   }
 
-  initialization_data_ = std::make_unique<OverlayInitializationData>(
+  auto initialization_data = std::make_unique<OverlayInitializationData>(
       screenshot, std::move(rgb_screenshot), color_palette, page_url,
       page_title);
-
-  AddBoundingBoxesToInitializationData(all_bounds);
+  AddBoundingBoxesToInitializationData(initialization_data.get(), all_bounds);
 
 #if BUILDFLAG(ENABLE_PDF)
   // Try and fetch the PDF bytes if enabled.
@@ -1310,9 +1309,9 @@ void LensOverlayController::ContinueCreateInitializationData(
           : nullptr;
   if (pdf_helper) {
     // Fetch the PDF bytes then initialize the overlay.
-    pdf_helper->GetPdfBytes(
-        base::BindOnce(&LensOverlayController::OnPdfBytesReceived,
-                       weak_factory_.GetWeakPtr()));
+    pdf_helper->GetPdfBytes(base::BindOnce(
+        &LensOverlayController::OnPdfBytesReceived, weak_factory_.GetWeakPtr(),
+        std::move(initialization_data)));
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -1323,7 +1322,8 @@ void LensOverlayController::ContinueCreateInitializationData(
     content_extraction::GetInnerText(
         *render_frame_host, /*node_id=*/std::nullopt,
         base::BindOnce(&LensOverlayController::OnInnerTextReceived,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(),
+                       std::move(initialization_data)));
     return;
   }
 
@@ -1332,43 +1332,50 @@ void LensOverlayController::ContinueCreateInitializationData(
     content_extraction::GetInnerHtml(
         *render_frame_host,
         base::BindOnce(&LensOverlayController::OnInnerHtmlReceived,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(),
+                       std::move(initialization_data)));
     return;
   }
 
-  // Initialize since there are no PDF bytes to wait on.
-  InitializeOverlay();
+  // Since there are no page content bytes to wait on, assign
+  // initialization_data and initialize the overlay.
+  InitializeOverlay(std::move(initialization_data));
 }
 
 void LensOverlayController::OnPdfBytesReceived(
+    std::unique_ptr<OverlayInitializationData> initialization_data,
     const std::vector<uint8_t>& bytes) {
-  initialization_data_->page_content_bytes_ = bytes;
-  initialization_data_->page_content_type_ = kPdfMimeType;
-  InitializeOverlay();
+  initialization_data->page_content_bytes_ = bytes;
+  initialization_data->page_content_type_ = kPdfMimeType;
+  InitializeOverlay(std::move(initialization_data));
 }
 
 void LensOverlayController::OnInnerTextReceived(
+    std::unique_ptr<OverlayInitializationData> initialization_data,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
   if (result) {
-    initialization_data_->page_content_bytes_ = std::vector<uint8_t>(
+    initialization_data->page_content_bytes_ = std::vector<uint8_t>(
         result->inner_text.begin(), result->inner_text.end());
-    initialization_data_->page_content_type_ = kPlainTextMimeType;
+    initialization_data->page_content_type_ = kPlainTextMimeType;
   }
-  InitializeOverlay();
+  InitializeOverlay(std::move(initialization_data));
 }
 
 void LensOverlayController::OnInnerHtmlReceived(
+    std::unique_ptr<OverlayInitializationData> initialization_data,
     const std::optional<std::string>& result) {
   if (result.has_value()) {
-    initialization_data_->page_content_bytes_ =
+    initialization_data->page_content_bytes_ =
         std::vector<uint8_t>(result->begin(), result->end());
-    initialization_data_->page_content_type_ = "text/html";
+    initialization_data->page_content_type_ = "text/html";
   }
-  InitializeOverlay();
+  InitializeOverlay(std::move(initialization_data));
 }
 
 void LensOverlayController::AddBoundingBoxesToInitializationData(
+    OverlayInitializationData* initialization_data,
     const std::vector<gfx::Rect>& all_bounds) {
+  CHECK(initialization_data);
   int max_regions = lens::features::GetLensOverlayMaxSignificantRegions();
   if (max_regions == 0) {
     return;
@@ -1404,7 +1411,7 @@ void LensOverlayController::AddBoundingBoxesToInitializationData(
       significant_region_boxes.size() > (unsigned long)max_regions) {
     significant_region_boxes.resize(max_regions);
   }
-  initialization_data_->significant_region_boxes_ =
+  initialization_data->significant_region_boxes_ =
       std::move(significant_region_boxes);
 }
 
@@ -1592,7 +1599,15 @@ void LensOverlayController::CloseUIPart2(
   RecordEndOfSessionMetrics(dismissal_source);
 }
 
-void LensOverlayController::InitializeOverlay() {
+void LensOverlayController::InitializeOverlay(
+    std::unique_ptr<OverlayInitializationData> initialization_data) {
+  // Initialization data is ready.
+  if (initialization_data) {
+    // Confirm initialization_data has not already been assigned.
+    CHECK(!initialization_data_);
+    initialization_data_ = std::move(initialization_data);
+  }
+
   // We can only continue once both the WebUI is bound and the initialization
   // data is processed and ready. If either of those conditions aren't met, we
   // exit early and wait for the other condition to call this method again.
