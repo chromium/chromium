@@ -24,8 +24,9 @@ import type {SettingsPrefs} from './common.js';
 import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs} from './common.js';
 import {ReadAnythingLogger, TimeFrom, TimeTo} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import type {VoicePackStatus} from './voice_language_util.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getFilteredVoiceList, getNaturalVoiceOrDefault, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
+import type {VoicePackStatus} from './voice_language_util.js';
+import {VoiceNotificationManager} from './voice_notification_manager.js';
 
 const AppElementBase = WebUiListenerMixinLit(CrLitElement);
 
@@ -241,7 +242,7 @@ export class AppElement extends AppElementBase {
 
   // Our local representation of the status of voice pack downloads and
   // availability
-  protected voiceStatusLocalState_:
+  private voiceStatusLocalState_:
       {[language: string]: VoiceClientSideStatusCode} = {};
 
   // Cache of responses from LanguagePackManager
@@ -255,6 +256,7 @@ export class AppElement extends AppElementBase {
   // Metrics captured for logging.
   private playSessionStartTime: number = -1;
 
+  private notificationManager_: VoiceNotificationManager;
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
   private styleUpdater_: AppStyleUpdater;
   protected settingsPrefs_: SettingsPrefs;
@@ -314,6 +316,7 @@ export class AppElement extends AppElementBase {
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
     this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
     this.styleUpdater_ = new AppStyleUpdater(this);
+    this.notificationManager_ = VoiceNotificationManager.getInstance();
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -2636,11 +2639,21 @@ export class AppElement extends AppElementBase {
   }
 
   setVoicePackLocalStatus(lang: string, status: VoiceClientSideStatusCode) {
-    const voicePackLanguage = getVoicePackConvertedLangIfExists(lang);
+    const possibleVoicePackLanguage =
+        convertLangOrLocaleForVoicePackManager(lang);
+    const voicePackLanguage =
+        possibleVoicePackLanguage ? possibleVoicePackLanguage : lang;
+    const oldStatus = this.voiceStatusLocalState_[voicePackLanguage];
     this.voiceStatusLocalState_ = {
       ...this.voiceStatusLocalState_,
       [voicePackLanguage]: status,
     };
+
+    // No need for notifications for non-Google TTS languages.
+    if ((possibleVoicePackLanguage !== undefined) && (oldStatus !== status)) {
+      this.notificationManager_.onVoiceStatusChange(
+          voicePackLanguage, status, this.availableVoices_);
+    }
   }
 
   resetVoiceForTesting() {

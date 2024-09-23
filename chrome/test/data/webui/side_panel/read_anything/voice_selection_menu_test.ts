@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ToolbarEvent, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
@@ -59,7 +59,6 @@ suite('VoiceSelectionMenu', () => {
     dots.appendChild(newContent);
     document.body.appendChild(dots);
 
-    voiceSelectionMenu.voicePackInstallStatus = {};
     return microtasksFinished();
   });
 
@@ -402,12 +401,9 @@ suite('VoiceSelectionMenu', () => {
 
   suite('with installing voices', () => {
     function setVoiceStatus(lang: string, status: VoiceClientSideStatusCode) {
-      voiceSelectionMenu.voicePackInstallStatus = {
-        ...voiceSelectionMenu.voicePackInstallStatus,
-        [lang]: status,
-      };
+      VoiceNotificationManager.getInstance().onVoiceStatusChange(
+          lang, status, voiceSelectionMenu.availableVoices);
     }
-
 
     function getDownloadMessages(): HTMLElement[] {
       return Array.from(
@@ -416,6 +412,7 @@ suite('VoiceSelectionMenu', () => {
     }
 
     setup(() => {
+      VoiceNotificationManager.getInstance().clear();
       voiceSelectionMenu!.onVoiceSelectionMenuClick(dots);
     });
 
@@ -423,8 +420,10 @@ suite('VoiceSelectionMenu', () => {
       assertEquals(0, getDownloadMessages().length);
     });
 
-    test('no downloading messages with invalid language', async () => {
-      setVoiceStatus('simlish', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
+    test('no downloading messages after close', async () => {
+      voiceSelectionMenu.$.voiceSelectionMenu.get().close();
+      await microtasksFinished();
+      setVoiceStatus('fr', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
       await microtasksFinished();
 
       assertEquals(0, getDownloadMessages().length);

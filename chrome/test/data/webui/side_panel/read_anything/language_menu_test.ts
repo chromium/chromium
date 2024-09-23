@@ -7,7 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {AVAILABLE_GOOGLE_TTS_LOCALES, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AVAILABLE_GOOGLE_TTS_LOCALES, VoiceClientSideStatusCode, VoiceNotificationManager} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -17,8 +17,6 @@ suite('LanguageMenu', () => {
   let languageMenu: LanguageMenuElement;
   let availableVoices: SpeechSynthesisVoice[];
   let enabledLangs: string[];
-  const languagesToNotificationMap:
-      {[language: string]: VoiceClientSideStatusCode} = {};
 
   function getLanguageLineItems() {
     return languageMenu.$.languageMenu.querySelectorAll<HTMLElement>(
@@ -42,9 +40,9 @@ suite('LanguageMenu', () => {
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    VoiceNotificationManager.getInstance().clear();
     languageMenu = document.createElement('language-menu');
     languageMenu.localesOfLangPackVoices = new Set(['it-it']);
-    languageMenu.voicePackInstallStatus = {};
   });
 
   test('with existing available language no duplicates added', () => {
@@ -202,6 +200,11 @@ suite('LanguageMenu', () => {
         });
 
     suite('with display names for locales', () => {
+      function notify(language: string, status: VoiceClientSideStatusCode) {
+        VoiceNotificationManager.getInstance().onVoiceStatusChange(
+            language, status, availableVoices);
+      }
+
       setup(() => {
         languageMenu.localeToDisplayName = {
           'en-us': 'English (United States)',
@@ -282,9 +285,7 @@ suite('LanguageMenu', () => {
         languageMenu.localesOfLangPackVoices = new Set(['it-it']);
         enabledLangs = ['it-it', 'English (United States)'];
         languageMenu.enabledLangs = enabledLangs;
-        languagesToNotificationMap['it'] =
-            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST;
-        languageMenu.voicePackInstallStatus = {...languagesToNotificationMap};
+        notify('it', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
         document.body.appendChild(languageMenu);
         await microtasksFinished();
 
@@ -294,9 +295,7 @@ suite('LanguageMenu', () => {
         assertLanguageNotification(
             'Downloading voices…', getNotificationItems()[2]!);
 
-        languagesToNotificationMap['it'] =
-            VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE;
-        languageMenu.voicePackInstallStatus = {...languagesToNotificationMap};
+        notify('it', VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
         await microtasksFinished();
 
         assertEquals(3, getNotificationItems().length);
@@ -305,8 +304,7 @@ suite('LanguageMenu', () => {
         assertLanguageNotification(
             'Downloading voices…', getNotificationItems()[2]!);
 
-        languagesToNotificationMap['it'] = VoiceClientSideStatusCode.AVAILABLE;
-        languageMenu.voicePackInstallStatus = {...languagesToNotificationMap};
+        notify('it', VoiceClientSideStatusCode.AVAILABLE);
         await microtasksFinished();
 
         assertEquals(3, getNotificationItems().length);
@@ -326,10 +324,7 @@ suite('LanguageMenu', () => {
               createSpeechSynthesisVoice({name: 'espeak voice', lang: 'es'}),
             ];
             languageMenu.availableVoices = availableVoices;
-            languagesToNotificationMap['es'] =
-                VoiceClientSideStatusCode.SENT_INSTALL_REQUEST;
-            languageMenu.voicePackInstallStatus = {
-                ...languagesToNotificationMap};
+            notify('es', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
             document.body.appendChild(languageMenu);
             await microtasksFinished();
 
@@ -344,14 +339,11 @@ suite('LanguageMenu', () => {
             enabledLangs = ['Italian', 'English (United States)'];
             // Remove the italian voice so we can test when there's no voices
             // for this language.
-            languageMenu.availableVoices =
-                availableVoices.filter(v => v.lang !== 'it-IT');
+            availableVoices = availableVoices.filter(v => v.lang !== 'it-IT');
+            languageMenu.availableVoices = availableVoices;
             languageMenu.enabledLangs = enabledLangs;
             document.body.appendChild(languageMenu);
-            languagesToNotificationMap['it'] =
-                VoiceClientSideStatusCode.ERROR_INSTALLING;
-            languageMenu.voicePackInstallStatus = {
-                ...languagesToNotificationMap};
+            notify('it', VoiceClientSideStatusCode.ERROR_INSTALLING);
             await microtasksFinished();
 
             assertEquals(3, getNotificationItems().length);
@@ -367,10 +359,7 @@ suite('LanguageMenu', () => {
             enabledLangs = ['Italian', 'English (United States)'];
             languageMenu.enabledLangs = enabledLangs;
             document.body.appendChild(languageMenu);
-            languagesToNotificationMap['it'] =
-                VoiceClientSideStatusCode.ERROR_INSTALLING;
-            languageMenu.voicePackInstallStatus = {
-                ...languagesToNotificationMap};
+            notify('it', VoiceClientSideStatusCode.ERROR_INSTALLING);
             await microtasksFinished();
 
             assertEquals(3, getNotificationItems().length);
@@ -380,14 +369,7 @@ suite('LanguageMenu', () => {
           });
 
       test('does not show old error notifications', async () => {
-        languageMenu.voicePackInstallStatus = {
-          'it': VoiceClientSideStatusCode.ERROR_INSTALLING,
-        };
-        languageMenu.availableVoices = [
-          createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
-          createSpeechSynthesisVoice({name: 'test voice 1', lang: 'it-IT'}),
-          createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
-        ];
+        notify('it', VoiceClientSideStatusCode.ERROR_INSTALLING);
         document.body.appendChild(languageMenu);
         await microtasksFinished();
 
@@ -401,14 +383,7 @@ suite('LanguageMenu', () => {
       });
 
       test('shows old downloading notifications', async () => {
-        languageMenu.voicePackInstallStatus = {
-          'it': VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
-        };
-        languageMenu.availableVoices = [
-          createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
-          createSpeechSynthesisVoice({name: 'test voice 1', lang: 'it-IT'}),
-          createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
-        ];
+        notify('it', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST);
         document.body.appendChild(languageMenu);
         await microtasksFinished();
 
@@ -418,16 +393,14 @@ suite('LanguageMenu', () => {
 
         const downloadingNotifications = notificationItems.filter(
             notification => notification.innerText === 'Downloading voices…');
-        assertEquals(downloadingNotifications.length, 1);
+        assertEquals(1, downloadingNotifications.length);
       });
 
       test('shows high quality allocation notification', async () => {
         enabledLangs = ['Italian', 'English (United States)'];
         languageMenu.enabledLangs = enabledLangs;
         document.body.appendChild(languageMenu);
-        languagesToNotificationMap['it'] =
-            VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
-        languageMenu.voicePackInstallStatus = {...languagesToNotificationMap};
+        notify('it', VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION);
         await microtasksFinished();
 
         assertEquals(3, getNotificationItems().length);
@@ -448,9 +421,7 @@ suite('LanguageMenu', () => {
         languageMenu.availableVoices = availableVoices;
         document.body.appendChild(languageMenu);
 
-        languagesToNotificationMap['it'] =
-            VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION;
-        languageMenu.voicePackInstallStatus = {...languagesToNotificationMap};
+        notify('it', VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION);
         await microtasksFinished();
 
         assertEquals(3, getNotificationItems().length);

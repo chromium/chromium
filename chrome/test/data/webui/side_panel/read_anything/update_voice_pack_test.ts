@@ -5,8 +5,8 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement, NotificationType, VoiceNotificationListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode, VoiceNotificationManager, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
@@ -37,6 +37,61 @@ suite('UpdateVoicePack', () => {
     speechSynthesis = new FakeSpeechSynthesis();
     app.synth = speechSynthesis;
     app.getSpeechSynthesisVoice();
+  });
+
+  suite('setVoicePackLocalStatus', () => {
+    let listener: VoiceNotificationListener;
+    let listenerNotified: boolean;
+
+    setup(() => {
+      listenerNotified = false;
+      listener = {
+        notify(_language: string, _type: NotificationType): void {
+          listenerNotified = true;
+        },
+      };
+      VoiceNotificationManager.setInstance(new VoiceNotificationManager());
+      VoiceNotificationManager.getInstance().addListener(listener);
+    });
+
+    test('no notification for non-Google language', () => {
+      app.setVoicePackLocalStatus(
+          'zh', VoiceClientSideStatusCode.ERROR_INSTALLING);
+      assertFalse(listenerNotified);
+    });
+
+    test('no notification for invalid language', () => {
+      app.setVoicePackLocalStatus(
+          'klingon', VoiceClientSideStatusCode.ERROR_INSTALLING);
+      assertFalse(listenerNotified);
+    });
+
+    test('no notification for same status', () => {
+      app.setVoicePackLocalStatus(
+          'pt-br', VoiceClientSideStatusCode.ERROR_INSTALLING);
+      assertTrue(listenerNotified);
+      listenerNotified = false;
+
+      app.setVoicePackLocalStatus(
+          'pt-br', VoiceClientSideStatusCode.ERROR_INSTALLING);
+
+      assertFalse(listenerNotified);
+    });
+
+    test('notifies for new status with Google-supported language', () => {
+      app.setVoicePackLocalStatus(
+          'it-it', VoiceClientSideStatusCode.ERROR_INSTALLING);
+      assertTrue(listenerNotified);
+
+      listenerNotified = false;
+      app.setVoicePackLocalStatus('it-it', VoiceClientSideStatusCode.AVAILABLE);
+      assertTrue(listenerNotified);
+
+      listenerNotified = false;
+      app.setVoicePackLocalStatus(
+          'hi', VoiceClientSideStatusCode.ERROR_INSTALLING);
+      assertTrue(listenerNotified);
+    });
   });
 
   suite('updateVoicePackStatus', () => {

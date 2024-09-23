@@ -22,7 +22,9 @@ import {openMenu, ToolbarEvent} from './common.js';
 import type {LanguageMenuElement} from './language_menu.js';
 import {ReadAloudSettingsChange} from './metrics_browser_proxy.js';
 import {ReadAnythingLogger} from './read_anything_logger.js';
-import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isGoogle, isNatural, VoiceClientSideStatusCode} from './voice_language_util.js';
+import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isGoogle, isNatural, NotificationType} from './voice_language_util.js';
+import {VoiceNotificationManager} from './voice_notification_manager.js';
+import type {VoiceNotificationListener} from './voice_notification_manager.js';
 import {getCss} from './voice_selection_menu.css.js';
 import {getHtml} from './voice_selection_menu.html.js';
 
@@ -50,7 +52,8 @@ interface VoiceDropdownItem {
 
 const VoiceSelectionMenuElementBase = WebUiListenerMixinLit(CrLitElement);
 
-export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
+export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
+    implements VoiceNotificationListener {
   static get is() {
     return 'voice-selection-menu';
   }
@@ -69,7 +72,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       availableVoices: {type: Array},
       enabledLangs: {type: Array},
       previewVoicePlaying: {type: Object},
-      voicePackInstallStatus: {type: Object},
+      currentNotifications_: {type: Object},
       isSpeechActive: {type: Boolean},
       localeToDisplayName: {type: Object},
       lastDownloadedLang: {type: String},
@@ -79,7 +82,6 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     };
   }
 
-  voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode} = {};
   selectedVoice?: SpeechSynthesisVoice;
   localeToDisplayName: {[lang: string]: string} = {};
   previewVoicePlaying?: SpeechSynthesisVoice;
@@ -87,6 +89,9 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   availableVoices: SpeechSynthesisVoice[] = [];
   isSpeechActive: boolean = false;
   lastDownloadedLang?: string;
+
+  // The current notifications that should be used in the voice menu.
+  private currentNotifications_: {[language: string]: NotificationType} = {};
 
   protected downloadingMessages_: string[] = [];
   protected voiceGroups_: VoiceDropdownGroup[] = [];
@@ -98,14 +103,10 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
           .getPropertyValue('--sp-body-padding'),
       10);
   private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
-
+  private notificationManager_ = VoiceNotificationManager.getInstance();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
-
-    if (changedProperties.has('voicePackInstallStatus')) {
-      this.downloadingMessages_ = this.computeDownloadingMessages_();
-    }
 
     if (changedProperties.has('selectedVoice') ||
         changedProperties.has('availableVoices') ||
@@ -114,11 +115,24 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
         changedProperties.has('localeToDisplayName')) {
       this.voiceGroups_ = this.computeVoiceDropdown_();
     }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('currentNotifications_')) {
+      this.downloadingMessages_ = this.computeDownloadingMessages_();
+    }
   }
 
+  notify(language: string, type: NotificationType) {
+    this.currentNotifications_ = {
+      ...this.currentNotifications_,
+      [language]: type,
+    };
+  }
 
   onVoiceSelectionMenuClick(targetElement: HTMLElement) {
     this.voicePlayingWhenMenuOpened_ = this.isSpeechActive;
+    this.notificationManager_.addListener(this);
 
     const menu = this.$.voiceSelectionMenu.get();
     openMenu(menu, targetElement, {
@@ -231,11 +245,13 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   protected onLanguageMenuClose_(event: CustomEvent) {
     event.preventDefault();
     event.stopPropagation();
+    this.notificationManager_.removeListener(this.$.languageMenu);
 
     this.showLanguageMenuDialog_ = false;
   }
 
   protected onClose_() {
+    this.notificationManager_.removeListener(this);
     this.dispatchEvent(new CustomEvent('voice-menu-close', {
       bubbles: true,
       composed: true,
@@ -326,11 +342,10 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   }
 
   private computeDownloadingMessages_(): string[] {
-    return Object.entries(this.voicePackInstallStatus)
+    return Object.entries(this.currentNotifications_)
         .filter(
-            ([_, status]) => status ===
-                    VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE ||
-                status === VoiceClientSideStatusCode.SENT_INSTALL_REQUEST)
+            ([_, notification]) =>
+                notification === NotificationType.DOWNLOADING)
         .map(([lang, _]) => this.getDisplayNameForLocale(lang))
         .filter(possibleName => possibleName.length > 0)
         .map(

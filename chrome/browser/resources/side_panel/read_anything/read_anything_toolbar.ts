@@ -109,7 +109,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       isAudioCurrentlyPlaying: Boolean,
       isReadAloudPlayable: Boolean,
       selectedVoice: Object,
-      voicePackInstallStatus: Map,
       availableVoices: Array,
       enabledLangs: Array,
       localeToDisplayName: Object,

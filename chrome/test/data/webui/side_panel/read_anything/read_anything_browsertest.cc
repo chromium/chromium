@@ -75,6 +75,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageUtil) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceNotificationManager) {
+  RunSidePanelTest(
+      "side_panel/read_anything/voice_notification_manager_test.js",
+      "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudFlag) {
   RunSidePanelTest("side_panel/read_anything/read_aloud_flag_test.js",
                    "mocha.run()");
