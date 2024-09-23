@@ -78,6 +78,10 @@ class SafetyHubMenuNotification {
 
   SafetyHubService::Result* GetResultForTesting() const;
 
+  // Returns whether any notification for the same type of result has been
+  // shown.
+  bool HasAnyNotificationBeenShown() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(SafetyHubMenuNotificationTest, ToFromDictValue);
   friend class SafetyHubMenuNotificationTest;
@@ -88,9 +92,6 @@ class SafetyHubMenuNotification {
   // For the given interval, it is determined whether a notification of the same
   // type can be shown again.
   bool HasIntervalPassed(base::TimeDelta interval) const;
-  // Returns whether any notification for the same type of result has been
-  // shown.
-  bool HasAnyNotificationBeenShown() const;
 
   // Indicates whether the notification is actively being shown.
   bool is_currently_active_ = false;

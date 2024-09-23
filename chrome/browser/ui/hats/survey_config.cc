@@ -73,6 +73,12 @@ constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
 // "permission-prompt0", "permission-prompt1", ...
 constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
 constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
+constexpr char kHatsSurveyTriggerSafetyHubOneOffExperimentControl[] =
+    "safety-hub-control";
+constexpr char kHatsSurveyTriggerSafetyHubOneOffExperimentNotification[] =
+    "safety-hub-notification";
+constexpr char kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction[] =
+    "safety-hub-interaction";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
 constexpr char kHatsSurveyTriggerSettingsSecurity[] = "settings-security";
@@ -576,6 +582,24 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           DownloadWarningHatsType::kDownloadsPageIgnore),
       DownloadWarningHatsProductSpecificData::GetStringDataFields(
           DownloadWarningHatsType::kDownloadsPageIgnore));
+
+  survey_configs.emplace_back(
+      &features::kSafetyHubHaTSOneOffSurvey,
+      kHatsSurveyTriggerSafetyHubOneOffExperimentControl,
+      features::kHatsSurveyTriggerSafetyHubOneOffExperimentControlTriggerId
+          .Get());
+  survey_configs.emplace_back(
+      &features::kSafetyHubHaTSOneOffSurvey,
+      kHatsSurveyTriggerSafetyHubOneOffExperimentNotification,
+      features::kHatsSurveyTriggerSafetyHubOneOffExperimentNotificationTriggerId
+          .Get(),
+      sh_psd_fields);
+  survey_configs.emplace_back(
+      &features::kSafetyHubHaTSOneOffSurvey,
+      kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction,
+      features::kHatsSurveyTriggerSafetyHubOneOffExperimentInteractionTriggerId
+          .Get(),
+      sh_psd_fields);
 
 #else
   survey_configs.emplace_back(&chrome::android::kChromeSurveyNextAndroid,

@@ -1949,6 +1949,9 @@ extern const char kSafetyHubFollowupDescription[];
 
 extern const char kSafetyHubAndroidSurveyName[];
 extern const char kSafetyHubAndroidSurveyDescription[];
+#else
+extern const char kSafetyHubHaTSOneOffSurveyName[];
+extern const char kSafetyHubHaTSOneOffSurveyDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kSafetyHubAbusiveNotificationRevocationName[];

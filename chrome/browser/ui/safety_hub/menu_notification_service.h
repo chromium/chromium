@@ -137,6 +137,9 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // Called when the pref for Safe Browsing has been updated.
   void OnSafeBrowsingPrefUpdate();
 
+  // Returns if any safety hub notification is shown in the menu so far.
+  bool HasAnyNotificationBeenShown() const;
+
   // Holds the mapping from module type to pref name.
   std::map<safety_hub::SafetyHubModuleType, const char*> pref_dict_key_map_;
 

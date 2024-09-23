@@ -3396,6 +3396,11 @@ const char kSafetyHubAndroidSurveyName[] =
     "HaTS for Safety Check v2 on Android";
 const char kSafetyHubAndroidSurveyDescription[] =
     "Enables control & proactive HaTS surveys for Safety Check v2 on Android.";
+#else
+const char kSafetyHubHaTSOneOffSurveyName[] =
+    "HaTS for Safety Check v2 on Desktop";
+const char kSafetyHubHaTSOneOffSurveyDescription[] =
+    "Enables one-off HaTS surveys for Safety Check v2 on Desktop.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kSafetyHubAbusiveNotificationRevocationName[] =
