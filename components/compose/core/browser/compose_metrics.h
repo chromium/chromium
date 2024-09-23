@@ -39,6 +39,7 @@ extern const char kComposeMSBBSessionDialogShownCount[];
 extern const char kInnerTextNodeOffsetFound[];
 extern const char kComposeContextMenuCtr[];
 extern const char kComposeProactiveNudgeCtr[];
+extern const char kComposeSelectionNudgeCtr[];
 extern const char kComposeProactiveNudgeShowStatus[];
 extern const char kOpenComposeDialogResult[];
 extern const char kComposeStartSessionEntryPoint[];
@@ -169,9 +170,9 @@ enum class ComposeShowStatus {
 };
 
 // Enum for calculating the CTR of the Compose proactive nudge.
-// Keep in sync with ComposeProactiveNudgeCtrEvent in
+// Keep in sync with ComposeNudgeCtrEvent in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
-enum class ComposeProactiveNudgeCtrEvent {
+enum class ComposeNudgeCtrEvent {
   kNudgeDisplayed = 0,
   kDialogOpened = 1,
   kUserDisabledProactiveNudge = 2,
@@ -425,7 +426,9 @@ void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 
-void LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent event);
+void LogComposeProactiveNudgeCtr(ComposeNudgeCtrEvent event);
+
+void LogComposeSelectionNudgeCtr(ComposeNudgeCtrEvent event);
 
 void LogComposeProactiveNudgeShowStatus(ComposeShowStatus status);
 

@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Inner Text Node Offset found"/>
 </enum>
 
-<enum name="ComposeProactiveNudgeCtrEvent">
+<enum name="ComposeNudgeCtrEvent">
   <int value="0" label="Nudge shown"/>
   <int value="1" label="Dialog opened from nudge"/>
   <int value="2" label="Globally disabled from nudge"/>

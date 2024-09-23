@@ -1111,9 +1111,9 @@ TEST_F(ChromeComposeClientTest, TestShouldTriggerProactiveNudgeEnabled) {
               ukm::builders::Compose_PageEvents::kProactiveNudgeShownName, 1)));
 
   // Check Compose.ProactiveNudge.CTR metrics.
-  histograms().ExpectBucketCount(
-      compose::kComposeProactiveNudgeCtr,
-      compose::ComposeProactiveNudgeCtrEvent::kNudgeDisplayed, 1);
+  histograms().ExpectBucketCount(compose::kComposeProactiveNudgeCtr,
+                                 compose::ComposeNudgeCtrEvent::kNudgeDisplayed,
+                                 1);
 }
 
 TEST_F(ChromeComposeClientTest,
@@ -1857,9 +1857,9 @@ TEST_F(ChromeComposeClientTest,
       compose::ComposeSessionEventTypes::kInsertClicked, 1);
 
   // Check Compose.ProactiveNudge.CTR metrics.
-  histograms().ExpectBucketCount(
-      compose::kComposeProactiveNudgeCtr,
-      compose::ComposeProactiveNudgeCtrEvent::kDialogOpened, 1);
+  histograms().ExpectBucketCount(compose::kComposeProactiveNudgeCtr,
+                                 compose::ComposeNudgeCtrEvent::kDialogOpened,
+                                 1);
 }
 
 // Test that opening the saved state dialog with selected text does not start
@@ -2965,6 +2965,7 @@ TEST_F(ChromeComposeClientTest,
   compose::Config& config = compose::GetMutableConfigForTesting();
   config.proactive_nudge_enabled = true;
   config.proactive_nudge_show_probability = 1.0;
+  config.proactive_nudge_field_per_navigation = false;
   config.proactive_nudge_focus_delay = base::Microseconds(4);
   config.proactive_nudge_segmentation = false;
 
@@ -2995,6 +2996,216 @@ TEST_F(ChromeComposeClientTest,
                   .Find(test_origin.Serialize()));
   EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
                                            trigger_source));
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  histograms().ExpectBucketCount(
+      compose::kComposeProactiveNudgeCtr,
+      compose::ComposeNudgeCtrEvent::kUserDisabledSite, 1);
+  histograms().ExpectBucketCount(compose::kComposeProactiveNudgeCtr,
+                                 compose::ComposeNudgeCtrEvent::kNudgeDisplayed,
+                                 1);
+  histograms().ExpectTotalCount(compose::kComposeSelectionNudgeCtr, 0);
+
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledGloballyName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledForSiteName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_THAT(ukm_entries[0].metrics,
+              testing::UnorderedElementsAre(
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledGloballyName,
+                                0),
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledForSiteName,
+                                1)));
+}
+
+TEST_F(ChromeComposeClientTest,
+       AddSiteToNeverPromptListBlocksSelectionNudgeTest) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_enabled = true;
+  config.proactive_nudge_field_per_navigation = false;
+  config.proactive_nudge_show_probability = 1.0;
+  config.proactive_nudge_focus_delay = base::Microseconds(4);
+  config.proactive_nudge_segmentation = false;
+
+  PrefService* prefs = GetProfile()->GetPrefs();
+
+  auto test_url = GURL("http://foo");
+  auto test_origin = url::Origin::Create(test_url);
+
+  autofill::FormData form_data;
+  form_data.set_url(test_url);
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
+
+  autofill::FormFieldData& selected_field_data = test_api(form_data).field(0);
+  selected_field_data.set_origin(test_origin);
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
+
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
+  task_environment()->FastForwardBy(config.proactive_nudge_focus_delay);
+  // Set the most recent nudge to the selection nudge.
+  client().ShowProactiveNudge(form_data.global_id(),
+                              selected_field_data.global_id(),
+                              compose::ComposeEntryPoint::kSelectionNudge);
+  EXPECT_TRUE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                          trigger_source));
+
+  client().AddSiteToNeverPromptList(test_origin);
+
+  EXPECT_TRUE(prefs->GetDict(prefs::kProactiveNudgeDisabledSitesWithTime)
+                  .Find(test_origin.Serialize()));
+  EXPECT_FALSE(client().ShouldTriggerPopup(form_data, selected_field_data,
+                                           trigger_source));
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  histograms().ExpectUniqueSample(
+      compose::kComposeSelectionNudgeCtr,
+      compose::ComposeNudgeCtrEvent::kUserDisabledSite, 1);
+  histograms().ExpectUniqueSample(
+      compose::kComposeProactiveNudgeCtr,
+      compose::ComposeNudgeCtrEvent::kNudgeDisplayed, 1);
+
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledGloballyName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledForSiteName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_THAT(ukm_entries[0].metrics,
+              testing::UnorderedElementsAre(
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledGloballyName,
+                                0),
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledForSiteName,
+                                0)));
+}
+
+TEST_F(ChromeComposeClientTest, DisableComposeBlocksProactiveNudgeTest) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_enabled = true;
+  config.proactive_nudge_field_per_navigation = false;
+  config.proactive_nudge_show_probability = 1.0;
+  config.proactive_nudge_focus_delay = base::Microseconds(4);
+  config.proactive_nudge_segmentation = false;
+
+  PrefService* prefs = GetProfile()->GetPrefs();
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kEnableProactiveNudge));
+
+  autofill::FormData form_data;
+  form_data.set_url(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
+
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
+  field_data.set_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
+
+  EXPECT_FALSE(
+      client().ShouldTriggerPopup(form_data, field_data, trigger_source));
+  task_environment()->FastForwardBy(config.proactive_nudge_focus_delay);
+  EXPECT_TRUE(
+      client().ShouldTriggerPopup(form_data, field_data, trigger_source));
+
+  client().DisableProactiveNudge();
+
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kEnableProactiveNudge));
+
+  EXPECT_FALSE(
+      client().ShouldTriggerPopup(form_data, field_data, trigger_source));
+
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  histograms().ExpectBucketCount(
+      compose::kComposeProactiveNudgeCtr,
+      compose::ComposeNudgeCtrEvent::kUserDisabledProactiveNudge, 1);
+  histograms().ExpectBucketCount(compose::kComposeProactiveNudgeCtr,
+                                 compose::ComposeNudgeCtrEvent::kNudgeDisplayed,
+                                 1);
+  histograms().ExpectTotalCount(compose::kComposeSelectionNudgeCtr, 0);
+
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledGloballyName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledForSiteName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_THAT(ukm_entries[0].metrics,
+              testing::UnorderedElementsAre(
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledGloballyName,
+                                1),
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledForSiteName,
+                                0)));
+}
+
+TEST_F(ChromeComposeClientTest, DisableComposeBlocksSelectionNudgeTest) {
+  compose::Config& config = compose::GetMutableConfigForTesting();
+  config.proactive_nudge_enabled = true;
+  config.proactive_nudge_field_per_navigation = false;
+  config.proactive_nudge_show_probability = 1.0;
+  config.proactive_nudge_focus_delay = base::Microseconds(4);
+  config.proactive_nudge_segmentation = false;
+
+  PrefService* prefs = GetProfile()->GetPrefs();
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kEnableProactiveNudge));
+
+  autofill::FormData form_data;
+  form_data.set_url(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL());
+  form_data.set_fields({autofill::test::CreateTestFormField(
+      "label0", "name0", "value0", autofill::FormControlType::kTextArea)});
+
+  autofill::FormFieldData& field_data = test_api(form_data).field(0);
+  field_data.set_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  const autofill::AutofillSuggestionTriggerSource trigger_source =
+      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange;
+
+  EXPECT_FALSE(
+      client().ShouldTriggerPopup(form_data, field_data, trigger_source));
+  task_environment()->FastForwardBy(config.proactive_nudge_focus_delay);
+  // Set the most recent nudge to the selection nudge.
+  client().ShowProactiveNudge(form_data.global_id(), field_data.global_id(),
+                              compose::ComposeEntryPoint::kSelectionNudge);
+  EXPECT_TRUE(
+      client().ShouldTriggerPopup(form_data, field_data, trigger_source));
+
+  client().DisableProactiveNudge();
+
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kEnableProactiveNudge));
+
+  EXPECT_FALSE(
+      client().ShouldTriggerPopup(form_data, field_data, trigger_source));
+
+  NavigateAndCommitActiveTab(GURL("about:blank"));
+
+  histograms().ExpectUniqueSample(
+      compose::kComposeSelectionNudgeCtr,
+      compose::ComposeNudgeCtrEvent::kUserDisabledProactiveNudge, 1);
+  histograms().ExpectUniqueSample(
+      compose::kComposeProactiveNudgeCtr,
+      compose::ComposeNudgeCtrEvent::kNudgeDisplayed, 1);
+  auto ukm_entries = ukm_recorder().GetEntries(
+      ukm::builders::Compose_PageEvents::kEntryName,
+      {ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledGloballyName,
+       ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledForSiteName});
+  ASSERT_EQ(ukm_entries.size(), 1UL);
+  EXPECT_THAT(ukm_entries[0].metrics,
+              testing::UnorderedElementsAre(
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledGloballyName,
+                                0),
+                  testing::Pair(ukm::builders::Compose_PageEvents::
+                                    kProactiveNudgeDisabledForSiteName,
+                                0)));
 }
 
 TEST_F(ChromeComposeClientTest, TextFieldChangeThresholdHidesProactiveNudge) {
@@ -4525,6 +4736,12 @@ TEST_F(ComposePopupAutofillDriverTest, TestSelectionNudgeEnabled) {
       client().ShouldTriggerPopup(form_data, field_data,
                                   autofill::AutofillSuggestionTriggerSource::
                                       kComposeDelayedProactiveNudge));
+  histograms().ExpectUniqueSample(
+      compose::kComposeSelectionNudgeCtr,
+      compose::ComposeNudgeCtrEvent::kNudgeDisplayed, 1);
+  histograms().ExpectUniqueSample(
+      compose::kComposeProactiveNudgeCtr,
+      compose::ComposeNudgeCtrEvent::kNudgeDisplayed, 1);
 }
 
 TEST_F(ComposePopupAutofillDriverTest, TestSelectionTooShort) {

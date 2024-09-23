@@ -429,51 +429,21 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
 
 TEST_F(ComposeManagerImplTest, NeverShowForOrigin_MetricsTest) {
   auto test_origin = url::Origin::Create(GURL("http://foo"));
+
+  EXPECT_CALL(mock_compose_client(), AddSiteToNeverPromptList(test_origin));
+
   compose_manager_impl().NeverShowComposeForOrigin(test_origin);
   SimulateComposeSessionEnd();
-
-  histograms().ExpectUniqueSample(
-      compose::kComposeProactiveNudgeCtr,
-      compose::ComposeProactiveNudgeCtrEvent::kUserDisabledSite, 1);
-
-  auto ukm_entries = GetUkmPageEntries(
-      {ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledGloballyName,
-       ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledForSiteName});
-  ASSERT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_THAT(ukm_entries[0].metrics,
-              UnorderedElementsAre(Pair(ukm::builders::Compose_PageEvents::
-                                            kProactiveNudgeDisabledGloballyName,
-                                        0),
-                                   Pair(ukm::builders::Compose_PageEvents::
-                                            kProactiveNudgeDisabledForSiteName,
-                                        1)));
 }
 
 TEST_F(ComposeManagerImplTest, DisableCompose_MetricTest) {
+  EXPECT_CALL(mock_compose_client(), DisableProactiveNudge());
+
   compose_manager_impl().DisableCompose();
   SimulateComposeSessionEnd();
-
-  histograms().ExpectUniqueSample(
-      compose::kComposeProactiveNudgeCtr,
-      compose::ComposeProactiveNudgeCtrEvent::kUserDisabledProactiveNudge, 1);
-
-  auto ukm_entries = GetUkmPageEntries(
-      {ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledGloballyName,
-       ukm::builders::Compose_PageEvents::kProactiveNudgeDisabledForSiteName});
-  ASSERT_EQ(ukm_entries.size(), 1UL);
-  EXPECT_THAT(ukm_entries[0].metrics,
-              UnorderedElementsAre(Pair(ukm::builders::Compose_PageEvents::
-                                            kProactiveNudgeDisabledGloballyName,
-                                        1),
-                                   Pair(ukm::builders::Compose_PageEvents::
-                                            kProactiveNudgeDisabledForSiteName,
-                                        0)));
 }
 
 TEST_F(ComposeManagerImplTest, GoToSettings_HistogramTest) {
+  EXPECT_CALL(mock_compose_client(), OpenProactiveNudgeSettings());
   compose_manager_impl().GoToSettings();
-
-  histograms().ExpectUniqueSample(
-      compose::kComposeProactiveNudgeCtr,
-      compose::ComposeProactiveNudgeCtrEvent::kOpenSettings, 1);
 }
