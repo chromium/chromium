@@ -72,6 +72,9 @@ class TabGroupSyncMetricsLogger {
       const std::vector<SavedTabGroup>& saved_tab_groups,
       const std::vector<bool>& is_remote);
 
+  // Records metrics about number of groups deleted on startup.
+  void RecordTabGroupDeletionsOnStartup(size_t group_count);
+
  private:
   // For resolving device information.
   raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;

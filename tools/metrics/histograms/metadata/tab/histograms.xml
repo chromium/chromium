@@ -911,6 +911,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Sync.NumberOfGroupsDeletedOnStartup" units="groups"
+    expires_after="2025-01-19">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Tracks the number of tab groups that are deleted on startup due to a forced
+    cleanup. This is only enabled for a certain finch group of users who have
+    network layer disabled.
+
+    Recorded on startup after TabGroupSyncService initialization after notifying
+    the observers. Android only.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.Sync.OpenTabGroupCount" units="groups"
     expires_after="2025-01-26">
   <owner>shaktisahu@chromium.org</owner>

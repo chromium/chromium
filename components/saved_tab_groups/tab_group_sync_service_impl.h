@@ -170,6 +170,11 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // Wrapper function that calls all metric recording functions.
   void RecordMetrics();
 
+  // Force remove all tab groups that are currently not open in the local tab
+  // model. This is used on a certain finch group in order to fix an earlier
+  // bug.
+  void ForceRemoveClosedTabGroupsOnStartup();
+
   // Helper function to update attributions for a group and optionally a tab.
   void UpdateAttributions(
       const LocalTabGroupID& group_id,

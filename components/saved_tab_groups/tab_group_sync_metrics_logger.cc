@@ -357,4 +357,10 @@ void TabGroupSyncMetricsLogger::RecordMetricsOnStartup(
       remote_active_group_count_28_day);
 }
 
+void TabGroupSyncMetricsLogger::RecordTabGroupDeletionsOnStartup(
+    size_t group_count) {
+  base::UmaHistogramCounts10000("TabGroups.Sync.NumberOfGroupsDeletedOnStartup",
+                                group_count);
+}
+
 }  // namespace tab_groups

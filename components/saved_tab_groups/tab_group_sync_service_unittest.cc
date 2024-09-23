@@ -572,6 +572,28 @@ TEST_F(TabGroupSyncServiceTest, RemoveTab) {
       "TabGroups.Sync.TabGroup.TabRemoved.GroupCreateOrigin", 2u);
 }
 
+TEST_F(TabGroupSyncServiceTest, ForceRemoveClosedTabGroupsOnStartup) {
+  feature_list_.InitWithFeatures(
+      {tab_groups::kForceRemoveClosedTabGroupsOnStartup}, {});
+
+  EXPECT_CALL(*observer_, OnInitialized()).Times(1);
+  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
+                                                group_1_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(0);
+  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
+                                                group_2_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
+  EXPECT_CALL(*observer_, OnTabGroupRemoved(testing::TypedEq<const base::Uuid&>(
+                                                group_3_.saved_guid()),
+                                            Eq(TriggerSource::LOCAL)))
+      .Times(1);
+
+  model_->LoadStoredEntries(/*groups=*/{}, /*tabs=*/{});
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(TabGroupSyncServiceTest, UpdateTab) {
   base::HistogramTester histogram_tester;
   auto local_tab_id_2 = test::GenerateRandomTabID();

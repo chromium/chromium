@@ -660,6 +660,7 @@ void TabGroupSyncServiceImpl::NotifyServiceInitialized() {
     observer.OnInitialized();
   }
 
+  ForceRemoveClosedTabGroupsOnStartup();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&TabGroupSyncServiceImpl::RecordMetrics,
@@ -684,6 +685,29 @@ void TabGroupSyncServiceImpl::RecordMetrics() {
   }
 
   metrics_logger_->RecordMetricsOnStartup(saved_tab_groups, is_remote);
+}
+
+void TabGroupSyncServiceImpl::ForceRemoveClosedTabGroupsOnStartup() {
+  if (!ShouldForceRemoveClosedTabGroupsOnStartup()) {
+    return;
+  }
+
+  std::vector<base::Uuid> group_ids;
+  for (const auto& group : model_->saved_tab_groups()) {
+    if (group.local_group_id()) {
+      continue;
+    }
+    group_ids.push_back(group.saved_guid());
+  }
+
+  VLOG(0) << __func__
+          << " Cleaning up groups on startup, groups# = " << group_ids.size();
+
+  for (const auto& group_id : group_ids) {
+    model_->Remove(group_id);
+  }
+
+  metrics_logger_->RecordTabGroupDeletionsOnStartup(group_ids.size());
 }
 
 void TabGroupSyncServiceImpl::LogEvent(
