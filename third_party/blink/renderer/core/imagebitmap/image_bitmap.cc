@@ -954,11 +954,6 @@ void ImageBitmap::ResolvePromiseOnOriginalThread(
     resolver->Reject(v8::Null(resolver->GetScriptState()->GetIsolate()));
     return;
   }
-  image = ApplyColorSpaceConversion(std::move(image), *(parsed_options.get()));
-  if (!image) {
-    resolver->Reject(v8::Null(resolver->GetScriptState()->GetIsolate()));
-    return;
-  }
   ImageBitmap* bitmap = MakeGarbageCollected<ImageBitmap>(image);
   bitmap->BitmapImage()->SetOriginClean(origin_clean);
   resolver->Resolve(bitmap);
