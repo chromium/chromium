@@ -551,6 +551,9 @@ void SafeBrowsingService::SendDownloadReport(
     bool did_proceed,
     std::optional<bool> show_download_in_folder) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!ShouldSendDangerousDownloadReport(download, report_type)) {
+    return;
+  }
   auto report = CreateDownloadReport(download, report_type, did_proceed,
                                      show_download_in_folder);
   Profile* profile = Profile::FromBrowserContext(
@@ -569,6 +572,9 @@ void SafeBrowsingService::PersistDownloadReportAndSendOnNextStartup(
     bool did_proceed,
     std::optional<bool> show_download_in_folder) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!ShouldSendDangerousDownloadReport(download, report_type)) {
+    return;
+  }
   auto report = CreateDownloadReport(download, report_type, did_proceed,
                                      show_download_in_folder);
   Profile* profile = Profile::FromBrowserContext(

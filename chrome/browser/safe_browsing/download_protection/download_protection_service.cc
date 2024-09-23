@@ -511,7 +511,7 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
 
   OnDangerousDownloadOpened(item, profile);
 
-  if (sb_service_ && ShouldSendDangerousDownloadReport(item)) {
+  if (sb_service_) {
     // If the download is opened, it indicates the user has bypassed the warning
     // and decided to proceed, so setting did_proceed to true.
     sb_service_->SendDownloadReport(

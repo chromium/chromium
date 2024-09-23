@@ -180,14 +180,6 @@ void MaybeReportBypassAction(download::DownloadItem* file,
   // sent, because this event should be included in the report.
   DownloadItemWarningData::AddWarningActionEvent(file, surface, action);
 
-  if (!file->GetURL().is_valid()) {
-    return;
-  }
-  if (content::BrowserContext* browser_context =
-          content::DownloadItemUtils::GetBrowserContext(file);
-      browser_context && browser_context->IsOffTheRecord()) {
-    return;
-  }
   // Do not send cancel or keep report since it's not a terminal action.
   if (action != WarningAction::PROCEED && action != WarningAction::DISCARD) {
     return;

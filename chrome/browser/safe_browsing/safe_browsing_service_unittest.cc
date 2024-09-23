@@ -103,6 +103,7 @@ class SafeBrowsingServiceTest : public testing::Test {
                                                      /*web_contents=*/nullptr);
     EXPECT_CALL(download_item_, GetDangerType())
         .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST));
+    EXPECT_CALL(download_item_, IsDangerous()).WillRepeatedly(Return(true));
     EXPECT_CALL(download_item_, GetURL())
         .WillRepeatedly(ReturnRef(download_url_));
 
@@ -275,7 +276,7 @@ TEST_F(
 
   sb_service_->SendDownloadReport(
       &download_item_,
-      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED,
+      ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_RECOVERY,
       /*did_proceed=*/true,
       /*show_download_in_folder=*/true);
   histogram_tester.ExpectUniqueSample(

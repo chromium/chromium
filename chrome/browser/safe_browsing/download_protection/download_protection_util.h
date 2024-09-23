@@ -173,13 +173,10 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
     int user_gesture_limit);
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-// Sends dangerous download report if the following conditions are met:
-// (1) it is a dangerous download.
-// (2) user is NOT in incognito mode.
-// (3) user is opted-in for extended reporting.
-// (4) there is a download ping token associated with the download (i.e.
-//     Safe Browsing returns a dangerous verdict).
-bool ShouldSendDangerousDownloadReport(download::DownloadItem* item);
+// Returns true if dangerous download report should be sent.
+bool ShouldSendDangerousDownloadReport(
+    download::DownloadItem* item,
+    ClientSafeBrowsingReportRequest::ReportType report_type);
 #endif
 
 }  // namespace safe_browsing

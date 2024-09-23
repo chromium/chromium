@@ -169,44 +169,15 @@ DownloadItemModelData* DownloadItemModelData::GetOrCreate(
 DownloadItemModelData::DownloadItemModelData() = default;
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-bool ShouldSendDownloadReport(download::DownloadDangerType danger_type) {
-  switch (danger_type) {
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
-    case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST:
-    case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
-    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
-    case download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING:
-    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING:
-    case download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
-      return true;
-    default:
-      return false;
-  }
-}
-
-void MaybeSendDownloadReport(const GURL& url,
-                             download::DownloadDangerType danger_type,
-                             bool did_proceed,
-                             Profile* profile,
+void MaybeSendDownloadReport(bool did_proceed,
                              download::DownloadItem* download) {
-  // Only sends dangerous download report if :
-  // 1. FULL_SAFE_BROWSING is enabled, and
-  // 2. Download verdict is one of the dangerous types, and
-  // 3. Download URL is not empty, and
-  // 4. User is not in incognito mode.
-  if (ShouldSendDownloadReport(danger_type) && !url.is_empty() &&
-      !profile->IsOffTheRecord()) {
-    safe_browsing::SafeBrowsingService* sb_service =
-        g_browser_process->safe_browsing_service();
-    if (sb_service) {
-      sb_service->SendDownloadReport(
-          download,
-          safe_browsing::ClientSafeBrowsingReportRequest::
-              DANGEROUS_DOWNLOAD_WARNING,
-          did_proceed, /*show_download_in_folder=*/std::nullopt);
-    }
+  if (safe_browsing::SafeBrowsingService* sb_service =
+          g_browser_process->safe_browsing_service()) {
+    sb_service->SendDownloadReport(
+        download,
+        safe_browsing::ClientSafeBrowsingReportRequest::
+            DANGEROUS_DOWNLOAD_WARNING,
+        did_proceed, /*show_download_in_folder=*/std::nullopt);
   }
 }
 
@@ -882,15 +853,13 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       }
       DCHECK(IsDangerous());
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-      MaybeSendDownloadReport(GetURL(), GetDangerType(), /*did_proceed=*/true,
-                              profile(), download_);
+      MaybeSendDownloadReport(/*did_proceed=*/true, download_);
 #endif
       download_->ValidateDangerousDownload();
       break;
     case DownloadCommands::DISCARD:
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-      MaybeSendDownloadReport(GetURL(), GetDangerType(), /*did_proceed=*/false,
-                              profile(), download_);
+      MaybeSendDownloadReport(/*did_proceed=*/false, download_);
       if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         LogDeepScanEvent(download_, safe_browsing::DeepScanEvent::kScanDeleted);
       }

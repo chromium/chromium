@@ -198,6 +198,7 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Sends download report to backend.
+  // TODO(crbug.com/355577227): Rename to MaybeSendDownloadReport.
   virtual void SendDownloadReport(
       download::DownloadItem* download,
       ClientSafeBrowsingReportRequest::ReportType report_type,
@@ -205,6 +206,8 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
       std::optional<bool> show_download_in_folder);
 
   // Persists download report on disk and sends it to backend on next startup.
+  // TODO(crbug.com/355577227): Rename to
+  // MaybePersistDownloadReportAndSendOnNextStartup.
   virtual void PersistDownloadReportAndSendOnNextStartup(
       download::DownloadItem* download,
       ClientSafeBrowsingReportRequest::ReportType report_type,

@@ -40,21 +40,14 @@ namespace {
 
 void MaybeSendDownloadReport(content::BrowserContext* browser_context,
                              download::DownloadItem* download) {
-  if (download->GetURL().is_empty() || browser_context->IsOffTheRecord()) {
-    return;
+  if (safe_browsing::SafeBrowsingService* service =
+          g_browser_process->safe_browsing_service()) {
+    service->SendDownloadReport(download,
+                                safe_browsing::ClientSafeBrowsingReportRequest::
+                                    DANGEROUS_DOWNLOAD_RECOVERY,
+                                /*did_proceed=*/true,
+                                /*show_download_in_folder=*/std::nullopt);
   }
-
-  safe_browsing::SafeBrowsingService* service =
-      g_browser_process->safe_browsing_service();
-  if (!service) {
-    return;
-  }
-
-  service->SendDownloadReport(download,
-                              safe_browsing::ClientSafeBrowsingReportRequest::
-                                  DANGEROUS_DOWNLOAD_RECOVERY,
-                              /*did_proceed=*/true,
-                              /*show_download_in_folder=*/std::nullopt);
 }
 
 }  // namespace

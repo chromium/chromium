@@ -2352,23 +2352,6 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 }
 
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
-       AutoCanceledReport_NotSentStandardProtection) {
-  safe_browsing::SetSafeBrowsingState(
-      profile()->GetPrefs(),
-      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
-  std::unique_ptr<download::MockDownloadItem> download_item =
-      SetUpDangerousDownloadItemForCanceledReport();
-
-  delegate()->ScheduleCancelForEphemeralWarning(download_item->GetGuid());
-  EXPECT_CALL(*download_item, Cancel(false)).Times(1);
-  task_environment()->FastForwardBy(base::Hours(1));
-
-  EXPECT_FALSE(safe_browsing_service()->GetActualSentReportType().has_value());
-  EXPECT_FALSE(
-      safe_browsing_service()->GetActualSentDidProceedValue().has_value());
-}
-
-TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        AutoCanceledReport_NotSentNotDangerous) {
   safe_browsing::SetSafeBrowsingState(
       profile()->GetPrefs(),

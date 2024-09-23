@@ -226,15 +226,11 @@ void DownloadDangerPromptViews::RunDone(Action action) {
         RecordDownloadDangerPromptHistogram("Proceed", *download_);
       }
       RecordDownloadWarningEvent(action, download_);
-      if (!download_->GetURL().is_empty() &&
-          !content::DownloadItemUtils::GetBrowserContext(download_)
-               ->IsOffTheRecord()) {
-        ClientSafeBrowsingReportRequest::ReportType report_type =
-            ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API;
-        // Do not send cancel report since it's not a terminal action.
-        if (accept) {
-          SendSafeBrowsingDownloadReport(report_type, accept, download_);
-        }
+      // Do not send cancel report since it's not a terminal action.
+      if (accept) {
+        SendSafeBrowsingDownloadReport(
+            ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API, accept,
+            download_);
       }
     }
     download_->RemoveObserver(this);

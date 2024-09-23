@@ -200,7 +200,7 @@ class DownloadProtectionService {
   GetDownloadProtectionTailoredVerdict(const download::DownloadItem* item);
 
   // Sends dangerous download opened report when download is opened or
-  // shown in folder, and if |ShouldSendDangerousDownloadReport| is true.
+  // shown in folder.
   void MaybeSendDangerousDownloadOpenedReport(download::DownloadItem* item,
                                               bool show_download_in_folder);
 

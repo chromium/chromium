@@ -1916,9 +1916,6 @@ void ChromeDownloadManagerDelegate::MaybeSendDangerousDownloadCanceledReport(
     DownloadItem* download,
     bool is_shutdown) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  if (!safe_browsing::ShouldSendDangerousDownloadReport(download)) {
-    return;
-  }
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
   if (!sb_service) {

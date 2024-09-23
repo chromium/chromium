@@ -12,6 +12,7 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -129,6 +130,30 @@ void AddEventUrlToReferrerChain(const download::DownloadItem& item,
     event_url_entry->add_server_redirect_chain()->set_url(url.spec());
   }
 }
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+bool IsDownloadReportGatedByExtendedReporting(
+    ClientSafeBrowsingReportRequest::ReportType report_type) {
+  switch (report_type) {
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_RECOVERY:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_WARNING:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_BY_API:
+      return false;
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_OPENED:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_AUTO_DELETED:
+    case safe_browsing::ClientSafeBrowsingReportRequest::
+        DANGEROUS_DOWNLOAD_PROFILE_CLOSED:
+      return true;
+    default:
+      NOTREACHED();
+  }
+}
+#endif
 
 }  // namespace
 
@@ -388,34 +413,51 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-bool ShouldSendDangerousDownloadReport(download::DownloadItem* item) {
+bool ShouldSendDangerousDownloadReport(
+    download::DownloadItem* item,
+    ClientSafeBrowsingReportRequest::ReportType report_type) {
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(item);
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile || !IsExtendedReportingEnabled(*profile->GetPrefs())) {
+  if (!profile) {
     return false;
   }
-
-  // When users are in incognito mode, no report will be sent and no
-  // |onDangerousDownloadOpened| extension API will be called.
+  if (!IsSafeBrowsingEnabled(*profile->GetPrefs())) {
+    return false;
+  }
+  if (IsDownloadReportGatedByExtendedReporting(report_type) &&
+      !IsExtendedReportingEnabled(*profile->GetPrefs())) {
+    return false;
+  }
   if (browser_context->IsOffTheRecord()) {
     return false;
   }
-
-  // Only report downloads that are known to be dangerous or was dangerous but
-  // was validated by the user.
-  if (!item->IsDangerous() &&
-      item->GetDangerType() != download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
+  if (item->GetURL().is_empty() || !item->GetURL().is_valid()) {
     return false;
   }
 
+  download::DownloadDangerType danger_type = item->GetDangerType();
   std::string token = DownloadProtectionService::GetDownloadPingToken(item);
-  // Only dangerous downloads have token stored.
-  if (token.empty()) {
+  bool has_token = !token.empty();
+
+  ClientDownloadResponse::Verdict download_verdict =
+      safe_browsing::DownloadProtectionService::GetDownloadProtectionVerdict(
+          item);
+  bool has_unsafe_verdict = download_verdict != ClientDownloadResponse::SAFE;
+
+  if (item->IsDangerous() ||
+      danger_type == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
+    // Report downloads that are known to be dangerous or was dangerous but
+    // was validated by the user.
+    return has_token && has_unsafe_verdict;
+  } else if (danger_type ==
+             download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING) {
+    // Async scanning may be triggered when the verdict is safe. Still send the
+    // report in this case.
+    return has_token;
+  } else {
     return false;
   }
-
-  return true;
 }
 #endif
 
