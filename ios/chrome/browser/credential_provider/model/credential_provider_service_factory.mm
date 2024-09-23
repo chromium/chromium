@@ -59,34 +59,33 @@ CredentialProviderServiceFactory::~CredentialProviderServiceFactory() = default;
 std::unique_ptr<KeyedService>
 CredentialProviderServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   scoped_refptr<password_manager::PasswordStoreInterface>
       profile_password_store =
-          IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-              browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+          IOSChromeProfilePasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::IMPLICIT_ACCESS);
   scoped_refptr<password_manager::PasswordStoreInterface>
       account_password_store =
-          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-              browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+          IOSChromeAccountPasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::IMPLICIT_ACCESS);
   webauthn::PasskeyModel* passkeyModel =
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
-          ? IOSPasskeyModelFactory::GetForBrowserState(browser_state)
+          ? IOSPasskeyModelFactory::GetForProfile(profile)
           : nullptr;
   ArchivableCredentialStore* credential_store =
       [[ArchivableCredentialStore alloc]
           initWithFileURL:CredentialProviderSharedArchivableStoreURL()];
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForProfile(profile);
   affiliations::AffiliationService* affiliation_service =
-      IOSChromeAffiliationServiceFactory::GetForBrowserState(browser_state);
+      IOSChromeAffiliationServiceFactory::GetForProfile(profile);
   FaviconLoader* favicon_loader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state);
+      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
   return std::make_unique<CredentialProviderService>(
-      browser_state->GetPrefs(), profile_password_store, account_password_store,
+      profile->GetPrefs(), profile_password_store, account_password_store,
       passkeyModel, credential_store, identity_manager, sync_service,
       affiliation_service, favicon_loader);
 }

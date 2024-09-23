@@ -307,15 +307,14 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader,
 }
 
 void UpdateFaviconsStorageForBrowserState(
-    base::WeakPtr<ChromeBrowserState> weak_browser_state,
+    base::WeakPtr<ProfileIOS> weak_profile,
     bool fallback_to_google_server) {
-  ChromeBrowserState* browser_state = weak_browser_state.get();
-  if (!browser_state) {
+  ProfileIOS* profile = weak_profile.get();
+  if (!profile) {
     return;
   }
-  UpdateFaviconsStorage(
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state),
-      fallback_to_google_server);
+  UpdateFaviconsStorage(IOSChromeFaviconLoaderFactory::GetForProfile(profile),
+                        fallback_to_google_server);
 }
 
 NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness() {
