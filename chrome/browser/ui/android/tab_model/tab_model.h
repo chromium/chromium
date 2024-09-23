@@ -123,6 +123,8 @@ class TabModel {
     // Open most recent tab in foregroud, used by ctrl-shift-t to restore
     // most recently closed tab or tabs.
     FROM_RECENT_TABS_FOREGROUND,
+    // Open a new tab to prevent collaborations from having 0 tabs.
+    FROM_COLLABORATION_BACKGROUND_IN_GROUP,
     // Must be last.
     SIZE
   };

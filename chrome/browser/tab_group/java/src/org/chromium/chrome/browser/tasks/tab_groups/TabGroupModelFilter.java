@@ -801,7 +801,8 @@ public class TabGroupModelFilter extends TabModelFilter {
         return isTabModelRestored()
                 && !mIsResetting
                 && ((tabLaunchType == TabLaunchType.FROM_TAB_GROUP_UI
-                        || tabLaunchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP));
+                        || tabLaunchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                        || tabLaunchType == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP));
     }
 
     private Tab getParentTab(Tab tab) {

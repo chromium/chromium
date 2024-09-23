@@ -116,6 +116,9 @@ public interface TabModelSelector {
      */
     boolean isOffTheRecordModelSelected();
 
+    /** Returns the {@link TabCreatorManager} to create tabs in this tab model selector. */
+    TabCreatorManager getTabCreatorManager();
+
     /**
      * Opens a new tab.
      *

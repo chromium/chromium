@@ -137,6 +137,8 @@ public class ChromeTabCreator extends TabCreator {
                 return "SyncBackground";
             case TabLaunchType.FROM_RECENT_TABS_FOREGROUND:
                 return "RecentTabsForeground";
+            case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
+                return "CollaborationBackgroundInGroup";
             default:
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 return "TypeUnknown";

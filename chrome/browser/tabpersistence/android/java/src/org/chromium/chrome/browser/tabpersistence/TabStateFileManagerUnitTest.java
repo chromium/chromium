@@ -161,12 +161,13 @@ public class TabStateFileManagerUnitTest {
         Assert.assertEquals(22, TabLaunchTypeAtCreation.UNSET);
         Assert.assertEquals(23, TabLaunchTypeAtCreation.FROM_SYNC_BACKGROUND);
         Assert.assertEquals(24, TabLaunchTypeAtCreation.FROM_RECENT_TABS_FOREGROUND);
+        Assert.assertEquals(25, TabLaunchTypeAtCreation.FROM_COLLABORATION_BACKGROUND_IN_GROUP);
         // Note this should be the total number of TabLaunchTypeAtCreation values including
         // SIZE and UNKNOWN so it should be equal to the last value +3.
         Assert.assertEquals(
                 "Need to increment 1 to expected value each time a LaunchTypeAtCreation "
                         + "is added. Also need to add any new LaunchTypeAtCreation to this test.",
-                27,
+                28,
                 TabLaunchTypeAtCreation.names.length);
     }
 
@@ -177,7 +178,7 @@ public class TabStateFileManagerUnitTest {
                         + " FlatBufferTabStateSerizer#getLaunchTypeFromFlatBuffer,"
                         + " FlatBufferTabStateSerizer#getLaunchTypeToFlatBuffer"
                         + " and this test file.",
-                25,
+                26,
                 TabLaunchType.SIZE);
     }
 
@@ -303,6 +304,10 @@ public class TabStateFileManagerUnitTest {
                 TabLaunchType.SIZE,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.SIZE));
+        Assert.assertEquals(
+                TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP,
+                FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
+                        TabLaunchTypeAtCreation.FROM_COLLABORATION_BACKGROUND_IN_GROUP));
         Assert.assertEquals(
                 TabLaunchType.UNSET,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(

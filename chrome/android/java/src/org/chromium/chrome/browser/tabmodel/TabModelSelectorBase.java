@@ -259,6 +259,11 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
+    public TabCreatorManager getTabCreatorManager() {
+        return mTabCreatorManager;
+    }
+
+    @Override
     public Tab openNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, boolean incognito) {
         return mTabCreatorManager
@@ -413,10 +418,6 @@ public abstract class TabModelSelectorBase
         for (TabModelSelectorObserver listener : mObservers) {
             listener.onTabHidden(tab);
         }
-    }
-
-    protected TabCreatorManager getTabCreatorManager() {
-        return mTabCreatorManager;
     }
 
     @Override

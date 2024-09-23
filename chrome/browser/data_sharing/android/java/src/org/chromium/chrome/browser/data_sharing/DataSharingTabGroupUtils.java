@@ -9,19 +9,28 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /** Utilities related to tab groups in data sharing. */
 public class DataSharingTabGroupUtils {
@@ -87,6 +96,60 @@ public class DataSharingTabGroupUtils {
                         ? TabModelUtils.convertTabListToListOfTabs(tabModel)
                         : closureParams.tabs;
         return getCollaborationsDestroyedByTabRemoval(tabModel, tabsToClose);
+    }
+
+    /**
+     * Given a set of local tab group IDs create placeholder tabs in those tab groups to protect the
+     * collaborations from being deleted.
+     *
+     * @param tabModel The tab model to close tabs in.
+     * @param tabCreatorManager The tab creator manager.
+     * @param localTabGroupIds The list of tab group IDs to add tabs to.
+     * @return A list of tabs that were created.
+     */
+    public static @NonNull List<Tab> createPlaceholderTabInGroups(
+            TabModel tabModel,
+            TabCreatorManager tabCreatorManager,
+            @Nullable List<LocalTabGroupId> localTabGroupIds) {
+        // This functionality is not supported in incognito mode.
+        if (localTabGroupIds == null
+                || localTabGroupIds.isEmpty()
+                || tabModel.isIncognitoBranded()) {
+            return Collections.emptyList();
+        }
+
+        Set<Token> tabGroupIds =
+                localTabGroupIds.stream()
+                        .map(localTabGroupId -> localTabGroupId.tabGroupId)
+                        .collect(Collectors.toSet());
+        HashMap<Token, Tab> parentTabMap = new HashMap<>();
+        for (int i = 0; i < tabModel.getCount(); i++) {
+            Tab tab = tabModel.getTabAt(i);
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+
+            // The parent tab should be the last tab in the tab group. Tab groups are contiguous.
+            if (tabGroupId != null && tabGroupIds.contains(tabGroupId)) {
+                parentTabMap.put(tabGroupId, tab);
+            } else if (parentTabMap.size() == localTabGroupIds.size()) {
+                // Every tab group now has a parent tab and since groups are contiguous we can early
+                // exit.
+                break;
+            }
+        }
+
+        TabCreator tabCreator = tabCreatorManager.getTabCreator(tabModel.isIncognitoBranded());
+        List<Tab> newTabs = new ArrayList<>();
+        for (Tab parentTab : parentTabMap.values()) {
+            // The tab will automatically be placed immediately after the parent and this launch
+            // type ensures the tab is added to the tab group.
+            Tab newTab =
+                    tabCreator.createNewTab(
+                            new LoadUrlParams(UrlConstants.NTP_URL),
+                            TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP,
+                            parentTab);
+            newTabs.add(newTab);
+        }
+        return newTabs;
     }
 
     private static boolean willRemoveAllTabsInGroup(

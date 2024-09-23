@@ -152,6 +152,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
                         && type != TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                         && type != TabLaunchType.FROM_RECENT_TABS
                         && type != TabLaunchType.FROM_SYNC_BACKGROUND
+                        && type != TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP
                 || (!mTabModelSelector.isIncognitoBrandedModelSelected()
                         && isNewTabIncognitoBranded);
     }

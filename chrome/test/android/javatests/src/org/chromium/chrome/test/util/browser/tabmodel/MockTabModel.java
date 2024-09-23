@@ -116,6 +116,16 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
+    public boolean isIncognitoBranded() {
+        return mProfile.isOffTheRecord();
+    }
+
+    @Override
+    public boolean isOffTheRecord() {
+        return mProfile.isOffTheRecord();
+    }
+
+    @Override
     public int getCount() {
         return mTabs.size();
     }

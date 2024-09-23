@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -164,6 +165,14 @@ public class SimpleAnimationLayout extends Layout {
             float originX,
             float originY) {
         super.onTabCreated(time, id, index, sourceId, newIsIncognito, background, originX, originY);
+        if (mTabModelSelector != null) {
+            Tab tab = mTabModelSelector.getModel(newIsIncognito).getTabById(id);
+            if (tab != null
+                    && tab.getLaunchType()
+                            == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP) {
+                return;
+            }
+        }
         ensureSourceTabCreated(sourceId);
         if (background && mLayoutTabs != null && mLayoutTabs.length > 0) {
             tabCreatedInBackground(id, sourceId, newIsIncognito, originX, originY);

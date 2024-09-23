@@ -4462,6 +4462,8 @@ chromium-metrics-reviews@google.com.
     <variant name="BrowserActions"
         summary="tabs opened from browser actions context menu"/>
     <variant name="ChromeUI" summary="tabs opened via Chrome UI"/>
+    <variant name="CollaborationBackgroundInGroup"
+        summary="tabs opened from collaboration protection mechanism"/>
     <variant name="ExternalApp" summary="tabs opened from an external app"/>
     <variant name="LauncherShortcut"
         summary="tabs opened from launcher shortcut"/>
@@ -4515,6 +4517,8 @@ chromium-metrics-reviews@google.com.
     <variant name="BrowserActions"
         summary="tabs opened from browser actions context menu"/>
     <variant name="ChromeUI" summary="tabs opened via Chrome UI"/>
+    <variant name="CollaborationBackgroundInGroup"
+        summary="tabs opened from collaboration protection mechanism"/>
     <variant name="ExternalApp" summary="tabs opened from an external app"/>
     <variant name="LauncherShortcut"
         summary="tabs opened from launcher shortcut"/>

@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.data_sharing;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import androidx.annotation.Nullable;
@@ -21,8 +24,12 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -56,11 +63,14 @@ public class DataSharingTabGroupUtilsUnitTest {
     @Mock private Profile mRegularProfile;
     @Mock private Profile mOtrProfile;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private TabCreator mTabCreator;
 
     @Before
     public void setUp() {
         when(mRegularProfile.isOffTheRecord()).thenReturn(false);
         when(mOtrProfile.isOffTheRecord()).thenReturn(true);
+        when(mTabCreatorManager.getTabCreator(false)).thenReturn(mTabCreator);
 
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
     }
@@ -256,6 +266,76 @@ public class DataSharingTabGroupUtilsUnitTest {
         assertEquals(LOCAL_TAB_GROUP_ID_3, result.get(1));
     }
 
+    @Test
+    public void testCreatePlaceholderTabInGroups_Incognito() {
+        List<TabGroupData> tabGroups = new ArrayList<>();
+        tabGroups.add(
+                new TabGroupData(
+                        LOCAL_TAB_GROUP_ID_1, List.of(TAB_ID_1), /* isCollaboration= */ true));
+        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ true);
+        List<Tab> result =
+                DataSharingTabGroupUtils.createPlaceholderTabInGroups(
+                        tabModel, mTabCreatorManager, List.of(LOCAL_TAB_GROUP_ID_1));
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testCreatePlaceholderTabInGroups_EmptyOrNullOrMismatch() {
+        List<TabGroupData> tabGroups = new ArrayList<>();
+        tabGroups.add(
+                new TabGroupData(
+                        LOCAL_TAB_GROUP_ID_1, List.of(TAB_ID_1), /* isCollaboration= */ true));
+        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
+        List<Tab> result =
+                DataSharingTabGroupUtils.createPlaceholderTabInGroups(
+                        tabModel, mTabCreatorManager, /* localTabGroupIds= */ null);
+        assertTrue(result.isEmpty());
+
+        result =
+                DataSharingTabGroupUtils.createPlaceholderTabInGroups(
+                        tabModel, mTabCreatorManager, Collections.emptyList());
+        assertTrue(result.isEmpty());
+
+        result =
+                DataSharingTabGroupUtils.createPlaceholderTabInGroups(
+                        tabModel, mTabCreatorManager, List.of(LOCAL_TAB_GROUP_ID_2));
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void testCreatePlaceholderTabInGroups() {
+        List<TabGroupData> tabGroups = new ArrayList<>();
+        tabGroups.add(
+                new TabGroupData(
+                        LOCAL_TAB_GROUP_ID_1,
+                        List.of(TAB_ID_1, TAB_ID_2),
+                        /* isCollaboration= */ true));
+        tabGroups.add(
+                new TabGroupData(
+                        LOCAL_TAB_GROUP_ID_2, List.of(TAB_ID_3), /* isCollaboration= */ true));
+        tabGroups.add(
+                new TabGroupData(
+                        LOCAL_TAB_GROUP_ID_3, List.of(TAB_ID_4), /* isCollaboration= */ true));
+        var tabModel = createTabGroups(tabGroups, /* isIncognito= */ false);
+        List<Tab> result =
+                DataSharingTabGroupUtils.createPlaceholderTabInGroups(
+                        tabModel,
+                        mTabCreatorManager,
+                        List.of(LOCAL_TAB_GROUP_ID_1, LOCAL_TAB_GROUP_ID_3));
+        assertEquals(2, result.size());
+
+        verify(mTabCreator)
+                .createNewTab(
+                        any(),
+                        eq(TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP),
+                        eq(tabModel.getTabById(TAB_ID_2)));
+        verify(mTabCreator)
+                .createNewTab(
+                        any(),
+                        eq(TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP),
+                        eq(tabModel.getTabById(TAB_ID_4)));
+    }
+
     private static class TabGroupData {
         public final @Nullable LocalTabGroupId localTabGroupId;
         public final List<Integer> tabIds;
@@ -280,7 +360,10 @@ public class DataSharingTabGroupUtilsUnitTest {
         for (TabGroupData group : groups) {
             List<SavedTabGroupTab> savedTabs = new ArrayList<>();
             for (int tabId : group.tabIds) {
-                mockTabModel.addTab(tabId);
+                Tab tab = mockTabModel.addTab(tabId);
+                if (group.localTabGroupId != null) {
+                    tab.setTabGroupId(group.localTabGroupId.tabGroupId);
+                }
 
                 SavedTabGroupTab savedTab = new SavedTabGroupTab();
                 savedTab.localId = tabId;
