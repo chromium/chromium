@@ -267,8 +267,6 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // |scale_factor|.
   int GetSystemMetricsForScaleFactor(float scale_factor, int metric) const;
 
-  void RecordDisplayScaleFactors() const;
-
   //-----------------------------------------------------------------
   // UwpTextScaleFactor::Observer:
 

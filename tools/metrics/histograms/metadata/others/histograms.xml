@@ -9590,15 +9590,6 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram name="UI.DeviceScale" units="%" expires_after="2024-09-29">
-  <owner>bsep@chromium.org</owner>
-  <summary>
-    The device scales available on the system at startup. A system may report
-    more than one if it has multiple displays with varying device scales. Only
-    logged on Windows.
-  </summary>
-</histogram>
-
 <histogram name="UnifiedConsent.MakeSearchesAndBrowsingBetter.OnProfileLoad"
     enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: Core metric for monitoring user settings for making searches and browsing better. -->

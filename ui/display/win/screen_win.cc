@@ -928,7 +928,6 @@ void ScreenWin::Initialize() {
   singleton_hwnd_observer_ = std::make_unique<gfx::SingletonHwndObserver>(
       base::BindRepeating(&ScreenWin::OnWndProc, base::Unretained(this)));
   UpdateFromDisplayInfos(GetDisplayInfosFromSystem());
-  RecordDisplayScaleFactors();
 
   // We want to remember that we've observed a screen metrics object so that we
   // can remove ourselves as an observer at some later point (either when the
@@ -1101,22 +1100,6 @@ int ScreenWin::GetSystemMetricsForScaleFactor(float scale_factor,
   // per-process dpi awareness.
   return base::ClampRound(GetSystemMetrics(metric) * scale_factor /
                           GetPrimaryDisplay().device_scale_factor());
-}
-
-void ScreenWin::RecordDisplayScaleFactors() const {
-  std::vector<int> unique_scale_factors;
-  for (const auto& screen_win_display : screen_win_displays_) {
-    const float scale_factor =
-        screen_win_display.display().device_scale_factor();
-    // Multiply the reported value by 100 to display it as a percentage. Clamp
-    // it so that if it's wildly out-of-band we won't send it to the backend.
-    const int reported_scale =
-        std::clamp(base::checked_cast<int>(scale_factor * 100), 0, 1000);
-    if (!base::Contains(unique_scale_factors, reported_scale)) {
-      unique_scale_factors.push_back(reported_scale);
-      base::UmaHistogramSparse("UI.DeviceScale", reported_scale);
-    }
-  }
 }
 
 void ScreenWin::OnUwpTextScaleFactorChanged() {
