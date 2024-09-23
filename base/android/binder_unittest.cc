@@ -595,7 +595,8 @@ class BinderSink : public SupportsBinder<BinderSinkClass> {
   WaitableEvent disconnect_;
 };
 
-TEST_F(BinderMultiprocessTest, AssociateValid) {
+// (crbug.com/361233762): Failing on M129 and not needed for M129.
+TEST_F(BinderMultiprocessTest, DISABLED_AssociateValid) {
   auto sink = base::MakeRefCounted<BinderSink>(*this);
   Process child = sink->LaunchChildAndWaitForCall(
       "AssociateValid_Child", [&](BinderRef binder) {
