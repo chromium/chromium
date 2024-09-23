@@ -4,7 +4,7 @@
 
 #include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 
-#include "chrome/browser/engagement/site_engagement_service_factory.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -34,13 +34,16 @@ LookalikeUrlServiceFactory::LookalikeUrlServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
 LookalikeUrlServiceFactory::~LookalikeUrlServiceFactory() = default;
 
 // BrowserContextKeyedServiceFactory:
 KeyedService* LookalikeUrlServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return new LookalikeUrlService(static_cast<Profile*>(profile));
+    content::BrowserContext* context) const {
+  auto* profile = static_cast<Profile*>(context);
+  return new LookalikeUrlService(
+      profile->GetPrefs(),
+      HostContentSettingsMapFactory::GetForProfile(profile));
 }

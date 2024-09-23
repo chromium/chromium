@@ -14,9 +14,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/common/channel_info.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -87,8 +84,12 @@ void RecordReputationStatusWithEngagedSitesTime(base::TimeTicks start) {
 
 }  // namespace
 
-LookalikeUrlService::LookalikeUrlService(Profile* profile)
-    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {}
+LookalikeUrlService::LookalikeUrlService(
+    PrefService* pref_service,
+    HostContentSettingsMap* host_content_settings_map)
+    : pref_service_(pref_service),
+      host_content_settings_map_(host_content_settings_map),
+      clock_(base::DefaultClock::GetInstance()) {}
 
 LookalikeUrlService::~LookalikeUrlService() = default;
 
@@ -112,11 +113,9 @@ void LookalikeUrlService::ForceUpdateEngagedSites(
         FROM_HERE,
         {base::TaskPriority::USER_BLOCKING,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(
-            &UpdateEngagedSitesOnWorkerThread,
-            clock_->Now(),
-            base::WrapRefCounted(
-                HostContentSettingsMapFactory::GetForProfile(profile_))),
+        base::BindOnce(&UpdateEngagedSitesOnWorkerThread, clock_->Now(),
+                       base::WrapRefCounted<HostContentSettingsMap>(
+                           host_content_settings_map_)),
         base::BindOnce(&LookalikeUrlService::OnUpdateEngagedSitesCompleted,
                        weak_factory_.GetWeakPtr()));
   }
@@ -182,7 +181,7 @@ LookalikeUrlService::CheckUrlForLookalikes(
   }
 
   // If the host is allowlisted by policy, don't show any warning.
-  if (lookalikes::IsAllowedByEnterprisePolicy(profile_->GetPrefs(), url)) {
+  if (lookalikes::IsAllowedByEnterprisePolicy(pref_service_, url)) {
     result.is_allowlisted = true;
     if (stop_checking_on_allowlist_or_ignore) {
       return result;

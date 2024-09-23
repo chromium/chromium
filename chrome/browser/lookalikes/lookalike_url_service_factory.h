@@ -29,7 +29,7 @@ class LookalikeUrlServiceFactory : public ProfileKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* profile) const override;
+      content::BrowserContext* context) const override;
 };
 
 #endif  // CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_SERVICE_FACTORY_H_

@@ -20,7 +20,11 @@
 #include "components/security_state/core/security_state.h"
 #include "url/gurl.h"
 
-class Profile;
+class PrefService;
+
+namespace base {
+class Clock;
+}
 
 namespace lookalikes {
 struct DomainInfo;
@@ -51,19 +55,16 @@ struct SafetyTipCheckResult {
 using SafetyTipCheckCallback =
     base::OnceCallback<void(SafetyTipCheckResult result)>;
 
-class Profile;
-
-namespace base {
-class Clock;
-}
-
 // A service that handles operations on lookalike URLs. It can fetch the list of
 // engaged sites in a background thread and cache the results until the next
 // update. This is more efficient than fetching the list on each navigation for
 // each tab separately.
 class LookalikeUrlService : public KeyedService {
  public:
-  explicit LookalikeUrlService(Profile* profile);
+  // DO NOT pass a Profile here, pass keyed services dependencies explicitly
+  // (crbug.com/368297674).
+  LookalikeUrlService(PrefService* pref_service,
+                      HostContentSettingsMap* host_content_settings_map);
 
   LookalikeUrlService(const LookalikeUrlService&) = delete;
   LookalikeUrlService& operator=(const LookalikeUrlService&) = delete;
@@ -160,7 +161,8 @@ class LookalikeUrlService : public KeyedService {
       SafetyTipCheckCallback callback,
       const std::vector<lookalikes::DomainInfo>& engaged_sites);
 
-  raw_ptr<Profile> profile_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   raw_ptr<base::Clock> clock_;
   base::Time last_engagement_fetch_time_;
   std::vector<lookalikes::DomainInfo> engaged_sites_
