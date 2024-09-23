@@ -317,6 +317,7 @@ test("google_apis_unittests") {
     deps += [
       "//google_apis/classroom:classroom_unittests",
       "//google_apis/tasks:tasks_unittests",
+      "//google_apis/youtube_music:youtube_music_unittests",
     ]
   }
 }

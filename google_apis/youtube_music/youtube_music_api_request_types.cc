@@ -286,4 +286,48 @@ std::vector<std::string> SignedRequest::GetExtraRequestHeaders() const {
   return headers_;
 }
 
+std::string ParseErrorJson(const std::string& response_body) {
+  const char kErrorKey[] = "error";
+  const char kDetailsKey[] = "details";
+  const char kTypeKey[] = "@type";
+  const char kLocalizedMessage[] =
+      "type.googleapis.com/google.rpc.LocalizedMessage";
+  const char kMessageKey[] = "message";
+
+  std::unique_ptr<const base::Value> value(
+      google_apis::ParseJson(response_body));
+  if (!value || !value->is_dict()) {
+    return std::string();
+  }
+
+  const base::Value::Dict* error = value->GetDict().FindDict(kErrorKey);
+  if (!error) {
+    return std::string();
+  }
+
+  const base::Value::List* details = error->FindList(kDetailsKey);
+  if (!details) {
+    return std::string();
+  }
+
+  for (const base::Value& detail : *details) {
+    if (!detail.is_dict()) {
+      continue;
+    }
+
+    const base::Value::Dict& detail_dict = detail.GetDict();
+    const std::string* type = detail_dict.FindString(kTypeKey);
+    if (!type || kLocalizedMessage != *type) {
+      continue;
+    }
+
+    // This is the localized message detail. Try to extract the message.
+    const std::string* message = detail_dict.FindString(kMessageKey);
+    return !message ? std::string() : *message;
+  }
+
+  // No detail with the correct type found.
+  return std::string();
+}
+
 }  // namespace google_apis::youtube_music

@@ -22,3 +22,19 @@ static_library("youtube_music") {
     "//url",
   ]
 }
+
+source_set("youtube_music_unittests") {
+  testonly = true
+
+  sources = [ "youtube_music_api_request_types_unittest.cc" ]
+
+  deps = [
+    ":youtube_music",
+    "//base/test:test_support",
+    "//google_apis/common:common",
+    "//google_apis/common:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
