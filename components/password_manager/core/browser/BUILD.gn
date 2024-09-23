@@ -42,6 +42,7 @@ static_library("browser") {
     "credentials_cleaner_runner.cc",
     "credentials_cleaner_runner.h",
     "credentials_filter.h",
+    "credential_type_flags.h",
     "field_info_manager.cc",
     "field_info_manager.h",
     "form_fetcher.h",

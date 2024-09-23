@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/password_manager/core/browser/credential_type_flags.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -138,7 +139,6 @@ CredentialManagerPendingRequestTask::CredentialManagerPendingRequestTask(
     CredentialManagerPendingRequestTaskDelegate* delegate,
     SendCredentialCallback callback,
     CredentialMediationRequirement mediation,
-    bool include_passwords,
     int requested_credential_type_flags,
     const std::vector<GURL>& request_federations,
     PasswordFormDigest form_digest)
@@ -146,7 +146,6 @@ CredentialManagerPendingRequestTask::CredentialManagerPendingRequestTask(
       send_callback_(std::move(callback)),
       mediation_(mediation),
       origin_(delegate_->GetOrigin()),
-      include_passwords_(include_passwords),
       requested_credential_type_flags_(requested_credential_type_flags),
       form_fetcher_(std::make_unique<FormFetcherImpl>(
           std::move(form_digest),
@@ -181,7 +180,10 @@ void CredentialManagerPendingRequestTask::OnFetchCompleted() {
                           [](const PasswordForm& form) {
                             return std::make_unique<PasswordForm>(form);
                           });
-  FilterIrrelevantForms(all_matches, include_passwords_, federations_);
+  bool include_passwords =
+      requested_credential_type_flags_ &
+      static_cast<int>(CredentialTypeFlags::kPassword);
+  FilterIrrelevantForms(all_matches, include_passwords, federations_);
   ProcessForms(std::move(all_matches));
 }
 
