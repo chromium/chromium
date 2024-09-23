@@ -97,6 +97,8 @@ using ::testing::UnorderedElementsAre;
 
 constexpr char kUpdateManifestUrl1[] =
     "https://example.com/1/update-manifest-1.json";
+constexpr char kUpdateManifestUrl1Beta[] =
+    "https://example.com/1/update-manifest-1-beta.json";
 constexpr char kUpdateManifestUrl2[] =
     "https://example.com/2/update-manifest-2.json";
 constexpr char kUpdateManifestUrl3[] =
@@ -114,6 +116,12 @@ constexpr char kUpdateManifestValue1[] = R"(
     {"versions":[
       {"version": "1.0.0", "src": "https://example.com/not-used.swbn"},
       {"version": "7.0.6", "src": "https://example.com/app1.swbn"}]
+    })";
+constexpr char kUpdateManifestValue1Beta[] = R"(
+    {"versions":[
+      {"version": "1.0.0", "src": "https://example.com/not-used.swbn"},
+      {"version": "7.0.6", "src": "https://example.com/app1.swbn"},
+      {"version": "7.0.8", "src": "https://example.com/app1-beta.swbn", "channels":["beta"]}]
     })";
 constexpr char kUpdateManifestValue2[] = R"(
     {"versions":
@@ -134,6 +142,8 @@ constexpr char kUpdateManifestValue7[] = R"(
 
 constexpr char kWebBundleId1[] =
     "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+constexpr char kWebBundleId1Beta[] =
+    "a2rugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId2[] =
     "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId3[] =
@@ -146,15 +156,6 @@ constexpr char kWebBundleId6[] =
     "herugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 constexpr char kWebBundleId7[] =
     "gerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-
-base::Value CreatePolicyEntry(std::string_view web_bundle_id,
-                              std::string_view update_manifest_url) {
-  base::Value::Dict policy_entry =
-      base::Value::Dict()
-          .Set(web_app::kPolicyWebBundleIdKey, web_bundle_id)
-          .Set(web_app::kPolicyUpdateManifestUrlKey, update_manifest_url);
-  return base::Value(std::move(policy_entry));
-}
 
 class MockIwaInstallCommandWrapper
     : public internal::IwaInstaller::IwaInstallCommandWrapper {
@@ -214,11 +215,14 @@ void HandleInstallBasedOnId(
     const base::Version& expected_version,
     WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) {
   if (url_info.web_bundle_id().id() == kWebBundleId1 ||
-      url_info.web_bundle_id().id() == kWebBundleId2) {
+      url_info.web_bundle_id().id() == kWebBundleId2 ||
+      url_info.web_bundle_id().id() == kWebBundleId1Beta) {
     if (url_info.web_bundle_id().id() == kWebBundleId1) {
       EXPECT_EQ(expected_version, base::Version("7.0.6"));
     } else if (url_info.web_bundle_id().id() == kWebBundleId2) {
       EXPECT_EQ(expected_version, base::Version("3.0.0"));
+    } else if (url_info.web_bundle_id().id() == kWebBundleId1Beta) {
+      EXPECT_EQ(expected_version, base::Version("7.0.8"));
     }
 
     std::move(callback).Run(InstallIsolatedWebAppCommandSuccess(
@@ -241,6 +245,7 @@ struct IwaInstallerTestParam {
   std::string bundle_id;
   std::string manifest_url;
   internal::IwaInstallerResult::Type result_type;
+  std::optional<std::string> update_channel;
 };
 
 class IwaInstallerTest
@@ -266,6 +271,7 @@ class IwaInstallerTest
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
     AddJsonResponse(kUpdateManifestUrl1, kUpdateManifestValue1);
+    AddJsonResponse(kUpdateManifestUrl1Beta, kUpdateManifestValue1Beta);
     AddJsonResponse(kUpdateManifestUrl2, kUpdateManifestValue2);
     test_factory_.AddResponse(kUpdateManifestUrl3, kUpdateManifestValue3,
                               net::HttpStatusCode::HTTP_NOT_FOUND);
@@ -275,6 +281,8 @@ class IwaInstallerTest
     AddJsonResponse(kUpdateManifestUrl7, kUpdateManifestValue7);
     test_factory_.AddResponse("https://example.com/app1.swbn",
                               "Content of app1");
+    test_factory_.AddResponse("https://example.com/app1-beta.swbn",
+                              "Content of app1-beta");
     test_factory_.AddResponse("https://example.com/app2.swbn",
                               "Content of app2");
     test_factory_.AddResponse("https://example.com/app6.swbn",
@@ -310,8 +318,10 @@ class IwaInstallerTest
 
   IsolatedWebAppExternalInstallOptions install_options_ =
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
-          CreatePolicyEntry(/*web_bundle_id=*/GetParam().bundle_id,
-                            /*update_manifest_url=*/GetParam().manifest_url))
+          PolicyGenerator::CreatePolicyEntry(
+              /*web_bundle_id=*/GetParam().bundle_id,
+              /*update_manifest_url=*/GetParam().manifest_url,
+              /*update_channel=*/GetParam().update_channel))
           .value();
 };
 
@@ -381,7 +391,14 @@ INSTANTIATE_TEST_SUITE_P(
          .bundle_id = kWebBundleId1,
          .manifest_url = kUpdateManifestUrl1,
          .result_type = internal::IwaInstallerResult::Type::kSuccess},
-        // Same as the previous test case, but inside a managed guest session.
+        // Same as the first test case, but with non-default release channel.
+        {.is_mgs_install_enabled = true,
+         .is_user_session = true,
+         .bundle_id = kWebBundleId1Beta,
+         .manifest_url = kUpdateManifestUrl1Beta,
+         .result_type = internal::IwaInstallerResult::Type::kSuccess,
+         .update_channel = "beta"},
+        // Same as the first test case, but inside a managed guest session.
         {.is_mgs_install_enabled = true,
          .is_user_session = false,
          .bundle_id = kWebBundleId1,
@@ -408,6 +425,14 @@ INSTANTIATE_TEST_SUITE_P(
          .manifest_url = kUpdateManifestUrl4,
          .result_type = internal::IwaInstallerResult::Type::
              kErrorUpdateManifestParsingFailed},
+        // Release channel is not assigned to any version of the app.
+        {.is_mgs_install_enabled = true,
+         .is_user_session = true,
+         .bundle_id = kWebBundleId1Beta,
+         .manifest_url = kUpdateManifestUrl1,
+         .result_type = internal::IwaInstallerResult::Type::
+             kErrorWebBundleUrlCantBeDetermined,
+         .update_channel = "beta"},
         // The Web Bundle URL of the App 5 is not valid.
         {.is_mgs_install_enabled = true,
          .is_user_session = true,
@@ -444,7 +469,7 @@ constexpr char kUpdateManifestUrlApp2[] =
 
 constexpr char kUpdateManifestValueApp1[] = R"(
     {"versions":
-    [{"version": "1.0.0","src": "https://example.com/web_bundle_app1.swbn"}]})";
+      [{"version": "1.0.0","src": "https://example.com/web_bundle_app1.swbn"}]})";
 constexpr char kUpdateManifestValueApp2[] = R"(
     {"versions":
     [{"version": "1.0.0","src": "https://example.com/web_bundle_app2.swbn"}]})";
@@ -580,6 +605,7 @@ TEST_F(IsolatedWebAppPolicyManagerTest, AppInstalled) {
   PolicyGenerator policy_generator;
   policy_generator.AddForceInstalledIwa(url_info.web_bundle_id(),
                                         GURL(kUpdateManifestUrlApp1));
+
   profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
                              policy_generator.Generate());
 

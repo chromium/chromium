@@ -4,10 +4,11 @@ desc: |-
         IWAs are applications that have useful security properties unavailable to normal web pages. They are packaged in a Signed Web Bundle. The public key of the Signed Web Bundle is used to create the Web Bundle ID that identifies the IWA.
         So far this policy works for Managed Guest Session only.
 
-        Each list item of the policy is an object with the update manifest <ph name="URL_LABEL">URL</ph> and Web Bundle ID of the Isolated Web App. Both fields are mandatory.
+        Each list item of the policy is an object which has two mandatory fields: the update manifest <ph name="URL_LABEL">URL</ph> and Web Bundle ID of the Isolated Web App. Each item can also have an optional field with the IWA release channel name. If the "update_channel" is not set, then the value of "default" will be used.
 example_value:
 - update_manifest_url: https://example.com/isolated_web_app/update_manifest.json
   web_bundle_id: aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic
+  update_channel: beta
 features:
   dynamic_refresh: true
   per_profile: true
@@ -24,6 +25,12 @@ schema:
         type: string
       web_bundle_id:
         type: string
+      update_channel:
+        type: string
+        description: >-
+          The name of the IWA's update/release channel. This value can be any string;
+          no restrictions are imposed. If no value is provided, the "default"
+          channel will be used.
     required:
     - update_manifest_url
     - web_bundle_id

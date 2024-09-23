@@ -10,15 +10,18 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 
 namespace web_app {
 
 IsolatedWebAppExternalInstallOptions::IsolatedWebAppExternalInstallOptions(
     GURL update_manifest_url,
-    web_package::SignedWebBundleId web_bundle_id)
+    web_package::SignedWebBundleId web_bundle_id,
+    UpdateChannelId update_channel)
     : update_manifest_url_(std::move(update_manifest_url)),
-      web_bundle_id_(std::move(web_bundle_id)) {
+      web_bundle_id_(std::move(web_bundle_id)),
+      update_channel_(update_channel) {
   DCHECK(update_manifest_url_.is_valid());
 }
 
@@ -72,8 +75,23 @@ IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
         "bundle cannot be installed");
   }
 
-  return IsolatedWebAppExternalInstallOptions(std::move(update_manifest_url),
-                                              std::move(web_bundle_id));
-}
+  const std::string* const update_channel_raw =
+      entry_dict.FindString(kPolicyUpdateChannelKey);
 
+  if (!update_channel_raw) {
+    return IsolatedWebAppExternalInstallOptions(std::move(update_manifest_url),
+                                                std::move(web_bundle_id),
+                                                UpdateChannelId::default_id());
+  }
+
+  auto update_channel = UpdateChannelId::Create(*update_channel_raw);
+
+  if (update_channel.has_value()) {
+    return IsolatedWebAppExternalInstallOptions(
+        std::move(update_manifest_url), std::move(web_bundle_id),
+        std::move(update_channel.value()));
+  }
+
+  return base::unexpected("Failed to create UpdateChannelId");
+}
 }  // namespace web_app

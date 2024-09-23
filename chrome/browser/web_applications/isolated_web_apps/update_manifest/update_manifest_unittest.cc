@@ -269,7 +269,6 @@ TEST(UpdateManifestTest, ParsesManifestWithVersionChannels) {
                               .Set("version", "1.2.4")
                               .Set("src", "https://example.com")))),
           GURL("https://c.de/um.json")));
-
   EXPECT_THAT(
       update_manifest.versions(),
       ElementsAre(

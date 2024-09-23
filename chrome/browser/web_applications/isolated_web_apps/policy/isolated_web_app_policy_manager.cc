@@ -306,10 +306,7 @@ void IwaInstaller::OnUpdateManifestParsed(
       });
 
   std::optional<UpdateManifest::VersionEntry> latest_version =
-      update_manifest.GetLatestVersion(
-          // TODO(b/294481776): In the future, we will support channel selection
-          // via policy. For now, we always use the "default" channel.
-          UpdateChannelId::default_id());
+      update_manifest.GetLatestVersion(install_options_.update_channel());
   if (!latest_version.has_value()) {
     Finish(Result(Result::Type::kErrorWebBundleUrlCantBeDetermined));
     return;

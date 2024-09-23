@@ -9,20 +9,8 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace {
-
-base::Value CreatePolicyEntry(std::string_view web_bundle_id,
-                              std::string_view update_manifest_url) {
-  base::Value::Dict policy_entry =
-      base::Value::Dict()
-          .Set(web_app::kPolicyWebBundleIdKey, web_bundle_id)
-          .Set(web_app::kPolicyUpdateManifestUrlKey, update_manifest_url);
-  return base::Value(std::move(policy_entry));
-}
-
-}  // namespace
 
 namespace web_app {
 
@@ -39,19 +27,21 @@ const char kIncorrectUpdateManifestUrl[] = "aaa";
 // We create an instance of IsolatedWebAppExternalInstallOptions if both
 // update manifest URL and bundle ID are correct as the app may be installed.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValue) {
-  const base::Value policy_entry =
-      CreatePolicyEntry(kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl);
+  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+      kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl);
 
   ASSERT_OK_AND_ASSIGN(
       const auto options,
       IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry));
   EXPECT_EQ(options.web_bundle_id().id(), kEd25519SignedWebBundleId);
   EXPECT_EQ(options.update_manifest_url(), GURL(kCorrectUpdateManifestUrl));
+  EXPECT_EQ(options.update_channel().ToString(),
+            UpdateChannelId::default_id().ToString());
 }
 
 // We don't install apps signed by not a release key.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueDevelopmentId) {
-  const base::Value policy_entry = CreatePolicyEntry(
+  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
       kDevelopmentSignedWebBundleId, kCorrectUpdateManifestUrl);
 
   const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
@@ -62,8 +52,8 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueDevelopmentId) {
 
 // We don't install an app with incorrect ID.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueWrongId) {
-  const base::Value policy_entry =
-      CreatePolicyEntry(kIncorrectSignedWebBundleId, kCorrectUpdateManifestUrl);
+  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+      kIncorrectSignedWebBundleId, kCorrectUpdateManifestUrl);
 
   const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
       options = IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(
@@ -71,10 +61,22 @@ TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueWrongId) {
   EXPECT_FALSE(options.has_value());
 }
 
+// Verify if a valid custom update channel is correctly parsed and set.
+TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueCustomChannel) {
+  const std::string customChannelId = "beta";
+  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+      kEd25519SignedWebBundleId, kCorrectUpdateManifestUrl, customChannelId);
+
+  ASSERT_OK_AND_ASSIGN(
+      const auto options,
+      IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(policy_entry));
+  EXPECT_EQ(options.update_channel().ToString(), customChannelId);
+}
+
 // No app install if we can't parse the update manifest URL.
 TEST(IsolatedWebAppExternalInstallOptionsTest, FromPolicyValueWrongUrl) {
-  const base::Value policy_entry =
-      CreatePolicyEntry(kEd25519SignedWebBundleId, kIncorrectUpdateManifestUrl);
+  const base::Value policy_entry = PolicyGenerator::CreatePolicyEntry(
+      kEd25519SignedWebBundleId, kIncorrectUpdateManifestUrl);
 
   const base::expected<IsolatedWebAppExternalInstallOptions, std::string>
       options = IsolatedWebAppExternalInstallOptions::FromPolicyPrefValue(

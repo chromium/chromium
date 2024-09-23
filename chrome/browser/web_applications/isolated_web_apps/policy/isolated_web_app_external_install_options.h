@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_EXTERNAL_INSTALL_OPTIONS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_POLICY_ISOLATED_WEB_APP_EXTERNAL_INSTALL_OPTIONS_H_
 
+#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "url/gurl.h"
 
@@ -13,6 +14,8 @@ class Value;
 }
 
 namespace web_app {
+
+class UpdateChannelId;
 
 // This class contains all information to install an Isolated Web App via
 // enterprise policy.
@@ -34,17 +37,22 @@ class IsolatedWebAppExternalInstallOptions final {
   const web_package::SignedWebBundleId& web_bundle_id() const {
     return web_bundle_id_;
   }
+  const UpdateChannelId& update_channel() const { return update_channel_; }
 
  private:
   IsolatedWebAppExternalInstallOptions(
       GURL update_manifest_url,
-      web_package::SignedWebBundleId web_bundle_id);
+      web_package::SignedWebBundleId web_bundle_id,
+      UpdateChannelId update_channel);
 
   // Update manifest contains the info about available versions of the IWA and
   // the URLs of the corresponding Web Bundle files.
   GURL update_manifest_url_;
   // Signed Web Bundle ID identifies the app.
   web_package::SignedWebBundleId web_bundle_id_;
+  // Update Channel ID to specify the desired release channel. If not specified
+  // in policy, it is set to "default".
+  UpdateChannelId update_channel_;
 };
 
 }  // namespace web_app
