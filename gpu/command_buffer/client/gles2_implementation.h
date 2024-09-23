@@ -347,12 +347,16 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
 
   // Prevents problematic reentrancy during error callbacks.
   class DeferErrorCallbacks {
+    STACK_ALLOCATED();
+
    public:
     explicit DeferErrorCallbacks(GLES2Implementation* gles2_implementation);
     ~DeferErrorCallbacks();
 
    private:
-    raw_ptr<GLES2Implementation> gles2_implementation_;
+    // not using raw_ptr<> here for performance reasons. A CHECK() in
+    // ~GLES2Implementation() assures lifetime invariants instead.
+    GLES2Implementation& gles2_implementation_;
   };
 
   struct DeferredErrorCallback {

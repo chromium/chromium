@@ -171,15 +171,15 @@ GLES2Implementation::GLStaticState::~GLStaticState() = default;
 
 GLES2Implementation::DeferErrorCallbacks::DeferErrorCallbacks(
     GLES2Implementation* gles2_implementation)
-    : gles2_implementation_(gles2_implementation) {
-  DCHECK_EQ(false, gles2_implementation_->deferring_error_callbacks_);
-  gles2_implementation_->deferring_error_callbacks_ = true;
+    : gles2_implementation_(*gles2_implementation) {
+  DCHECK_EQ(false, gles2_implementation_.deferring_error_callbacks_);
+  gles2_implementation_.deferring_error_callbacks_ = true;
 }
 
 GLES2Implementation::DeferErrorCallbacks::~DeferErrorCallbacks() {
-  DCHECK_EQ(true, gles2_implementation_->deferring_error_callbacks_);
-  gles2_implementation_->deferring_error_callbacks_ = false;
-  gles2_implementation_->CallDeferredErrorCallbacks();
+  DCHECK_EQ(true, gles2_implementation_.deferring_error_callbacks_);
+  gles2_implementation_.deferring_error_callbacks_ = false;
+  gles2_implementation_.CallDeferredErrorCallbacks();
 }
 
 GLES2Implementation::DeferredErrorCallback::DeferredErrorCallback(
@@ -326,6 +326,9 @@ gpu::ContextResult GLES2Implementation::Initialize(
 }
 
 GLES2Implementation::~GLES2Implementation() {
+  // Assure no DeferErrorCallbacks instances are loose in the wild.
+  CHECK(!deferring_error_callbacks_);
+
   // Make sure the queries are finished otherwise we'll delete the
   // shared memory (mapped_memory_) which will free the memory used
   // by the queries. The GPU process when validating that memory is still
