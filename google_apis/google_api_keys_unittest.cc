@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "google_apis/default_api_keys.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
@@ -119,7 +120,6 @@ namespace official_build {
 
 // We start every test by creating a clean environment for the
 // preprocessor defines used in google_api_keys.cc
-#undef DUMMY_API_TOKEN
 #undef GOOGLE_API_KEY
 #undef GOOGLE_CLIENT_ID_MAIN
 #undef GOOGLE_CLIENT_SECRET_MAIN
@@ -207,7 +207,6 @@ namespace default_keys {
 
 // We start every test by creating a clean environment for the
 // preprocessor defines used in google_api_keys.cc
-#undef DUMMY_API_TOKEN
 #undef GOOGLE_API_KEY
 #undef GOOGLE_CLIENT_ID_MAIN
 #undef GOOGLE_CLIENT_SECRET_MAIN
@@ -258,7 +257,6 @@ namespace override_some_keys {
 
 // We start every test by creating a clean environment for the
 // preprocessor defines used in google_api_keys.cc
-#undef DUMMY_API_TOKEN
 #undef GOOGLE_API_KEY
 #undef GOOGLE_CLIENT_ID_MAIN
 #undef GOOGLE_CLIENT_SECRET_MAIN
@@ -312,7 +310,6 @@ namespace override_all_keys {
 
 // We start every test by creating a clean environment for the
 // preprocessor defines used in google_api_keys.cc
-#undef DUMMY_API_TOKEN
 #undef GOOGLE_API_KEY
 #undef GOOGLE_CLIENT_ID_MAIN
 #undef GOOGLE_CLIENT_SECRET_MAIN
@@ -371,7 +368,6 @@ namespace override_api_key_via_feature_without_param {
 
 // We start every test by creating a clean environment for the
 // preprocessor defines used in google_api_keys.cc
-#undef DUMMY_API_TOKEN
 #undef GOOGLE_API_KEY
 #undef GOOGLE_CLIENT_ID_MAIN
 #undef GOOGLE_CLIENT_SECRET_MAIN
@@ -420,7 +416,6 @@ namespace override_api_key_via_feature {
 
 // We start every test by creating a clean environment for the
 // preprocessor defines used in google_api_keys.cc
-#undef DUMMY_API_TOKEN
 #undef GOOGLE_API_KEY
 #undef GOOGLE_CLIENT_ID_MAIN
 #undef GOOGLE_CLIENT_SECRET_MAIN
@@ -471,7 +466,6 @@ namespace override_all_keys_env {
 
 // We start every test by creating a clean environment for the
 // preprocessor defines used in google_api_keys.cc
-#undef DUMMY_API_TOKEN
 #undef GOOGLE_API_KEY
 #undef GOOGLE_CLIENT_ID_MAIN
 #undef GOOGLE_CLIENT_SECRET_MAIN
@@ -545,7 +539,6 @@ namespace override_all_keys_setters {
 
 // We start every test by creating a clean environment for the
 // preprocessor defines used in google_api_keys.cc
-#undef DUMMY_API_TOKEN
 #undef GOOGLE_API_KEY
 #undef GOOGLE_CLIENT_ID_MAIN
 #undef GOOGLE_CLIENT_SECRET_MAIN
@@ -621,7 +614,6 @@ namespace override_all_keys_config {
 
 // We start every test by creating a clean environment for the
 // preprocessor defines used in google_api_keys.cc
-#undef DUMMY_API_TOKEN
 #undef GOOGLE_API_KEY
 #undef GOOGLE_CLIENT_ID_MAIN
 #undef GOOGLE_CLIENT_SECRET_MAIN

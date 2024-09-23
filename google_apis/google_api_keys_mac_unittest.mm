@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "google_apis/default_api_keys.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys_unittest.h"
 #include "google_apis/google_api_keys_utils.h"
@@ -57,7 +58,6 @@ namespace override_some_keys_info_plist {
 
 // We start every test by creating a clean environment for the
 // preprocessor defines used in google_api_keys.cc
-#undef DUMMY_API_TOKEN
 #undef GOOGLE_API_KEY
 #undef GOOGLE_CLIENT_ID_MAIN
 #undef GOOGLE_CLIENT_SECRET_MAIN
@@ -128,7 +128,6 @@ namespace override_apikey_from_plist_with_feature {
 
 // We start every test by creating a clean environment for the
 // preprocessor defines used in google_api_keys.cc
-#undef DUMMY_API_TOKEN
 #undef GOOGLE_API_KEY
 #undef GOOGLE_CLIENT_ID_MAIN
 #undef GOOGLE_CLIENT_SECRET_MAIN

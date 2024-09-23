@@ -115,6 +115,8 @@ component("google_apis") {
   sources = [
     "credentials_mode.cc",
     "credentials_mode.h",
+    "default_api_keys-inc.cc",
+    "default_api_keys.h",
     "gaia/core_account_id.cc",
     "gaia/core_account_id.h",
     "gaia/gaia_access_token_fetcher.cc",
