@@ -8065,3 +8065,8 @@ crbug.com/360163253 [ Linux ] virtual/threaded/wpt_internal/scheduler/integratio
 
 # Gardener 2024-08-16
 crbug.com/360385661 virtual/threaded/wpt_internal/scheduler/integration_tests/high-priority-input-click.html [ Failure Pass ]
+
+# Branch gardener 2024-09-23
+crbug.com/363051117 [ Mac14 ] editing/selection/modify_move/move-by-word-visually-crash-test-5.html [ Failure Pass ]
+crbug.com/365589062 [ Mac14 ] fast/css-grid-layout/grid-auto-repeat-huge-grid-010.html [ Failure Pass ]
+crbug.com/369085369 [ Mac14 ] webaudio/AudioParam/audioparam-rate-change-357391257.html [ Failure Pass ]
