@@ -37,9 +37,10 @@ struct SyncTokenStatus;
 class SyncUserSettings;
 struct SyncStatus;
 
-// UIs that need to prevent Sync startup should hold an instance of this class
-// until the user has finished modifying sync settings. This is not an inner
-// class of SyncService to enable forward declarations.
+// UIs that need to prevent Sync-the-feature from starting up, or reacting to
+// settings changes, should hold an instance of this class until the user has
+// finished modifying sync settings. This is not an inner class of SyncService
+// to enable forward declarations.
 class SyncSetupInProgressHandle {
  public:
   // UIs should not construct this directly, but instead call
@@ -56,55 +57,40 @@ class SyncSetupInProgressHandle {
   base::OnceClosure on_destroy_;
 };
 
-// SyncService is the layer between browser subsystems like bookmarks and the
-// sync engine. Each subsystem is logically thought of as being a sync datatype.
-// Individual datatypes can, at any point, be in a variety of stages of being
-// "enabled". Here are some specific terms for concepts used in this class:
+// SyncService is the central access point for configuring the sync machinery,
+// and querying its status.
 //
-//   'Registered' (feature suppression for a datatype)
+// Some high-level terms and concepts are described below; for detailed
+// documentation about sync's inner workings, as well as an integration guide,
+// see:  https://www.chromium.org/developers/design-documents/sync/
 //
-//      When a datatype is registered, the user has the option of syncing it.
-//      The sync opt-in UI will show only registered types; a checkbox should
-//      never be shown for an unregistered type, nor can it ever be synced.
+// Sync-the-feature vs sync-the-transport:
 //
-//   'Preferred' (user preferences and opt-out for a datatype)
+//   The sync machinery can operate in one of two modes:
+//   * Sync-the-feature: The "classic" user-visible Sync feature. In addition to
+//     signing in to Chrome, the user has to explicitly opt in to
+//     Sync-the-feature (see signin::ConsentLevel::kSync and
+//     SetInitialSyncFeatureSetupComplete()). In this mode, there is no
+//     distinction between "local data" and "account data" - when turning on
+//     Sync, everything is merged together, and this cannot be undone.
+//   * Sync-the-transport: This mode gets enabled on signin to Chrome, with no
+//     further opt-in required. In this mode, every data type is responsible for
+//     keeping local data and account data separate from each other.
+//   All APIs that are specific to sync-the-feature contain "SyncFeature" in
+//   their name.
 //
-//      This means the user's opt-in or opt-out preference on a per-datatype
-//      basis. The sync service will try to make active exactly these types.
-//      If a user has opted out of syncing a particular datatype, it will
-//      be registered, but not preferred. Also note that not all datatypes can
-//      be directly chosen by the user: e.g. AUTOFILL_PROFILE is implied by
-//      AUTOFILL but can't be selected separately. If AUTOFILL is chosen by the
-//      user, then AUTOFILL_PROFILE will also be considered preferred. See
-//      SyncPrefs::ResolvePrefGroups.
+// Configuration:
 //
-//      This state is controlled by SyncUserSettings::SetSelectedTypes. They
-//      are stored in the preferences system and persist; though if a datatype
-//      is not registered, it cannot be a preferred datatype.
-//
-//   'Active' (run-time initialization of sync system for a datatype)
-//
-//      An active datatype is a preferred datatype that is actively being
-//      synchronized: the syncer has been instructed to querying the server
-//      for this datatype, first-time merges have finished, and there is an
-//      actively installed ChangeProcessor that listens for changes to this
-//      datatype, propagating such changes into and out of the sync engine
-//      as necessary.
-//
-//      When a datatype is in the process of becoming active, it may be
-//      in some intermediate state. Those finer-grained intermediate states
-//      are differentiated by the DataTypeController state, but not exposed.
-//
-// Sync Configuration:
-//
-//   Sync configuration is accomplished via SyncUserSettings, in particular:
+//   Configuring sync, e.g. turning data types on or off, or enabling
+//   encryption, happens through SyncUserSettings, accessible via
+//   GetUserSettings(). In particular:
 //    * SetSelectedTypes(): Set the data types the user wants to sync.
 //    * SetDecryptionPassphrase(): Attempt to decrypt the user's encrypted data
-//        using the passed passphrase.
+//      using the passed passphrase.
 //    * SetEncryptionPassphrase(): Re-encrypt the user's data using the passed
-//        passphrase.
+//      passphrase.
 //
-// Initial sync setup:
+// Initial sync setup (Sync-the-feature mode only):
 //
 //   For privacy reasons, it is usually desirable to avoid syncing any data
 //   types until the user has finished setting up sync. There are two APIs
@@ -121,6 +107,24 @@ class SyncSetupInProgressHandle {
 //
 //   Once first setup has completed and there are no outstanding
 //   setup-in-progress handles, datatype configuration will begin.
+//
+// Terminology: "Enabled" vs "active":
+//
+//   These terms can refer to either sync as a whole or to individual data
+//   types.
+//   * Enabled: Think "configuration" - all the necessary preconditions are
+//     fulfilled, e.g. the user is signed in, hasn't opted out, etc. However,
+//     sync may not actually be running (yet), and there's no guarantee that it
+//     will (e.g. there might be an auth error that hasn't been detected yet, or
+//     the sync server may be unreachable, etc).
+//   * Active: Think "runtime state" - sync has finished initializing and is
+//     actually running right now, i.e. data is being continuously synchronized
+//     with the server. A data type is only considered active once its "initial
+//     sync" is done, i.e. all account data has been downloaded and applied
+//     locally.
+//
+//   For the detailed state of individual data types, also see
+//   GetDownloadStatusFor() and syncer::GetUploadToGoogleState().
 class SyncService : public KeyedService {
  public:
   // The set of reasons due to which Sync can be disabled. These apply to both
@@ -433,6 +437,11 @@ class SyncService : public KeyedService {
   // triggered for upload.
   virtual void TriggerLocalDataMigration(DataTypeSet types) = 0;
 
+  // Returns current download status for the given |type|. The caller can use
+  // SyncServiceObserver::OnStateChanged() to track status changes. Must be
+  // called for real data types only.
+  virtual DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const = 0;
+
   //////////////////////////////////////////////////////////////////////////////
   // ACTIONS / STATE CHANGE REQUESTS
   //////////////////////////////////////////////////////////////////////////////
@@ -546,11 +555,6 @@ class SyncService : public KeyedService {
   // scoped_refptr<>.
   virtual void GetAllNodesForDebugging(
       base::OnceCallback<void(base::Value::List)> callback) = 0;
-
-  // Returns current download status for the given |type|. The caller can use
-  // SyncServiceObserver::OnStateChanged() to track status changes. Must be
-  // called for real data types only.
-  virtual DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const = 0;
 };
 
 }  // namespace syncer
