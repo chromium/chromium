@@ -8002,6 +8002,11 @@ crbug.com/365487889 [ Mac13 ] shadow-dom/focus-navigation/focus-scroller-activeE
 # Gardener 2024-09-10
 crbug.com/364306254 [ Linux ] fast/events/middleClickAutoscroll-drag.html [ Failure Pass ]
 
+# Branch gardener 2024-09-23
+crbug.com/363051117 [ Mac14 ] editing/selection/modify_move/move-by-word-visually-crash-test-5.html [ Failure Pass ]
+crbug.com/365589062 [ Mac14 ] fast/css-grid-layout/grid-auto-repeat-huge-grid-010.html [ Failure Pass ]
+crbug.com/369085369 [ Mac14 ] webaudio/AudioParam/audioparam-rate-change-357391257.html [ Failure Pass ]
+
 # Skip one slow timeout test
 crbug.com/366311855 external/wpt/editing/crashtests/insertparagraph-in-listitem-in-svg-followed-by-collapsible-spaces.html [ Skip Timeout ]
 
