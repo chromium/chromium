@@ -97,14 +97,13 @@ AutocompleteScoringModelHandler::GetBatchModelInput(
     const std::vector<const ScoringSignals*>& scoring_signals_vec) {
   std::vector<std::vector<float>> batch_model_input;
   for (const auto* scoring_signals : scoring_signals_vec) {
-    const std::optional<std::vector<float>> model_input =
+    std::optional<std::vector<float>> model_input =
         GetModelInput(*scoring_signals);
-    if (model_input) {
-      batch_model_input.push_back(std::move(*model_input));
-    } else {
+    if (!model_input) {
       // Return null if any input in the batch is invalid.
       return std::nullopt;
     }
+    batch_model_input.push_back(std::move(*model_input));
   }
   return batch_model_input;
 }
