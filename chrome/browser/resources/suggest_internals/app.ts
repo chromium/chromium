@@ -1,7 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
+import './icons.html.js';
 import './request.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -119,11 +119,6 @@ class SuggestInternalsAppElement extends PolymerElement {
     this.$.hardcodeResponseDialog.close();
   }
 
-  private onCopyClick_() {
-    navigator.clipboard.writeText(this.stringifyRequests_())
-        .catch(error => console.error('unable to copy to clipboard:', error));
-  }
-
   private onDownloadClick_() {
     const a = document.createElement('a');
     const file =
@@ -165,10 +160,6 @@ class SuggestInternalsAppElement extends PolymerElement {
   private onOpenHardcodeResponseDialog_(e: CustomEvent<string>) {
     this.responseText_ = e.detail;
     this.$.hardcodeResponseDialog.showModal();
-  }
-
-  private async onPasteClick_() {
-    this.requests_ = JSON.parse(await navigator.clipboard.readText());
   }
 
   private onShowToast_(e: CustomEvent<string>) {

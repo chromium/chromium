@@ -6,7 +6,8 @@
   }
 
   cr-button {
-    width: 100%;
+    width: 95%;
+    margin: 3%;
   }
 
   cr-toolbar {
@@ -42,22 +43,14 @@
 </cr-toolbar>
 <cr-drawer id="drawer" heading="Output controls">
   <div slot="body">
-        <cr-button title="export requests to clipboard" on-click="onCopyClick_">
-          Copy
-          <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
-        </cr-button>
         <cr-button title="Download requests in JSON format." on-click="onDownloadClick_">
           Download
           <cr-icon icon="cr:file-download" slot="suffix-icon"></cr-icon>
         </cr-button>
-        <cr-button title="Import requests from clipboard." on-click="onPasteClick_">
-          Paste
-          <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
-        </cr-button>
         <div class="upload-container">
           <cr-button>
             Upload
-            <cr-icon icon="cr:insert-drive-file" slot="suffix-icon"></cr-icon>
+            <cr-icon icon="suggest:file-upload" slot="suffix-icon"></cr-icon>
           </cr-button>
           <input placeholder="Upload previously downloaded requests to load them." on-change="onImportFile_" type="file" accept=".json">
         </div>
