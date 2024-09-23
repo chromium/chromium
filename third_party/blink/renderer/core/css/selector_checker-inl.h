@@ -12,11 +12,22 @@
 namespace blink {
 
 bool EasySelectorChecker::IsEasy(const CSSSelector* selector) {
+  bool has_descendant_selector = false;
   for (; selector != nullptr; selector = selector->NextSimpleSelector()) {
     if (!selector->IsLastInComplexSelector() &&
         selector->Relation() != CSSSelector::kSubSelector &&
-        selector->Relation() != CSSSelector::kDescendant) {
+        selector->Relation() != CSSSelector::kDescendant &&
+        selector->Relation() != CSSSelector::kChild) {
       // We don't support anything that requires us to recurse.
+      return false;
+    }
+    if (selector->Relation() == CSSSelector::kDescendant) {
+      has_descendant_selector = true;
+    } else if (selector->Relation() == CSSSelector::kChild &&
+               has_descendant_selector) {
+      // Having a child selector after a descendant selector requires
+      // more complicated backtracking (we need to backtrack in both
+      // selector and element), which we don't support yet.
       return false;
     }
     if (selector->IsCoveredByBucketing()) {
@@ -71,8 +82,9 @@ bool EasySelectorChecker::Match(const CSSSelector* selector,
                                 const Element* element) {
   DCHECK(IsEasy(selector));
 
-  // Since we only support subselector and descendant combinators, we can do
-  // with a nonrecursive algorithm. The idea is fairly simple: We can match
+  // Since we only support subselector, child and descendant combinators
+  // (and not all combinations of the latter two), we can do with a
+  // nonrecursive algorithm. The idea is fairly simple: We can match
   // greedily and never need to backtrack. E.g. if we have .a.b .c.d .e.f {}
   // and see an element matching .e.f and then later some parent matching .c.d,
   // we never need to look for .c.d again.
@@ -83,7 +95,9 @@ bool EasySelectorChecker::Match(const CSSSelector* selector,
   // If we have a mismatch when looking for a parent (either .a.b or .c.d
   // in the example above), we rewind to the start of the compound and move on
   // to the parent element. (rewind_on_failure then points to the start of the
-  // compound; it's nullptr if we're matching the subject.)
+  // compound; it's nullptr if we're matching the subject.) Child combinators
+  // are implemented by simply skipping to the parent element and keeping
+  // matching.
   //
   // If all subselectors in a compound have matched, we move on to the next
   // compound (setting rewind_on_failure to the start of it) and go to the
@@ -97,6 +111,17 @@ bool EasySelectorChecker::Match(const CSSSelector* selector,
         // Move to the next one.
         DCHECK(!selector->IsLastInComplexSelector());
         rewind_on_failure = selector->NextSimpleSelector();
+
+        element = element->parentElement();
+        if (element == nullptr) {
+          return false;
+        }
+      } else if (selector->Relation() == CSSSelector::kChild) {
+        // Similar, but we need this to match the exact parent,
+        // so on failure, we should not rewind but fail the match
+        // (do not set rewind_on_failure).
+        DCHECK(!selector->IsLastInComplexSelector());
+        DCHECK(!rewind_on_failure);
 
         element = element->parentElement();
         if (element == nullptr) {
