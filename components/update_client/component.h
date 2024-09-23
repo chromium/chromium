@@ -54,10 +54,6 @@ class Component {
 
   CrxUpdateItem GetCrxUpdateItem() const;
 
-  // Sets the ping-only state for this component.
-  void PingOnly(const CrxComponent& crx_component,
-                UpdateClient::PingParams ping_params);
-
   // Called by the UpdateEngine when an update check for this component is done.
   void SetUpdateCheckResult(const std::optional<ProtocolParser::Result>& result,
                             ErrorCategory error_category,
@@ -309,18 +305,6 @@ class Component {
     StateUpdated(const StateUpdated&) = delete;
     StateUpdated& operator=(const StateUpdated&) = delete;
     ~StateUpdated() override;
-
-   private:
-    // State overrides.
-    void DoHandle() override;
-  };
-
-  class StatePingOnly : public State {
-   public:
-    explicit StatePingOnly(Component* component);
-    StatePingOnly(const StatePingOnly&) = delete;
-    StatePingOnly& operator=(const StatePingOnly&) = delete;
-    ~StatePingOnly() override;
 
    private:
     // State overrides.

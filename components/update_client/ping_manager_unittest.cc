@@ -20,6 +20,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -328,15 +329,20 @@ TEST_P(PingManagerTest, SendPing) {
   {
     // Test a valid |previouversion| and |next_version| = base::Version("0")
     // are serialized correctly under <event...> for uninstall.
-    Component component(*update_context, "abc");
     CrxComponent crx_component;
     crx_component.app_id = "abc";
     crx_component.version = base::Version("1.2.3.4");
-    component.PingOnly(crx_component, {.event_type = 4, .result = 1});
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component.session_id(), *component.crx_component_,
-                            component.GetEvents(), MakePingCallback());
+    base::MakeRefCounted<UpdateEngine>(
+        config_,
+        base::BindRepeating(
+            [](scoped_refptr<Configurator>) -> std::unique_ptr<UpdateChecker> {
+              return nullptr;
+            }),
+        ping_manager_, base::DoNothing())
+        ->SendPing(crx_component, {.event_type = 4, .result = 1},
+                   base::BindLambdaForTesting([&](Error) { Quit(); }));
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
@@ -385,23 +391,27 @@ TEST_P(PingManagerTest, SendPing) {
 
   {
     // Test `app_command_id`.
-    Component component(*update_context, "abc");
     CrxComponent crx_component;
     crx_component.app_id = "abc";
     crx_component.version = base::Version("1.2.3.4");
-    component.PingOnly(
-        crx_component,
-        {
-            .event_type = protocol_request::kEventAppCommandComplete,
-            .result = false,
-            .error_code = -11,
-            .extra_code1 = 101,
-            .app_command_id = "appcommandid1",
-        });
 
     EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
-    ping_manager_->SendPing(component.session_id(), *component.crx_component_,
-                            component.GetEvents(), MakePingCallback());
+    base::MakeRefCounted<UpdateEngine>(
+        config_,
+        base::BindRepeating(
+            [](scoped_refptr<Configurator>) -> std::unique_ptr<UpdateChecker> {
+              return nullptr;
+            }),
+        ping_manager_, base::DoNothing())
+        ->SendPing(crx_component,
+                   {
+                       .event_type = protocol_request::kEventAppCommandComplete,
+                       .result = false,
+                       .error_code = -11,
+                       .extra_code1 = 101,
+                       .app_command_id = "appcommandid1",
+                   },
+                   base::BindLambdaForTesting([&](Error) { Quit(); }));
     RunThreads();
 
     EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();

@@ -113,34 +113,6 @@
 //     kUpdateError                    kCanUpdate
 
 namespace update_client {
-namespace {
-
-base::Value::Dict MakeEvent(
-    UpdateClient::PingParams ping_params,
-    const std::optional<base::Version>& previous_version,
-    const std::optional<base::Version>& next_version) {
-  base::Value::Dict event;
-  event.Set("eventtype", ping_params.event_type);
-  event.Set("eventresult", ping_params.result);
-  if (ping_params.error_code) {
-    event.Set("errorcode", ping_params.error_code);
-  }
-  if (ping_params.extra_code1) {
-    event.Set("extracode1", ping_params.extra_code1);
-  }
-  if (!ping_params.app_command_id.empty()) {
-    event.Set("appcommandid", ping_params.app_command_id);
-  }
-  if (previous_version) {
-    event.Set("previousversion", previous_version->GetString());
-  }
-  if (next_version) {
-    event.Set("nextversion", next_version->GetString());
-  }
-  return event;
-}
-
-}  // namespace
 
 Component::Component(const UpdateContext& update_context, const std::string& id)
     : id_(id),
@@ -265,19 +237,6 @@ void Component::SetParseResult(const ProtocolParser::Result& result) {
           return matched ? it->text : "";
         }(crx_component_ ? crx_component_->install_data_index : "")));
   }
-}
-
-void Component::PingOnly(const CrxComponent& crx_component,
-                         UpdateClient::PingParams ping_params) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(ComponentState::kNew, state());
-  crx_component_ = crx_component;
-  previous_version_ = crx_component_->version;
-  error_category_ = ping_params.error_category;
-  error_code_ = ping_params.error_code;
-  extra_code1_ = ping_params.extra_code1;
-  state_ = std::make_unique<StatePingOnly>(this);
-  AppendEvent(MakeEvent(ping_params, previous_version_, std::nullopt));
 }
 
 void Component::SetUpdateCheckResult(
@@ -949,21 +908,6 @@ void Component::StateUpdated::DoHandle() {
 
   component.NotifyObservers(Events::COMPONENT_UPDATED);
   metrics::RecordComponentUpdated();
-  EndState();
-}
-
-Component::StatePingOnly::StatePingOnly(Component* component)
-    : State(component, ComponentState::kPingOnly) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-Component::StatePingOnly::~StatePingOnly() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void Component::StatePingOnly::DoHandle() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(State::component().crx_component());
   EndState();
 }
 

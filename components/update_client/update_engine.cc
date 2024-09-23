@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -21,6 +22,8 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/uuid.h"
+#include "base/values.h"
+#include "base/version.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
@@ -34,6 +37,28 @@
 #include "components/update_client/utils.h"
 
 namespace update_client {
+
+namespace {
+
+base::Value::Dict MakeEvent(UpdateClient::PingParams ping_params,
+                            const base::Version& previous_version) {
+  base::Value::Dict event;
+  event.Set("eventtype", ping_params.event_type);
+  event.Set("eventresult", ping_params.result);
+  if (ping_params.error_code) {
+    event.Set("errorcode", ping_params.error_code);
+  }
+  if (ping_params.extra_code1) {
+    event.Set("extracode1", ping_params.extra_code1);
+  }
+  if (!ping_params.app_command_id.empty()) {
+    event.Set("appcommandid", ping_params.app_command_id);
+  }
+  event.Set("previousversion", previous_version.GetString());
+  return event;
+}
+
+}  // namespace
 
 UpdateContext::UpdateContext(
     scoped_refptr<Configurator> config,
@@ -466,32 +491,13 @@ void UpdateEngine::SendPing(const CrxComponent& crx_component,
                             UpdateClient::PingParams ping_params,
                             Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const std::string& id = crx_component.app_id;
-
-  const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_, crx_cache_, false, false, std::vector<std::string>{id},
-      UpdateClient::CrxStateChangeCallback(),
-      UpdateEngine::NotifyObserversCallback(), std::move(callback),
-      config_->GetPersistedData(), /*is_update_check_only=*/false);
-  CHECK(!update_context->session_id.empty());
-
-  const auto [unused, inserted] = update_contexts_.insert(
-      std::make_pair(update_context->session_id, update_context));
-  CHECK(inserted);
-
-  CHECK(update_context);
-  CHECK_EQ(1u, update_context->ids.size());
-  CHECK_EQ(1u, update_context->components.count(id));
-  const auto& component = update_context->components.at(id);
-
-  component->PingOnly(crx_component, ping_params);
-
-  update_context->component_queue.push(id);
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateEngine::HandleComponent, this, update_context));
+  std::vector<base::Value::Dict> events;
+  events.push_back(MakeEvent(ping_params, crx_component.version));
+  ping_manager_->SendPing(
+      base::StrCat(
+          {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"}),
+      crx_component, std::move(events),
+      base::BindOnce(std::move(callback), Error::NONE));
 }
 
 }  // namespace update_client
