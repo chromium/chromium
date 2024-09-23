@@ -444,6 +444,7 @@ class Generator(generator.Generator):
         "under_to_camel": self._UnderToCamel,
         "unmapped_type_for_serializer": self._GetUnmappedTypeForSerializer,
         "use_custom_serializer": UseCustomSerializer,
+        "has_non_const_ref_param": self._HasNonConstRefParam,
     }
     return cpp_filters
 
@@ -797,6 +798,9 @@ class Generator(generator.Generator):
       return self.typemap[self._GetFullMojomNameForKind(kind)]["non_const_ref"]
     return False
 
+  def _HasNonConstRefParam(self, method):
+    return any(self._IsNonConstRefKind(p.kind) for p in method.parameters)
+
   def _IsFullHeaderRequiredForImport(self, imported_module):
     """Determines whether a given import module requires a full header include,
     or if the forward header is sufficient."""
@@ -865,7 +869,10 @@ class Generator(generator.Generator):
     return self._GetCppWrapperType(
         kind, add_same_module_namespaces=add_same_module_namespaces)
 
-  def _GetCppWrapperParamType(self, kind, add_same_module_namespaces=False):
+  def _GetCppWrapperParamType(self,
+                              kind,
+                              add_same_module_namespaces=False,
+                              allow_non_const_ref=False):
     # TODO: Remove all usage of this method in favor of
     # _GetCppWrapperParamTypeNew. This requires all generated code which passes
     # interface handles to use PtrInfo instead of Ptr.
@@ -876,7 +883,7 @@ class Generator(generator.Generator):
         kind, add_same_module_namespaces=add_same_module_namespaces)
     if self._ShouldPassParamByValue(kind):
       return cpp_wrapper_type
-    elif self._ShouldPassParamByNonConstRef(kind):
+    elif self._ShouldPassParamByNonConstRef(kind) and allow_non_const_ref:
       return "%s&" % cpp_wrapper_type
     else:
       return "const %s&" % cpp_wrapper_type

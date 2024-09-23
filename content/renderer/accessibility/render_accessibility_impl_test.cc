@@ -55,6 +55,11 @@ class RenderAccessibilityHostInterceptor
         base::Unretained(&receiver_)));
   }
 
+  void HandleAXEvents(const ui::AXUpdatesAndEvents& updates_and_events,
+                      uint32_t reset_token,
+                      HandleAXEventsCallback callback) override {
+    NOTREACHED();
+  }
   void HandleAXEvents(ui::AXUpdatesAndEvents& updates_and_events,
                       uint32_t reset_token,
                       HandleAXEventsCallback callback) override {

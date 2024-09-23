@@ -24,6 +24,14 @@ RenderAccessibilityHost::RenderAccessibilityHost(
 RenderAccessibilityHost::~RenderAccessibilityHost() = default;
 
 void RenderAccessibilityHost::HandleAXEvents(
+    const ui::AXUpdatesAndEvents& updates_and_events,
+    uint32_t reset_token,
+    HandleAXEventsCallback callback) {
+  NOTREACHED() << "Non-const ref version of this method should be used as a "
+                  "performance optimization.";
+}
+
+void RenderAccessibilityHost::HandleAXEvents(
     ui::AXUpdatesAndEvents& updates_and_events,
     uint32_t reset_token,
     HandleAXEventsCallback callback) {
