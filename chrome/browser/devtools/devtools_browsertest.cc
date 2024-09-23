@@ -1871,8 +1871,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectDevtoolsScheme) {
                     "#devtools://devtools/bundled/devtools_compatibility.js"}));
 }
 
+// TODO(crbug.com/369074885): Flaky on Linux
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_CantInspectViewSourceDevtoolsScheme \
+  DISABLED_CantInspectViewSourceDevtoolsScheme
+#else
+#define MAYBE_CantInspectViewSourceDevtoolsScheme \
+  CantInspectViewSourceDevtoolsScheme
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       CantInspectViewSourceDevtoolsScheme) {
+                       MAYBE_CantInspectViewSourceDevtoolsScheme) {
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
           base::StrCat({kArbitraryPage,
