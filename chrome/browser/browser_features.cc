@@ -107,7 +107,7 @@ BASE_FEATURE(kDevToolsConsoleInsights,
 const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId{
     &kDevToolsConsoleInsights, "aida_model_id", /*default_value=*/""};
 const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{
-    &kDevToolsConsoleInsights, "aida_temperature", /*default_value=*/0.2};
+    &kDevToolsConsoleInsights, "aida_temperature", /*default_value=*/-1};
 const base::FeatureParam<bool> kDevToolsConsoleInsightsOptIn{
     &kDevToolsConsoleInsights, "opt_in", /*default_value=*/false};
 
@@ -118,7 +118,7 @@ BASE_FEATURE(kDevToolsFreestylerDogfood,
 const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId{
     &kDevToolsFreestylerDogfood, "aida_model_id", /*default_value=*/""};
 const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature{
-    &kDevToolsFreestylerDogfood, "aida_temperature", /*default_value=*/0};
+    &kDevToolsFreestylerDogfood, "aida_temperature", /*default_value=*/-1};
 const base::FeatureParam<DevToolsFreestylerUserTier>::Option
     devtools_freestyler_user_tier_options[] = {
         {DevToolsFreestylerUserTier::kTesters, "TESTERS"},
@@ -140,7 +140,7 @@ const base::FeatureParam<std::string>
         /*default_value=*/""};
 const base::FeatureParam<double> kDevToolsExplainThisResourceDogfoodTemperature{
     &kDevToolsExplainThisResourceDogfood, "aida_temperature",
-    /*default_value=*/0};
+    /*default_value=*/-1};
 
 // Whether an infobar is shown when the process is shared.
 BASE_FEATURE(kDevToolsSharedProcessInfobar,
