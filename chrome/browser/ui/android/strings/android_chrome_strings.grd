@@ -6813,6 +6813,17 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_HUB_SEARCH_EMPTY_HINT" desc="The text displayed in the search box when it's empty.">
         Search your tabs
       </message>
+
+      <!-- Default browser promo -->
+      <message name="IDS_DEFAULT_BROWSER_PROMO_CARD_TITLE" desc="Title of a promotion about setting Chrome the default browser.">
+        Make Chrome your default browser
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_PROMO_CARD_DESCRIPTION" desc="Description of a promot about setting Chrome as default browser. It explains the user benefit of setting default browser.">
+        You can use Chrome any time you tap links in messages, documents and other apps
+      </message>
+      <message name="IDS_DEFAULT_BROWSER_PROMO_OPEN_SETTINGS_LABEL" desc="Text that displayed on button that allows the user to open Android settings to set a default browser.">
+        Open Settings
+      </message>
     </messages>
   </release>
 </grit>

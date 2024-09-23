@@ -46,7 +46,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertTrue(
                 "Should promo disambiguation sheet on Q.",
                 mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowOtherPromo(null));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
     // --- Q above ---
@@ -55,7 +55,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertTrue(
                 "Should promo role manager when there is no default browser on Q+.",
                 mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowOtherPromo(null));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertTrue(
                 "Should promo role manager when there is another default browser on Q+.",
                 mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowOtherPromo(null));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
     // --- P below ---
@@ -75,7 +75,7 @@ public class DefaultBrowserPromoUtilsTest {
         when(mProvider.isRoleAvailable(any())).thenCallRealMethod();
         Assert.assertFalse(
                 "Should not promo on P-.", mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertTrue(mUtils.shouldShowOtherPromo(null));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
     // --- prerequisites ---
@@ -86,7 +86,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertTrue(
                 "Should promo when promo count does not reach the upper limit.",
                 mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowOtherPromo(null));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
     @Test
@@ -96,7 +96,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertFalse(
                 "Should not promo when promo count reaches the upper limit.",
                 mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertTrue(mUtils.shouldShowOtherPromo(null));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertFalse(
                 "Should not promo when the feature is disabled.",
                 mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertTrue(mUtils.shouldShowOtherPromo(null));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertFalse(
                 "Should not promo when session count has not reached the required amount.",
                 mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowOtherPromo(null));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
     @Test
@@ -139,7 +139,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertFalse(
                 "Should not promo when another chrome channel browser has been default.",
                 mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowOtherPromo(null));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
     @Test
@@ -151,7 +151,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertFalse(
                 "Should not promo when chrome has been default.",
                 mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowOtherPromo(null));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
     @Test
@@ -160,7 +160,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertFalse(
                 "Should not promo when web browser activity does not exist.",
                 mUtils.shouldShowRoleManagerPromo(null, false));
-        Assert.assertFalse(mUtils.shouldShowOtherPromo(null));
+        Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(null));
     }
 
     private void setDepsMockWithDefaultValues() {

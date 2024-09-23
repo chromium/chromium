@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.SettingsLauncherHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
@@ -60,6 +61,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.settings_promo_card.SettingsPromoCardPreference;
 import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
@@ -72,6 +74,8 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -90,6 +94,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 SyncService.SyncStateChangedListener,
                 SigninManager.SignInStateObserver {
     public static final String PREF_SYNC_PROMO = "sync_promo";
+    public static final String PREF_SETTINGS_PROMO_CARD = "settings_promo_card";
     public static final String PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION =
             "account_and_google_services_section";
     public static final String PREF_SIGN_IN = "sign_in";
@@ -216,22 +221,38 @@ public class MainSettings extends ChromeBaseSettingsFragment
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(getProfile());
 
-        SyncPromoPreference syncPromoPreference = findPreference(PREF_SYNC_PROMO);
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
                                 R.string.signin_account_picker_bottom_sheet_title)
                         .build();
-        syncPromoPreference.initialize(
-                profileDataCache,
-                accountManagerFacade,
-                signinManager,
-                identityManager,
-                new SyncPromoController(
-                        getProfile(),
-                        bottomSheetStrings,
-                        SigninAccessPoint.SETTINGS,
-                        SyncConsentActivityLauncherImpl.get(),
-                        SigninAndHistorySyncActivityLauncherImpl.get()));
+
+        if (SigninFeatureMap.isEnabled(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)) {
+            // TODO(crbug.com/364906215): Define SettingsPromoCardPreference in the xml once
+            // SyncPromoPreference is removed.
+            SettingsPromoCardPreference settingsPromoCardPreference =
+                    new SettingsPromoCardPreference(
+                            getContext(), null, TrackerFactory.getTrackerForProfile(getProfile()));
+            settingsPromoCardPreference.setKey(PREF_SETTINGS_PROMO_CARD);
+            settingsPromoCardPreference.setOrder(0);
+            getPreferenceScreen().addPreference(settingsPromoCardPreference);
+        } else {
+            SyncPromoPreference syncPromoPreference = new SyncPromoPreference(getContext(), null);
+            syncPromoPreference.setKey(PREF_SYNC_PROMO);
+            syncPromoPreference.setOrder(0);
+            syncPromoPreference.initialize(
+                    profileDataCache,
+                    accountManagerFacade,
+                    signinManager,
+                    identityManager,
+                    new SyncPromoController(
+                            getProfile(),
+                            bottomSheetStrings,
+                            SigninAccessPoint.SETTINGS,
+                            SyncConsentActivityLauncherImpl.get(),
+                            SigninAndHistorySyncActivityLauncherImpl.get()));
+            getPreferenceScreen().addPreference(syncPromoPreference);
+        }
 
         SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
         signInPreference.initialize(getProfile(), profileDataCache, accountManagerFacade);
@@ -326,6 +347,13 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void updatePreferences() {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.HIDE_SETTINGS_SIGN_IN_PROMO)
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)) {
+            SettingsPromoCardPreference promoCardPreference =
+                    (SettingsPromoCardPreference) addPreferenceIfAbsent(PREF_SETTINGS_PROMO_CARD);
+            promoCardPreference.updatePreferences();
+        }
+
         if (IdentityServicesProvider.get()
                 .getSigninManager(getProfile())
                 .isSigninSupported(/* requireUpdatedPlayServices= */ false)) {

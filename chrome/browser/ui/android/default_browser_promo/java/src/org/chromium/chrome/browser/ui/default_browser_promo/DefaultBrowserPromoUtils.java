@@ -10,6 +10,7 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -93,12 +94,12 @@ public class DefaultBrowserPromoUtils {
     }
 
     /**
-     * Determine whether other types of default browser promo should be displayed if:
+     * Determine if default browser promo other than the Role Manager Promo should be displayed:
      * 1. Role Manager Promo shouldn't be shown,
      * 2. Impression count condition, other than the max count for RoleManager is met,
      * 3. Current default browser state satisfied the pre-defined conditions.
      */
-    public boolean shouldShowOtherPromo(Context context) {
+    public boolean shouldShowNonRoleManagerPromo(Context context) {
         return !shouldShowRoleManagerPromo(context, false)
                 && mImpressionCounter.shouldShowPromo(true)
                 && mStateProvider.shouldShowPromo();
@@ -126,5 +127,11 @@ public class DefaultBrowserPromoUtils {
     public static void incrementSessionCount() {
         ChromeSharedPreferences.getInstance()
                 .incrementInt(ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_SESSION_COUNT);
+    }
+
+    public static void setInstanceForTesting(DefaultBrowserPromoUtils testInstance) {
+        var oldInstance = sInstance;
+        sInstance = testInstance;
+        ResettersForTesting.register(() -> sInstance = oldInstance);
     }
 }

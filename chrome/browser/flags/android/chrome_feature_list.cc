@@ -219,6 +219,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTRevampedBranding,
     &kCCTTabModalDialog,
     &kDefaultBrowserPromoAndroid,
+    &kDefaultBrowserPromoAndroid2,
     &kDisableInstanceLimit,
     &kDontAutoHideBrowserControls,
     &kCacheDeprecatedSystemLocationSetting,
@@ -650,6 +651,10 @@ BASE_FEATURE(kCrossDeviceTabPaneAndroid,
 BASE_FEATURE(kDefaultBrowserPromoAndroid,
              "DefaultBrowserPromoAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDefaultBrowserPromoAndroid2,
+             "DefaultBrowserPromoAndroid2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDelayTempStripRemoval,
              "DelayTempStripRemoval",

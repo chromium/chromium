@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/MaterialCardStyle">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingBottom="12dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp">
+
+            <ImageView
+                android:id="@+id/browser_icon"
+                android:src="@mipmap/app_icon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"/>
+
+            <org.chromium.ui.widget.ChromeImageButton
+                android:id="@+id/close_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="top|end"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/close"
+                android:scaleType="center"
+                android:src="@drawable/btn_close"
+                app:tint="@macro/default_icon_color"/>
+
+        </FrameLayout>
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/title"
+            android:text="@string/default_browser_promo_card_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            app:leading="@dimen/text_size_medium_leading"/>
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/description"
+            android:text="@string/default_browser_promo_card_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="12dp"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            app:leading="@dimen/text_size_medium_leading"/>
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/open_settings_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="@string/default_browser_promo_open_settings_label"
+            style="@style/FilledButton" />
+
+    </LinearLayout>
+
+</org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>

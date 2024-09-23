@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettings;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
@@ -113,6 +114,7 @@ import org.chromium.chrome.browser.sync.settings.SyncPromoPreference.State;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
@@ -128,6 +130,7 @@ import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -189,6 +192,9 @@ public class MainSettingsFragmentTest {
     @Mock private SyncConsentActivityLauncher mSyncConsentActivityLauncher;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
     @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
+
+    @Mock private Tracker mTestTracker;
+    @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
 
     private MainSettings mMainSettings;
 
@@ -1224,6 +1230,22 @@ public class MainSettingsFragmentTest {
         Assert.assertNull(
                 "Address Bar should not be shown when flag is off",
                 mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)
+    public void testDefaultBrowserPromoCard() throws InterruptedException {
+        when(mTestTracker.shouldTriggerHelpUI(any())).thenReturn(true);
+        TrackerFactory.setTrackerForTests(mTestTracker);
+        when(mMockDefaultBrowserPromoUtils.shouldShowNonRoleManagerPromo(any())).thenReturn(true);
+        DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
+
+        launchSettingsActivity();
+        Preference preference = mMainSettings.findPreference(MainSettings.PREF_SETTINGS_PROMO_CARD);
+        Assert.assertNotNull(
+                "Settings promo preference exist when feature flag is enabled", preference);
+        Assert.assertTrue("Settings promo card is not showing", preference.isVisible());
     }
 
     private void launchSettingsActivity() {
