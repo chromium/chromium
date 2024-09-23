@@ -116,7 +116,7 @@ void CloudHeartbeatServiceClient::MakeUpdateRemoteAccessHostCall(
     std::optional<std::string> signaling_id,
     std::optional<std::string> offline_reason,
     CloudServiceClient::UpdateRemoteAccessHostCallback callback) {
-  auto* host_version = STRINGIZE(VERSION);
+  constexpr auto* host_version = STRINGIZE(VERSION);
   client_.UpdateRemoteAccessHost(directory_id_, host_version, signaling_id,
                                  offline_reason, GetHostOperatingSystemName(),
                                  GetHostOperatingSystemVersion(),
@@ -129,12 +129,13 @@ void CloudHeartbeatServiceClient::RunHeartbeatResponseCallback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Cloud hosts always require session authorization and do not support
-  // changing the email address of the primary user.
+  // changing the email address of the primary user. This service client always
+  // uses 'lite' heartbeats.
   // TODO: joedow - Return wait interval from the service and pass it through.
   std::move(callback).Run(status, /*wait_interval=*/std::nullopt,
                           /*primary_user_email=*/"",
                           /*require_session_authorization=*/true,
-                          /*use_lite_heartbeat=*/std::nullopt);
+                          /*use_lite_heartbeat=*/true);
 }
 
 }  // namespace remoting
