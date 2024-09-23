@@ -66,6 +66,7 @@ class DirectoryServiceClient {
   DirectoryServiceClient& operator=(const DirectoryServiceClient&) = delete;
 
   void DeleteHost(const std::string& host_id, DeleteHostCallback callback);
+  void GetHostList(GetHostListCallback callback);
   void LegacyHeartbeat(const std::string& directory_id,
                        std::optional<std::string> signaling_id,
                        std::optional<std::string> offline_reason,
@@ -74,7 +75,6 @@ class DirectoryServiceClient {
                        const std::string& os_name,
                        const std::string& os_version,
                        LegacyHeartbeatCallback callback);
-  void GetHostList(GetHostListCallback callback);
   void RegisterHost(const std::string& host_id,
                     const std::string& host_name,
                     const std::string& public_key,
