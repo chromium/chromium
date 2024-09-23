@@ -7,13 +7,13 @@
 #import "ui/gfx/image/image.h"
 
 MockSyncErrorInfoBarDelegate::MockSyncErrorInfoBarDelegate(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     id<SyncPresenter> presenter,
     std::u16string title_text,
     std::u16string message_text,
     std::u16string button_label_text,
     bool use_icon_background_tint)
-    : SyncErrorInfoBarDelegate(browser_state, presenter) {
+    : SyncErrorInfoBarDelegate(profile, presenter) {
   ON_CALL(*this, GetTitleText).WillByDefault(testing::Return(title_text));
   ON_CALL(*this, GetMessageText).WillByDefault(testing::Return(message_text));
   ON_CALL(*this, GetButtonLabel)

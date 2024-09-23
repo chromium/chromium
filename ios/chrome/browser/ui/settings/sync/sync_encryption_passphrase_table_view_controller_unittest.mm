@@ -216,7 +216,7 @@ TEST_F(SyncEncryptionPassphraseTableViewControllerTest, TestMessage) {
   TurnSyncPassphraseErrorOn();
   EXPECT_FALSE([sync_controller syncErrorMessage]);
   TurnSyncOtherErrorOn(otherError);
-  EXPECT_NSEQ(GetSyncErrorMessageForBrowserState(chrome_browser_state_.get()),
+  EXPECT_NSEQ(GetSyncErrorMessageForProfile(chrome_browser_state_.get()),
               [sync_controller syncErrorMessage]);
   TurnSyncErrorOff();
   EXPECT_FALSE([sync_controller syncErrorMessage]);

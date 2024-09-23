@@ -24,18 +24,16 @@ NSString* GetSyncErrorDescriptionForSyncService(
     syncer::SyncService* syncService);
 
 // Gets the title of the Sync error info bar.
-std::u16string GetSyncErrorInfoBarTitleForBrowserState(
-    ChromeBrowserState* browserState);
+std::u16string GetSyncErrorInfoBarTitleForProfile(ProfileIOS* profile);
 
 // Gets the string message associated with the sync error state of
-// `browserState`. The returned error message does not contain any links.
+// `profile`. The returned error message does not contain any links.
 // Returns nil if there is no sync error.
-NSString* GetSyncErrorMessageForBrowserState(ChromeBrowserState* browserState);
+NSString* GetSyncErrorMessageForProfile(ProfileIOS* profile);
 
-// Gets the title of the button to fix the sync error of `browserState`.
+// Gets the title of the button to fix the sync error of `profile`.
 // Returns nil if there is no sync error or it can't be fixed by a user action.
-NSString* GetSyncErrorButtonTitleForBrowserState(
-    ChromeBrowserState* browserState);
+NSString* GetSyncErrorButtonTitleForProfile(ProfileIOS* profile);
 
 // Returns true if sync settings (or the google services settings when unified
 // consent is enabled) should be displayed based on `error`.
@@ -43,7 +41,7 @@ bool ShouldShowSyncSettings(syncer::SyncService::UserActionableError error);
 
 // Check for sync errors, and display any that ought to be shown to the user.
 // Returns true if an infobar was brought up.
-bool DisplaySyncErrors(ChromeBrowserState* browser_state,
+bool DisplaySyncErrors(ProfileIOS* profile,
                        web::WebState* web_state,
                        id<SyncPresenter> presenter);
 

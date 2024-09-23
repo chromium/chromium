@@ -19,7 +19,7 @@
 // Mock version of SyncErrorInfoBarDelegate.
 class MockSyncErrorInfoBarDelegate : public SyncErrorInfoBarDelegate {
  public:
-  MockSyncErrorInfoBarDelegate(ChromeBrowserState* browser_state,
+  MockSyncErrorInfoBarDelegate(ProfileIOS* profile,
                                id<SyncPresenter> presenter,
                                std::u16string title_text = u"",
                                std::u16string message_text = u"",

@@ -149,7 +149,7 @@ const CGFloat kSpinnerButtonPadding = 18;
     return nil;
   }
 
-  return GetSyncErrorMessageForBrowserState(browserState);
+  return GetSyncErrorMessageForProfile(browserState);
 }
 
 #pragma mark - View lifecycle
