@@ -7761,7 +7761,6 @@ crbug.com/338109349 virtual/view-transition-wide-gamut/external/wpt/css/css-view
 crbug.com/338109349 virtual/threaded/external/wpt/css/css-view-transitions/no-crash-view-transition-in-massive-iframe.html [ Failure ]
 crbug.com/333501264 virtual/fenced-frame-mparch/external/wpt/fenced-frame/setting-null-config-navigates-to-about-blank.https.html [ Failure Pass ]
 crbug.com/338124116 external/wpt/payment-request/payment-request-hasenrolledinstrument-method.tentative.https.html [ Failure Pass ]
-crbug.com/40851596 external/wpt/pointerevents/pointerevent_click_during_capture.html?mouse-auxclick [ Failure Pass ]
 crbug.com/40181907 external/wpt/pointerevents/pointerevent_touch-action-pan-up-css_touch.html [ Failure Pass Timeout ]
 crbug.com/40286318 external/wpt/html/semantics/invokers/invoketarget-on-dialog-behavior.tentative.html [ Failure Pass ]
 crbug.com/333739617 fast/peerconnection/RTCEncodedVideoFrameMetadata-timestamp.html [ Failure Pass Timeout ]
