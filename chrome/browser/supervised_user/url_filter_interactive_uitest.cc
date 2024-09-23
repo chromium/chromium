@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
-                       ChildInPendingStateIsShownVerificationInterstitial) {
+                       ChildInPendingStateCanReauthAndRequestApproval) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildElementId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kChildSignInElementId);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(InIntendedStateObserver,
@@ -347,13 +347,14 @@ IN_PROC_BROWSER_TEST_P(UrlFilterUiTest,
       InstrumentTab(kChildSignInElementId, tab_index + 1, &child().browser()),
       WaitForStateChange(kChildSignInElementId,
                          PageWithMatchingTitle("Sign in - Google Accounts")),
-      Log("The child is redirected to Sing-in page"),
+      Log("The child is redirected to Sign-in page"),
       // Child goes through the sign-in flow.
       // Note: If the UI-sign performed below is flaky we can drop this part of
       // the test or find another way to sign-in.
       DoChildSignInFromUI(kChildSignInElementId),
-      // TODO(b/364011203): Add check for the RemoteApprovalButtonAppeared().
-      // TODO(b/362420913): Test closure of sing-in tab.
+      WaitForStateChange(kChildElementId, RemoteApprovalButtonAppeared()),
+      Log("The child is shown the blocked url interstitial"),
+      // TODO(b/362420913): Test closure of sign-in tab.
       Log("Test sequence finished"));
 }
 #endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
