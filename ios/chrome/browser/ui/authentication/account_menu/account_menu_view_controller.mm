@@ -425,7 +425,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
         base::RecordAction(
             base::UserMetricsAction("Signin_AccountMenu_Signout"));
         CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
-        [self.mutator signOutFromTargetRect:cellRect callback:nil];
+        [self.mutator signOutFromTargetRect:cellRect];
         break;
     }
   }

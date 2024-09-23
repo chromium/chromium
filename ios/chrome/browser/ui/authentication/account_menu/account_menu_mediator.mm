@@ -231,8 +231,7 @@
   [_delegate mediatorWantsToBeDismissed:self];
 }
 
-- (void)signOutFromTargetRect:(CGRect)targetRect
-                     callback:(void (^)(BOOL))callback {
+- (void)signOutFromTargetRect:(CGRect)targetRect {
   if (_blockUserInteractions) {
     return;
   }
@@ -242,8 +241,7 @@
   __weak __typeof(self) weakSelf = self;
   [self.delegate signOutFromTargetRect:targetRect
                               callback:^(BOOL success) {
-                                [weakSelf signoutEndedWithSuccess:success
-                                                         callback:callback];
+                                [weakSelf signoutEndedWithSuccess:success];
                               }];
 }
 
@@ -392,15 +390,13 @@
 }
 
 // Callback for signout.
-- (void)signoutEndedWithSuccess:(BOOL)success
-                       callback:(void (^)(BOOL))callback {
+- (void)signoutEndedWithSuccess:(BOOL)success {
   [self.delegate unblockScene];
   if (!success) {
     // User had not signed-out. Allow to interact with the UI.
     _blockUserInteractions = NO;
     [self restartUpdates];
   }
-  callback(success);
 }
 
 - (void)signinEndedWithSuccess:(BOOL)success {

@@ -391,9 +391,6 @@ TEST_F(AccountMenuMediatorTest, TestDidTapAddAccount) {
 
 // Tests the effect of signOutFromTargetRect.
 TEST_F(AccountMenuMediatorTest, TestViewControllerWantsToBeClosed) {
-  base::RunLoop run_loop;
-  base::RepeatingClosure closure = run_loop.QuitClosure();
-
   CGRect rect = CGRectMake(0, 0, 40, 24);
 
   __block void (^callback)(BOOL) = nil;
@@ -404,11 +401,7 @@ TEST_F(AccountMenuMediatorTest, TestViewControllerWantsToBeClosed) {
                      return true;
                    }]]);
   OCMExpect([delegate_ blockScene]);
-  [mediator_ signOutFromTargetRect:rect
-                          callback:^(BOOL success) {
-                            closure.Run();
-                          }];
+  [mediator_ signOutFromTargetRect:rect];
   OCMExpect([delegate_ unblockScene]);
   callback(YES);
-  run_loop.Run();
 }

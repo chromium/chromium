@@ -248,8 +248,7 @@ TEST_F(AccountMenuViewControllerTest, TestTapAddAccount) {
 
 // Tests tapping on the sign-out cell.
 TEST_F(AccountMenuViewControllerTest, TestTapSignOut) {
-  OCMExpect([mutator_ signOutFromTargetRect:CGRect() callback:nil])
-      .ignoringNonObjectArgs();
+  OCMExpect([mutator_ signOutFromTargetRect:CGRect()]).ignoringNonObjectArgs();
   SelectCell(path_for_sign_out_);
   EXPECT_EQ(1, user_actions_.GetActionCount("Signin_AccountMenu_Signout"));
 }
