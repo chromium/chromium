@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
@@ -17,8 +19,8 @@
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/lookalikes/lookalike_test_helper.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
-#include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
+#include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -260,7 +262,7 @@ class LookalikeUrlNavigationThrottleBrowserTest
     test_clock_.SetNow(kNow);
 
     LookalikeUrlService* lookalike_service =
-        LookalikeUrlService::Get(browser()->profile());
+        LookalikeUrlServiceFactory::GetForProfile(browser()->profile());
     lookalike_service->SetClockForTesting(&test_clock_);
 
     // Use HTTPS URLs in tests.
@@ -1199,7 +1201,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   // Set high engagement scores in the main profile and low engagement scores
   // in incognito. Main profile should record metrics, incognito shouldn't.
   Browser* incognito = CreateIncognitoBrowser();
-  LookalikeUrlService::Get(incognito->profile())
+  LookalikeUrlServiceFactory::GetForProfile(incognito->profile())
       ->SetClockForTesting(test_clock());
   SetEngagementScore(browser(), kEngagedUrl, kHighEngagement);
   SetEngagementScore(incognito, kEngagedUrl, kLowEngagement);
@@ -1873,7 +1875,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottlePrerenderBrowserTest,
   LoadAndCheckInterstitialAt(browser(), kNavigateUrl);
   SendInterstitialCommandSync(browser(),
                               SecurityInterstitialCommand::CMD_PROCEED);
-  LookalikeUrlService::Get(browser()->profile())
+  LookalikeUrlServiceFactory::GetForProfile(browser()->profile())
       ->ResetWarningDismissedETLDPlusOnesForTesting();
 
   // Start a prerender.

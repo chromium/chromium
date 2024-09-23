@@ -90,7 +90,7 @@
 #include "chrome/browser/language/url_language_histogram_factory.h"
 #include "chrome/browser/language_detection/language_detection_model_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
-#include "chrome/browser/lookalikes/lookalike_url_service.h"
+#include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/media_engagement_service_factory.h"
@@ -961,7 +961,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   LoginUIServiceFactory::GetInstance();
 #endif
   LogoServiceFactory::GetInstance();
-  LookalikeUrlService::EnsureFactoryBuilt();
+  LookalikeUrlServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   ManagedConfigurationAPIFactory::GetInstance();
 #endif

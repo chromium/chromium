@@ -682,6 +682,8 @@ static_library("browser") {
     "lookalikes/lookalike_url_navigation_throttle.h",
     "lookalikes/lookalike_url_service.cc",
     "lookalikes/lookalike_url_service.h",
+    "lookalikes/lookalike_url_service_factory.cc",
+    "lookalikes/lookalike_url_service_factory.h",
     "lookalikes/lookalike_url_tab_storage.cc",
     "lookalikes/lookalike_url_tab_storage.h",
     "lookalikes/safety_tip_ui.h",

@@ -73,8 +73,6 @@ class LookalikeUrlService : public KeyedService {
   using EngagedSitesCallback =
       base::OnceCallback<void(const std::vector<lookalikes::DomainInfo>&)>;
 
-  static LookalikeUrlService* Get(Profile* profile);
-
   // Returns whether the engaged site list is recently updated. Returns true
   // even when an update has already been queued or is in progress.
   bool EngagedSitesNeedUpdating() const;
@@ -149,8 +147,6 @@ class LookalikeUrlService : public KeyedService {
   // Reset set of eTLD+1s to forget the user action that ignores warning. Only
   // for testing.
   void ResetWarningDismissedETLDPlusOnesForTesting();
-
-  static void EnsureFactoryBuilt();
 
  private:
   // Called when an async engaged site computation is finished.

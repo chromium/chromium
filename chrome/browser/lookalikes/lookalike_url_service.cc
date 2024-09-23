@@ -10,16 +10,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/singleton.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/common/channel_info.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -42,49 +39,6 @@ using security_state::SafetyTipStatus;
 namespace {
 
 constexpr base::TimeDelta kEngagedSiteUpdateInterval = base::Seconds(60);
-
-class LookalikeUrlServiceFactory : public ProfileKeyedServiceFactory {
- public:
-  static LookalikeUrlService* GetForProfile(Profile* profile) {
-    return static_cast<LookalikeUrlService*>(
-        GetInstance()->GetServiceForBrowserContext(profile,
-                                                   /*create_service=*/true));
-  }
-  static LookalikeUrlServiceFactory* GetInstance() {
-    return base::Singleton<LookalikeUrlServiceFactory>::get();
-  }
-
-  LookalikeUrlServiceFactory(const LookalikeUrlServiceFactory&) = delete;
-  LookalikeUrlServiceFactory& operator=(const LookalikeUrlServiceFactory&) =
-      delete;
-
- private:
-  friend struct base::DefaultSingletonTraits<LookalikeUrlServiceFactory>;
-
-  // LookalikeUrlServiceFactory();
-  LookalikeUrlServiceFactory()
-      : ProfileKeyedServiceFactory(
-            "LookalikeUrlServiceFactory",
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kOwnInstance)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kOwnInstance)
-                // TODO(crbug.com/41488885): Check if this service is needed for
-                // Ash Internals.
-                .WithAshInternals(ProfileSelection::kOwnInstance)
-                .Build()) {
-    DependsOn(site_engagement::SiteEngagementServiceFactory::GetInstance());
-  }
-
-  ~LookalikeUrlServiceFactory() override {}
-
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* profile) const override {
-    return new LookalikeUrlService(static_cast<Profile*>(profile));
-  }
-};
 
 // static
 std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
@@ -137,11 +91,6 @@ LookalikeUrlService::LookalikeUrlService(Profile* profile)
     : profile_(profile), clock_(base::DefaultClock::GetInstance()) {}
 
 LookalikeUrlService::~LookalikeUrlService() = default;
-
-// static
-LookalikeUrlService* LookalikeUrlService::Get(Profile* profile) {
-  return LookalikeUrlServiceFactory::GetForProfile(profile);
-}
 
 bool LookalikeUrlService::EngagedSitesNeedUpdating() const {
   if (last_engagement_fetch_time_.is_null())
@@ -380,9 +329,4 @@ void LookalikeUrlService::OnUIDisabledFirstVisit(const GURL& url) {
 
 void LookalikeUrlService::ResetWarningDismissedETLDPlusOnesForTesting() {
   warning_dismissed_etld1s_.clear();
-}
-
-// static
-void LookalikeUrlService::EnsureFactoryBuilt() {
-  LookalikeUrlServiceFactory::GetInstance();
 }

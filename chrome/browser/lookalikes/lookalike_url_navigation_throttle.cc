@@ -25,6 +25,7 @@
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_controller_client.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
+#include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 #include "chrome/browser/lookalikes/lookalike_url_tab_storage.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -86,7 +87,7 @@ bool IsLookalikeUrl(Profile* profile,
                     base::TimeDelta* get_domain_info_duration) {
   DCHECK(get_domain_info_duration->is_zero());
   LookalikeUrlService::LookalikeUrlCheckResult result =
-      LookalikeUrlService::Get(profile)->CheckUrlForLookalikes(
+      LookalikeUrlServiceFactory::GetForProfile(profile)->CheckUrlForLookalikes(
           url, engaged_sites,
           /*stop_checking_on_allowlist_or_ignore=*/true);
   if (result.action_type == LookalikeActionType::kNone) {
@@ -117,7 +118,7 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillStartRequest() {
     return content::NavigationThrottle::PROCEED;
 
 #if BUILDFLAG(IS_ANDROID)
-  auto* service = LookalikeUrlService::Get(profile_);
+  auto* service = LookalikeUrlServiceFactory::GetForProfile(profile_);
   if (service->EngagedSitesNeedUpdating())
     service->ForceUpdateEngagedSites(base::DoNothing());
 #endif
@@ -155,7 +156,8 @@ void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSyncWithSites(
 
 void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSync() {
   // Update engaged sites if needed, and try again.
-  LookalikeUrlService* service = LookalikeUrlService::Get(profile_);
+  LookalikeUrlService* service =
+      LookalikeUrlServiceFactory::GetForProfile(profile_);
   if (!use_test_profile_ && service->EngagedSitesNeedUpdating()) {
     service->ForceUpdateEngagedSites(base::BindOnce(
         &LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSyncWithSites,
@@ -251,7 +253,8 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
   }
 
-  LookalikeUrlService* service = LookalikeUrlService::Get(profile_);
+  LookalikeUrlService* service =
+      LookalikeUrlServiceFactory::GetForProfile(profile_);
   if (!use_test_profile_ && service->EngagedSitesNeedUpdating()) {
     service->ForceUpdateEngagedSites(
         base::BindOnce(&LookalikeUrlNavigationThrottle::PerformChecksDeferred,
