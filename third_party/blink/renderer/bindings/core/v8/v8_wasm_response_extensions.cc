@@ -457,9 +457,12 @@ class WasmDataLoaderClient final
 // No further methods should be called on the WasmStreaming object afterwards,
 // hence we receive the shared_ptr by reference and clear it.
 void PropagateExceptionToWasmStreaming(
+    ScriptState* script_state,
     ExceptionState& exception_state,
     std::shared_ptr<v8::WasmStreaming>& streaming) {
   DCHECK(exception_state.HadException());
+  ApplyContextToException(script_state, exception_state.GetException(),
+                          exception_state.GetContext());
   streaming->Abort(exception_state.GetException());
   streaming.reset();
   exception_state.ClearException();
@@ -541,7 +544,7 @@ void StreamFromResponseCallback(
     exception_state.ThrowTypeError(
         "An argument must be provided, which must be a "
         "Response or Promise<Response> object");
-    PropagateExceptionToWasmStreaming(exception_state, streaming);
+    PropagateExceptionToWasmStreaming(script_state, exception_state, streaming);
     return;
   }
 
@@ -549,7 +552,7 @@ void StreamFromResponseCallback(
     base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
                                   WasmStreamingInputType::kResponseNotOK);
     exception_state.ThrowTypeError("HTTP status code is not ok");
-    PropagateExceptionToWasmStreaming(exception_state, streaming);
+    PropagateExceptionToWasmStreaming(script_state, exception_state, streaming);
     return;
   }
 
@@ -561,7 +564,7 @@ void StreamFromResponseCallback(
                                   WasmStreamingInputType::kWrongMimeType);
     exception_state.ThrowTypeError(
         "Incorrect response MIME type. Expected 'application/wasm'.");
-    PropagateExceptionToWasmStreaming(exception_state, streaming);
+    PropagateExceptionToWasmStreaming(script_state, exception_state, streaming);
     return;
   }
 
@@ -570,7 +573,7 @@ void StreamFromResponseCallback(
                                   WasmStreamingInputType::kReponseLocked);
     exception_state.ThrowTypeError(
         "Cannot compile WebAssembly.Module from an already read Response");
-    PropagateExceptionToWasmStreaming(exception_state, streaming);
+    PropagateExceptionToWasmStreaming(script_state, exception_state, streaming);
     return;
   }
 
@@ -580,7 +583,7 @@ void StreamFromResponseCallback(
     // Since the status is 2xx (ok), this must be status 204 (No Content),
     // status 205 (Reset Content) or a malformed status 200 (OK).
     exception_state.ThrowWasmCompileError("Empty WebAssembly module");
-    PropagateExceptionToWasmStreaming(exception_state, streaming);
+    PropagateExceptionToWasmStreaming(script_state, exception_state, streaming);
     return;
   }
 

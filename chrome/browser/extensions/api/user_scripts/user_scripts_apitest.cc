@@ -290,6 +290,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITestWithoutDeveloperMode,
              } catch (e) {
                caught = true;
                const expectedError =
+                   `Failed to read the 'userScripts' property from 'Object': ` +
                    `The 'userScripts' API is only available for ` +
                    `users in developer mode.`;
                chrome.test.assertEq(expectedError, e.message);

@@ -7832,16 +7832,18 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   AttachInterestGroupObserver();
 
-  EXPECT_EQ("TypeError: Cannot convert 3 to a BigInt",
-            RunAuctionAndWait(JsReplace(
-                R"({
+  EXPECT_EQ(
+      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
+      "Cannot convert 3 to a BigInt",
+      RunAuctionAndWait(JsReplace(
+          R"({
     seller: $1,
     decisionLogicURL: $2,
     auctionReportBuyerKeys: [3],
                          })",
-                url::Origin::Create(test_url),
-                embedded_https_test_server().GetURL(
-                    "a.test", "/interest_group/decision_logic.js"))));
+          url::Origin::Create(test_url),
+          embedded_https_test_server().GetURL(
+              "a.test", "/interest_group/decision_logic.js"))));
   WaitForAccessObserved({});
 }
 

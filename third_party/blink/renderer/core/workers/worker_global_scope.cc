@@ -244,12 +244,8 @@ void WorkerGlobalScope::importScripts(const Vector<String>& urls) {
 
 namespace {
 
-String NetworkErrorMessageAtImportScript(const char* const property_name,
-                                         const char* const interface_name,
-                                         const KURL& url) {
-  return ExceptionMessages::FailedToExecute(
-      property_name, interface_name,
-      "The script at '" + url.ElidedString() + "' failed to load.");
+String NetworkErrorMessageAtImportScript(const KURL& url) {
+  return "The script at '" + url.ElidedString() + "' failed to load.";
 }
 
 }  // namespace
@@ -261,19 +257,11 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
   DCHECK(GetExecutionContext());
   v8::Isolate* isolate = GetThread()->GetIsolate();
 
-  // Previously, exceptions here were thrown via ExceptionState but now are
-  // thrown via V8ThrowException. To keep the existing error messages,
-  // ExceptionMessages::FailedToExecute() is called directly (crbug/1114610).
-  const char* const property_name = "importScripts";
-  const char* const interface_name = "WorkerGlobalScope";
-
   // Step 1: "If worker global scope's type is "module", throw a TypeError
   // exception."
   if (script_type_ == mojom::blink::ScriptType::kModule) {
     V8ThrowException::ThrowTypeError(
-        isolate, ExceptionMessages::FailedToExecute(
-                     property_name, interface_name,
-                     "Module scripts don't support importScripts()."));
+        isolate, "Module scripts don't support importScripts().");
     return;
   }
 
@@ -293,9 +281,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
       V8ThrowException::ThrowException(
           isolate, V8ThrowDOMException::CreateOrEmpty(
                        isolate, DOMExceptionCode::kSyntaxError,
-                       ExceptionMessages::FailedToExecute(
-                           property_name, interface_name,
-                           "The URL '" + url_string + "' is invalid.")));
+                       "The URL '" + url_string + "' is invalid."));
       return;
     }
     if (!GetContentSecurityPolicy()->AllowScriptFromSource(
@@ -304,8 +290,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
       V8ThrowException::ThrowException(
           isolate, V8ThrowDOMException::CreateOrEmpty(
                        isolate, DOMExceptionCode::kNetworkError,
-                       NetworkErrorMessageAtImportScript(property_name,
-                                                         interface_name, url)));
+                       NetworkErrorMessageAtImportScript(url)));
       return;
     }
     completed_urls.push_back(url);
@@ -316,8 +301,8 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls) {
     KURL response_url;
     String source_code;
     std::unique_ptr<Vector<uint8_t>> cached_meta_data;
-    const String error_message = NetworkErrorMessageAtImportScript(
-        property_name, interface_name, complete_url);
+    const String error_message =
+        NetworkErrorMessageAtImportScript(complete_url);
 
     // Step 5.1: "Fetch a classic worker-imported script given url and settings
     // object, passing along any custom perform the fetch steps provided. If

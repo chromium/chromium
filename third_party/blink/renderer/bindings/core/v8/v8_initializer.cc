@@ -319,6 +319,38 @@ void V8Initializer::PromiseRejectHandlerInMainThread(
   PromiseRejectHandler(data, *rejected_promises, script_state);
 }
 
+void V8Initializer::ExceptionPropagationCallback(
+    v8::ExceptionPropagationMessage v8_message) {
+  v8::Isolate* isolate = v8_message.GetIsolate();
+  v8::Local<v8::Object> exception = v8_message.GetException();
+
+  v8::ExceptionContext context_type = v8_message.GetExceptionContext();
+  String class_name = ToCoreString(isolate, v8_message.GetInterfaceName());
+  if (class_name == "global") {
+    class_name = "Window";
+  }
+  String property_name = ToCoreString(isolate, v8_message.GetPropertyName());
+  if ((context_type == v8::ExceptionContext::kAttributeGet &&
+       property_name.StartsWith("get ")) ||
+      (context_type == v8::ExceptionContext::kAttributeSet &&
+       property_name.StartsWith("set "))) {
+    property_name = property_name.Substring(4);
+  }
+  if (property_name == "[Symbol.toPrimitive]") {
+    property_name = String();
+  }
+  if (context_type == v8::ExceptionContext::kConstructor) {
+    // Constructors are reported by v8 as the property name, but
+    // our plumbing expects it as the class name.
+    class_name = property_name;
+  }
+  DCHECK(class_name.Is8Bit());
+
+  ApplyContextToException(
+      isolate, isolate->GetCurrentContext(), exception,
+      ExceptionContext(context_type, class_name.Utf8().data(), property_name));
+}
+
 static void PromiseRejectHandlerInWorker(v8::PromiseRejectMessage data) {
   v8::Local<v8::Promise> promise = data.GetPromise();
 
@@ -922,6 +954,7 @@ v8::Isolate* V8Initializer::InitializeMainThread() {
   }
 
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInMainThread);
+  isolate->SetExceptionPropagationCallback(ExceptionPropagationCallback);
 
   V8PerIsolateData::From(isolate)->SetThreadDebugger(
       std::make_unique<MainThreadDebugger>(isolate));
@@ -963,6 +996,7 @@ void V8Initializer::InitializeWorker(v8::Isolate* isolate) {
 
   isolate->SetStackLimit(WTF::GetCurrentStackPosition() - kWorkerMaxStackSize);
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInWorker);
+  isolate->SetExceptionPropagationCallback(ExceptionPropagationCallback);
   isolate->SetModifyCodeGenerationFromStringsCallback(
       CodeGenerationCheckCallbackInMainThread);
   isolate->SetAllowWasmCodeGenerationCallback(

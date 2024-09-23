@@ -961,11 +961,30 @@ bool IsInParallelAlgorithmRunnable(ExecutionContext* execution_context,
 void ApplyContextToException(ScriptState* script_state,
                              v8::Local<v8::Value> exception,
                              const ExceptionContext& exception_context) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  auto* dom_exception = V8DOMException::ToWrappable(isolate, exception);
-  // TODO(crbug.com/328104148): Support errors besides DOMExceptions.
-  CHECK(dom_exception);
-  dom_exception->AddContextToMessages(exception_context);
+  ApplyContextToException(script_state->GetIsolate(),
+                          script_state->GetContext(), exception,
+                          exception_context);
+}
+
+void ApplyContextToException(v8::Isolate* isolate,
+                             v8::Local<v8::Context> context,
+                             v8::Local<v8::Value> exception,
+                             const ExceptionContext& exception_context) {
+  if (auto* dom_exception = V8DOMException::ToWrappable(isolate, exception)) {
+    dom_exception->AddContextToMessages(exception_context);
+  } else if (exception->IsObject()) {
+    v8::TryCatch try_catch(isolate);
+    v8::Local<v8::String> message_key = V8String(isolate, "message");
+    auto exception_object = exception.As<v8::Object>();
+    String updated_message = ExceptionMessages::AddContextToMessage(
+        exception_context,
+        ToCoreString(isolate, exception_object->Get(context, message_key)
+                                  .ToLocalChecked()
+                                  ->ToString(context)
+                                  .ToLocalChecked()));
+    std::ignore = exception_object->CreateDataProperty(
+        context, message_key, V8String(isolate, updated_message));
+  }
 }
 
 }  // namespace blink

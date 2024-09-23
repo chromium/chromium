@@ -444,16 +444,19 @@ void MainThreadDebugger::QuerySelectorCallback(
   auto* container_node = DynamicTo<ContainerNode>(SecondArgumentAsNode(info));
   if (!container_node)
     return;
+  ScriptState* script_state =
+      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
   ExceptionState exception_state(info.GetIsolate(),
                                  v8::ExceptionContext::kOperation,
                                  "CommandLineAPI", "$");
   Element* element =
       container_node->QuerySelector(AtomicString(selector), exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
+    ApplyContextToException(script_state, exception_state.GetException(),
+                            exception_state.GetContext());
     return;
+  }
   if (element) {
-    ScriptState* script_state =
-        ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
     info.GetReturnValue().Set(ToV8Traits<Element>::ToV8(script_state, element));
   } else {
     info.GetReturnValue().Set(v8::Null(info.GetIsolate()));
@@ -471,6 +474,8 @@ void MainThreadDebugger::QuerySelectorAllCallback(
   auto* container_node = DynamicTo<ContainerNode>(SecondArgumentAsNode(info));
   if (!container_node)
     return;
+  ScriptState* script_state =
+      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
   ExceptionState exception_state(info.GetIsolate(),
                                  v8::ExceptionContext::kOperation,
                                  "CommandLineAPI", "$$");
@@ -478,13 +483,17 @@ void MainThreadDebugger::QuerySelectorAllCallback(
   // not NodeList.
   StaticElementList* element_list =
       container_node->QuerySelectorAll(AtomicString(selector), exception_state);
-  if (exception_state.HadException() || !element_list)
+  if (exception_state.HadException()) {
+    ApplyContextToException(script_state, exception_state.GetException(),
+                            exception_state.GetContext());
     return;
+  }
+  if (!element_list) {
+    return;
+  }
   v8::Isolate* isolate = info.GetIsolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Array> nodes = v8::Array::New(isolate, element_list->length());
-  ScriptState* script_state =
-      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
   for (wtf_size_t i = 0; i < element_list->length(); ++i) {
     Element* element = element_list->item(i);
     v8::Local<v8::Value> value =
@@ -508,16 +517,24 @@ void MainThreadDebugger::XpathSelectorCallback(
   if (!node || !node->IsContainerNode())
     return;
 
+  ScriptState* script_state =
+      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
   ExceptionState exception_state(info.GetIsolate(),
                                  v8::ExceptionContext::kOperation,
                                  "CommandLineAPI", "$x");
   XPathResult* result = XPathEvaluator::Create()->evaluate(
       nullptr, selector, node, nullptr, XPathResult::kAnyType, ScriptValue(),
       exception_state);
-  if (exception_state.HadException() || !result)
+  if (exception_state.HadException()) {
+    if (exception_state.HadException()) {
+      ApplyContextToException(script_state, exception_state.GetException(),
+                              exception_state.GetContext());
+    }
     return;
-  ScriptState* script_state =
-      ScriptState::ForRelevantRealm(info.GetIsolate(), info.This());
+  }
+  if (!result) {
+    return;
+  }
   if (result->resultType() == XPathResult::kNumberType) {
     bindings::V8SetReturnValue(info, result->numberValue(exception_state));
   } else if (result->resultType() == XPathResult::kStringType) {
@@ -532,14 +549,17 @@ void MainThreadDebugger::XpathSelectorCallback(
     v8::Local<v8::Array> nodes = v8::Array::New(isolate);
     wtf_size_t index = 0;
     while (Node* next_node = result->iterateNext(exception_state)) {
-      if (exception_state.HadException())
-        return;
       v8::Local<v8::Value> value =
           ToV8Traits<Node>::ToV8(script_state, next_node);
       if (!CreateDataPropertyInArray(context, nodes, index++, value)
                .FromMaybe(false)) {
         return;
       }
+    }
+    if (exception_state.HadException()) {
+      ApplyContextToException(script_state, exception_state.GetException(),
+                              exception_state.GetContext());
+      return;
     }
     info.GetReturnValue().Set(nodes);
   }
