@@ -25,6 +25,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -61,21 +66,23 @@ template <typename CharType>
 static inline void AppendCharactersReplacingEntitiesInternal(
     StringBuilder& result,
     const StringView& source,
-    base::span<const CharType> text,
-    base::span<const EntityDescription> entities,
+    CharType* text,
+    unsigned length,
+    const EntityDescription entity_maps[],
+    unsigned entity_maps_count,
     EntityMask entity_mask) {
-  size_t position_after_last_entity = 0;
+  unsigned position_after_last_entity = 0;
   // Avoid scanning the string in cases where the mask is empty, for example
-  // scriptTag.innerHTML that use the kEntityMaskInCDATA mask.
+  // scripTag.innerHTML that use the kEntityMaskInCDATA mask.
   if (entity_mask) {
-    for (size_t i = 0; i < text.size(); ++i) {
-      for (const auto& entity : entities) {
-        if (text[i] == entity.entity && entity.mask & entity_mask) {
-          auto text_before = text.subspan(position_after_last_entity,
-                                          i - position_after_last_entity);
-          result.Append(text_before.data(),
-                        base::checked_cast<unsigned>(text_before.size()));
-          const std::string& replacement = entity.reference;
+    for (unsigned i = 0; i < length; ++i) {
+      for (unsigned entity_index = 0; entity_index < entity_maps_count;
+           ++entity_index) {
+        if (text[i] == entity_maps[entity_index].entity &&
+            entity_maps[entity_index].mask & entity_mask) {
+          result.Append(text + position_after_last_entity,
+                        i - position_after_last_entity);
+          const std::string& replacement = entity_maps[entity_index].reference;
           result.Append(replacement.c_str(),
                         base::checked_cast<unsigned>(replacement.length()));
           position_after_last_entity = i + 1;
@@ -91,9 +98,8 @@ static inline void AppendCharactersReplacingEntitiesInternal(
     result.Append(source);
     return;
   }
-  auto remaining_text = text.subspan(position_after_last_entity);
-  result.Append(remaining_text.data(),
-                base::checked_cast<wtf_size_t>(remaining_text.size()));
+  result.Append(text + position_after_last_entity,
+                length - position_after_last_entity);
 }
 
 void MarkupFormatter::AppendCharactersReplacingEntities(
@@ -121,8 +127,9 @@ void MarkupFormatter::AppendCharactersReplacingEntities(
   };
 
   WTF::VisitCharacters(source, [&](auto chars) {
-    AppendCharactersReplacingEntitiesInternal(result, source, chars,
-                                              kEntityMaps, entity_mask);
+    AppendCharactersReplacingEntitiesInternal(
+        result, source, chars.data(), source.length(), kEntityMaps,
+        std::size(kEntityMaps), entity_mask);
   });
 }
 
