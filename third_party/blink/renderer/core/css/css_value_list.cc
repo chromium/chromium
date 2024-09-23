@@ -112,6 +112,23 @@ CSSValueList* CSSValueList::Copy() const {
   return new_list;
 }
 
+const CSSValue* CSSValueList::UntaintedCopy() const {
+  bool changed = false;
+  HeapVector<Member<const CSSValue>, 4> untainted_values;
+  for (const CSSValue* value : values_) {
+    untainted_values.push_back(value->UntaintedCopy());
+    if (value != untainted_values.back().Get()) {
+      changed = true;
+    }
+  }
+  if (!changed) {
+    return this;
+  }
+  return MakeGarbageCollected<CSSValueList>(
+      static_cast<ValueListSeparator>(value_list_separator_),
+      std::move(untainted_values));
+}
+
 const CSSValueList& CSSValueList::PopulateWithTreeScope(
     const TreeScope* tree_scope) const {
   // Note: this will be changed if any subclass also involves values that need

@@ -232,6 +232,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   }
   bool IsScopedValue() const { return !needs_tree_scope_population_; }
 
+  const CSSValue* UntaintedCopy() const;
+
 #if DCHECK_IS_ON()
   WTF::String ClassTypeToString() const;
 #endif
@@ -381,6 +383,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   // Used for use counting of such situations (to see if we can try to remove
   // the functionality).
   uint8_t was_quirky_ : 1 = false;
+
+  // See css_attr_value_tainting.h.
+  uint8_t attr_tainted_ : 1 = false;
 
  private:
   const uint8_t class_type_;  // ClassType

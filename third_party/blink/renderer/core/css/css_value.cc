@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/css/css_alternate_value.h"
 #include "third_party/blink/renderer/core/css/css_appearance_auto_base_select_value_pair.h"
+#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
@@ -178,6 +179,9 @@ inline static bool CompareCSSValues(const CSSValue& first,
 }
 
 bool CSSValue::operator==(const CSSValue& other) const {
+  if (attr_tainted_ != other.attr_tainted_) {
+    return false;
+  }
   if (class_type_ == other.class_type_) {
     switch (GetClassType()) {
       case kAxisClass:
@@ -505,6 +509,16 @@ String CSSValue::CssText() const {
   }
   NOTREACHED_IN_MIGRATION();
   return String();
+}
+
+const CSSValue* CSSValue::UntaintedCopy() const {
+  if (const auto* v = DynamicTo<CSSValueList>(this)) {
+    return v->UntaintedCopy();
+  }
+  if (const auto* v = DynamicTo<CSSStringValue>(this)) {
+    return v->UntaintedCopy();
+  }
+  return this;
 }
 
 const CSSValue& CSSValue::PopulateWithTreeScope(

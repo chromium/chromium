@@ -784,6 +784,7 @@ blink_core_tests_css = [
   "container_selector_test.cc",
   "counter_style_map_test.cc",
   "counter_style_test.cc",
+  "css_attr_value_tainting_test.cc",
   "css_basic_shape_values_test.cc",
   "css_computed_style_declaration_test.cc",
   "css_container_values_test.cc",

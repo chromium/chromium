@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
@@ -19,9 +20,9 @@
 namespace blink {
 namespace {
 
-const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
-                                  CSSParserTokenStream& stream,
-                                  const CSSParserContext& context) {
+const CSSValue* ConsumeSingleTypeInternal(const CSSSyntaxComponent& syntax,
+                                          CSSParserTokenStream& stream,
+                                          const CSSParserContext& context) {
   switch (syntax.GetType()) {
     case CSSSyntaxType::kIdent:
       if (stream.Peek().GetType() == kIdentToken &&
@@ -84,6 +85,29 @@ const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
   }
 }
 
+const CSSValue* TaintedCopyIfNeeded(const CSSValue* value) {
+  if (const auto* v = DynamicTo<CSSStringValue>(value)) {
+    return v->TaintedCopy();
+  }
+  // Only needed for CSSStringValue for now.
+  return value;
+}
+
+const CSSValue* ConsumeSingleType(const CSSSyntaxComponent& syntax,
+                                  CSSParserTokenStream& stream,
+                                  const CSSParserContext& context) {
+  wtf_size_t offset_before = stream.Offset();
+  const CSSValue* value = ConsumeSingleTypeInternal(syntax, stream, context);
+  if (value) {
+    stream.EnsureLookAhead();
+    wtf_size_t offset_after = stream.LookAheadOffset();
+    if (IsAttrTainted(stream.StringRangeAt(
+            offset_before, /* length */ offset_after - offset_before))) {
+      value = TaintedCopyIfNeeded(value);
+    }
+  }
+  return value;
+}
 const CSSValue* ConsumeSyntaxComponent(const CSSSyntaxComponent& syntax,
                                        CSSParserTokenStream& stream,
                                        const CSSParserContext& context) {
