@@ -206,6 +206,9 @@ webui_ts_library("build_ts") {
     "cellular_setup/psim_flow_ui_test.ts",
     "cellular_setup/setup_loading_page_test.ts",
     "gaia_action_buttons/gaia_action_buttons_test.js",
+    "multidevice_setup/integration_test.js",
+    "multidevice_setup/setup_succeeded_page_test.js",
+    "multidevice_setup/start_setup_page_test.js",
     "network/apn_list_item_test.js",
     "network/apn_list_test.js",
     "network/apn_selection_dialog_list_item_test.js",
@@ -331,14 +334,6 @@ generate_grd("build_grdp") {
   out_grd = "$target_gen_dir/resources.grdp"
 
   deps = [ ":build_ts" ]
-
-  # Add local test files.
-  input_files_base_dir = rebase_path(".", "//")
-  input_files = [
-    "multidevice_setup/integration_test.js",
-    "multidevice_setup/setup_succeeded_page_test.js",
-    "multidevice_setup/start_setup_page_test.js",
-  ]
 
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])

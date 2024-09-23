@@ -22,12 +22,10 @@ export class BrowserProxy {
 
 /** @implements {BrowserProxy} */
 export class BrowserProxyImpl {
-  /** @override */
   getProfileInfo() {
     return sendWithPromise('getProfileInfo');
   }
 
-  /** @override */
   openMultiDeviceSettings() {
     chrome.send('openMultiDeviceSettings');
   }

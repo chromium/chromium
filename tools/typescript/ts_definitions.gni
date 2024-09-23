@@ -87,6 +87,12 @@ template("ts_definitions") {
 
     if (is_chromeos_ash) {
       path_mappings += [
+        "chrome://resources/cros_components/*|" + rebase_path(
+                "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten/*",
+                target_gen_dir),
+        "//resources/cros_components/*|" + rebase_path(
+                "$root_gen_dir/ui/webui/resources/tsc/cros_components/to_be_rewritten/*",
+                target_gen_dir),
         "chrome://resources/ash/common/*|" + rebase_path(
                 "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
                 target_gen_dir),
