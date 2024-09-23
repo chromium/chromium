@@ -350,6 +350,16 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
       break;
   }
 
+  if (state_ == State::kAnimationFinished) {
+    // - Navigation committed (old page was unloaded).
+    // - Navigation cancelled or never started.
+    CHECK_EQ(deferred_dialog_token_,
+             ui::ModalDialogManagerBridge::kInvalidDialogToken);
+  } else {
+    // Transition was aborted.
+    ResumeDialogs();
+  }
+
   ResetTransformForLayer(animation_manager_->web_contents_view_android()
                              ->parent_for_web_page_widgets());
 
@@ -850,6 +860,12 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
           return;
         }
 
+        // Resume the dialogs. When the transition starts we deferred the
+        // dialogs. Now the old page was unloaded and we need to resume the
+        // dialogs immediately so we don't accidentally defer the dialogs on the
+        // new page.
+        ResumeDialogs();
+
         // Before we display the crossfade animation to show the new page, we
         // need to check if the new page matches the origin of the screenshot.
         // We are not allowed to cross-fade from a screenshot of A.com to a page
@@ -1347,33 +1363,51 @@ void BackForwardTransitionAnimator::AdvanceAndProcessState(State state) {
 void BackForwardTransitionAnimator::ProcessState() {
   switch (state_) {
     case State::kStarted: {
+      DeferDialogs();
       break;
       // `this` will be waiting for the `OnGestureProgressed` call.
     }
     case State::kDisplayingCancelAnimation: {
-      if (navigation_state_ == NavigationState::kNotStarted) {
-        // When the user lifts the finger and signals not to start the
-        // navigation.
-        physics_model_.SwitchSpringForReason(
-            SwitchSpringReason::kGestureCancelled);
-      } else if (navigation_state_ ==
-                 NavigationState::kBeforeUnloadDispatched) {
-        // Notify the physics model we need to animate the active page back to
-        // the center of the viewport because the browser has asked the renderer
-        // to ack the BeforeUnload message. The renderer may need to show a
-        // prompt to ask for the user input.
-        physics_model_.SwitchSpringForReason(
-            SwitchSpringReason::kBeforeUnloadDispatched);
-      } else if (navigation_state_ == NavigationState::kCancelledBeforeStart) {
-        // The user has interacted with the prompt to not start the navigation.
-        // We are waiting for the ongoing cancel animation to finish.
-      } else if (navigation_state_ == NavigationState::kCancelled) {
-        // When the ongoing navigaion is cancelled because the user hits stop or
-        // the navigation was replaced by another navigation,
-        // `OnDidFinishNavigation()` has already notified the physics model to
-        // switch to the cancel spring.
-      } else {
-        NOTREACHED_IN_MIGRATION() << NavigationStateToString(navigation_state_);
+      switch (navigation_state_) {
+        case NavigationState::kNotStarted: {
+          // When the user lifts the finger and signals not to start the
+          // navigation.
+          physics_model_.SwitchSpringForReason(
+              SwitchSpringReason::kGestureCancelled);
+          ResumeDialogs();
+          break;
+        }
+        case NavigationState::kBeforeUnloadDispatched: {
+          // Notify the physics model we need to animate the active page back to
+          // the center of the viewport because the browser has asked the
+          // renderer to ack the BeforeUnload message. The renderer may need to
+          // show a prompt to ask for the user input.
+          physics_model_.SwitchSpringForReason(
+              SwitchSpringReason::kBeforeUnloadDispatched);
+          // We don't resume the TAB dialog if there is a BeforeUnload pending.
+          break;
+        }
+        case NavigationState::kCancelledBeforeStart: {
+          // The user has interacted with the prompt to not start the
+          // navigation. We are waiting for the ongoing cancel animation to
+          // finish.
+          ResumeDialogs();
+          break;
+        }
+        case NavigationState::kCancelled: {
+          // When the ongoing navigation is cancelled because the user hits stop
+          // or the navigation was replaced by another navigation,
+          // `OnDidFinishNavigation()` has already notified the physics model to
+          // switch to the cancel spring.
+          ResumeDialogs();
+          break;
+        }
+        case NavigationState::kBeforeUnloadAckedProceed:
+        case NavigationState::kStarted:
+        case NavigationState::kCommitted:
+          NOTREACHED_IN_MIGRATION()
+              << NavigationStateToString(navigation_state_);
+          break;
       }
       CHECK(animation_manager_->web_contents_view_android()
                 ->GetTopLevelNativeWindow());
@@ -2092,6 +2126,37 @@ gfx::PointF BackForwardTransitionAnimator::CalculateRRectEndPx() const {
 int BackForwardTransitionAnimator::DipToPx(int dip) const {
   return gfx::ScaleToFlooredSize(gfx::Size(dip, dip), device_scale_factor_)
       .width();
+}
+
+void BackForwardTransitionAnimator::DeferDialogs() {
+  CHECK_EQ(deferred_dialog_token_,
+           ui::ModalDialogManagerBridge::kInvalidDialogToken);
+  auto* dialog_manager = animation_manager_->web_contents_view_android()
+                             ->GetNativeView()
+                             ->GetWindowAndroid()
+                             ->GetModalDialogManagerBridge();
+  // We don't always have a dialog manager (i.e., content_browsertests).
+  if (dialog_manager) {
+    deferred_dialog_token_ = dialog_manager->SuspendModalDialog(
+        ui::ModalDialogManagerBridge::ModalDialogType::kTab);
+  }
+}
+
+void BackForwardTransitionAnimator::ResumeDialogs() {
+  if (deferred_dialog_token_ ==
+      ui::ModalDialogManagerBridge::kInvalidDialogToken) {
+    return;
+  }
+  auto* dialog_manager = animation_manager_->web_contents_view_android()
+                             ->GetNativeView()
+                             ->GetWindowAndroid()
+                             ->GetModalDialogManagerBridge();
+  if (dialog_manager) {
+    dialog_manager->ResumeModalDialog(
+        ui::ModalDialogManagerBridge::ModalDialogType::kTab,
+        deferred_dialog_token_);
+  }
+  deferred_dialog_token_ = ui::ModalDialogManagerBridge::kInvalidDialogToken;
 }
 
 }  // namespace content

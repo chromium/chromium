@@ -50,9 +50,13 @@ import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.UiAndroidFeatures;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -67,6 +71,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "enable-features=BackForwardTransitions,BackGestureRefactorAndroid",
+    "force-prefers-no-reduced-motion",
     // Resampling can make scroll offsets non-deterministic so turn it off.
     "disable-features=ResamplingScrollEvents",
     "hide-scrollbars"
@@ -225,7 +230,6 @@ public class NavigationTransitionsTest {
                 () -> {
                     invokeNavigateGesture(edge);
                 });
-        waitForTransitionFinished();
     }
 
     private void waitForTransitionFinished() {
@@ -236,6 +240,50 @@ public class NavigationTransitionsTest {
                                 getWebContents().getCurrentBackForwardTransitionStage()
                                         != AnimationStage.NONE;
                         Criteria.checkThat(hasTransition, Matchers.is(false));
+                    } catch (Throwable e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                },
+                TEST_TIMEOUT,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    private void waitForModalDialogShown() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(getDialogManager().isShowing(), Matchers.is(true));
+                    } catch (Throwable e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                },
+                TEST_TIMEOUT,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    private void runJavaScriptOnTab(String script) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getWebContents().evaluateJavaScriptForTests(script, null);
+                });
+    }
+
+    private ModalDialogManager getDialogManager() {
+        return mActivityTestRule.getActivity().getWindowAndroid().getModalDialogManager();
+    }
+
+    private int numSuspendedDialogs(@ModalDialogType int dialogType) {
+        var dialogs = getDialogManager().getPendingDialogsForTest(dialogType);
+        if (dialogs == null) return 0;
+        return dialogs.size();
+    }
+
+    private void waitForNumSuspendedDialogs(@ModalDialogType int dialogType, int numSuspended) {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                numSuspendedDialogs(dialogType), Matchers.is(numSuspended));
                     } catch (Throwable e) {
                         throw new CriteriaNotSatisfiedException(e);
                     }
@@ -265,6 +313,7 @@ public class NavigationTransitionsTest {
 
         // Perform a back gesture transition from the left edge.
         performNavigationTransition(url2, BackEventCompat.EDGE_LEFT);
+        waitForTransitionFinished();
 
         Assert.assertEquals(url2, getCurrentUrl());
 
@@ -272,9 +321,11 @@ public class NavigationTransitionsTest {
         // button mode this goes forward, in gestural mode this goes back.
         if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
             performNavigationTransition(url3, BackEventCompat.EDGE_RIGHT);
+            waitForTransitionFinished();
             Assert.assertEquals(url3, getCurrentUrl());
         } else {
             performNavigationTransition(url1, BackEventCompat.EDGE_RIGHT);
+            waitForTransitionFinished();
             Assert.assertEquals(url1, getCurrentUrl());
         }
     }
@@ -296,6 +347,7 @@ public class NavigationTransitionsTest {
 
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
         performNavigationTransition(url1, BackEventCompat.EDGE_LEFT);
+        waitForTransitionFinished();
 
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
                 getWebContents(),
@@ -338,6 +390,7 @@ public class NavigationTransitionsTest {
 
         WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
         performNavigationTransition(url2, BackEventCompat.EDGE_RIGHT);
+        waitForTransitionFinished();
         Assert.assertEquals(url2, getCurrentUrl());
 
         // Perform an edge gesture transition from the left edge (semantically
@@ -345,9 +398,11 @@ public class NavigationTransitionsTest {
         // forward, in gestural mode this goes back (without a transition).
         if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
             performNavigationTransition(url3, BackEventCompat.EDGE_LEFT);
+            waitForTransitionFinished();
             Assert.assertEquals(url3, getCurrentUrl());
         } else {
             performNavigationTransition(url1, BackEventCompat.EDGE_LEFT);
+            waitForTransitionFinished();
             Assert.assertEquals(url1, getCurrentUrl());
         }
     }
@@ -399,11 +454,128 @@ public class NavigationTransitionsTest {
         // Perform a back gesture transition.
         mViewportTestUtils.hideBrowserControls();
         performNavigationTransition(url1, BackEventCompat.EDGE_LEFT);
+        waitForTransitionFinished();
 
         Assert.assertEquals(url1, getCurrentUrl());
 
         Assert.assertTrue(
                 topControlOffsetDuringGesture.get() > -mViewportTestUtils.getTopControlsHeightPx());
         mViewportTestUtils.waitForBrowserControlsState(/* shown= */ true);
+    }
+
+    /**
+     * Test that the modal dialogs are suspended during the transition but resumed after the
+     * transition.
+     */
+    @Test
+    @MediumTest
+    public void alertSuspendedDuringTransition() throws Throwable {
+        // Skip for three button mode because `TouchCommon.performWallClockDrag` blocks (it sleeps
+        // between each touch event). It's okay
+        // to skip because the dialog suspension is navigation mode agnostic.
+        if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) return;
+        // Put "blue.html" and then "green.html" in the session history.
+        String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
+        String url2 = mTestServer.getURL("/chrome/test/data/android/green.html");
+        mActivityTestRule.loadUrl(url1);
+        mActivityTestRule.loadUrl(url2);
+
+        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
+
+        final AtomicBoolean dialogQueuedToShow = new AtomicBoolean(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getDialogManager()
+                            .addObserver(
+                                    new ModalDialogManager.ModalDialogManagerObserver() {
+                                        @Override
+                                        public void onDialogAdded(PropertyModel model) {
+                                            dialogQueuedToShow.set(true);
+                                        }
+                                    });
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BackPressManager manager =
+                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
+                    var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackStarted(backEvent);
+                });
+        runJavaScriptOnTab("window.alert('alert');");
+        waitForNumSuspendedDialogs(ModalDialogType.TAB, 1);
+        Assert.assertFalse(dialogQueuedToShow.get());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BackPressManager manager =
+                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
+                    var backEvent = new BackEventCompat(1, 0, 0.8f, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackProgressed(backEvent);
+                    manager.getCallback().handleOnBackPressed();
+                });
+
+        waitForTransitionFinished();
+        Assert.assertEquals(0, numSuspendedDialogs(ModalDialogType.TAB));
+        Assert.assertFalse(dialogQueuedToShow.get());
+
+        // After the transition, dialogs are resumed.
+        runJavaScriptOnTab("window.alert('alert');");
+        waitForModalDialogShown();
+        Assert.assertTrue(dialogQueuedToShow.get());
+    }
+
+    /**
+     * Test that the modal dialogs are suspended during the transition but resumed after the
+     * transition is cancelled.
+     */
+    @Test
+    @MediumTest
+    public void alertResumedAfterGestureCancelled() throws Throwable {
+        // TouchCommon.java doesn't have a "cancel gesture".
+        if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) return;
+
+        // Put "blue.html" and then "green.html" in the session history.
+        String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
+        String url2 = mTestServer.getURL("/chrome/test/data/android/green.html");
+        mActivityTestRule.loadUrl(url1);
+        mActivityTestRule.loadUrl(url2);
+
+        final AtomicBoolean dialogQueuedToShow = new AtomicBoolean(false);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getDialogManager()
+                            .addObserver(
+                                    new ModalDialogManager.ModalDialogManagerObserver() {
+                                        @Override
+                                        public void onDialogAdded(PropertyModel model) {
+                                            dialogQueuedToShow.set(true);
+                                        }
+                                    });
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BackPressManager manager =
+                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
+                    var backEvent = new BackEventCompat(0, 0, 0, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackStarted(backEvent);
+                });
+        runJavaScriptOnTab("window.alert('alert');");
+        waitForNumSuspendedDialogs(ModalDialogType.TAB, 1);
+        Assert.assertFalse(dialogQueuedToShow.get());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BackPressManager manager =
+                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
+                    var backEvent = new BackEventCompat(1, 0, .8f, BackEventCompat.EDGE_LEFT);
+                    manager.getCallback().handleOnBackProgressed(backEvent);
+                    manager.getCallback().handleOnBackCancelled();
+                });
+        waitForTransitionFinished();
+        Assert.assertEquals(0, numSuspendedDialogs(ModalDialogType.TAB));
+
+        // After the transition is finished, the dialog is resumed.
+        waitForModalDialogShown();
+        Assert.assertTrue(dialogQueuedToShow.get());
     }
 }
