@@ -62,6 +62,18 @@ const char kObsoletePpapiBrokerDefaultPref[] =
 constexpr char kObsoleteFederatedIdentityDefaultPref[] =
     "profile.default_content_setting_values.fedcm_active_session";
 
+#if !BUILDFLAG(IS_IOS)
+// This setting was accidentally bound to a UI surface intended for a different
+// setting (https://crbug.com/364820109). It should not have been settable
+// except via enterprise policy, so it is temporarily cleaned up here to revert
+// it to its default value.
+// TODO(https://crbug.com/367181093): clean this up.
+constexpr char kBug364820109DefaultSettingToClear[] =
+    "profile.default_content_setting_values.javascript_jit";
+constexpr char kBug364820109AlreadyWorkedAroundPref[] =
+    "profile.did_work_around_bug_364820109_default";
+#endif  // !BUILDFLAG(IS_IOS)
+
 ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
   const base::Value& initial_default = info->initial_default_value();
   if (initial_default.is_none())
@@ -139,6 +151,11 @@ void DefaultProvider::RegisterProfilePrefs(
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(kObsoleteFederatedIdentityDefaultPref, 0);
+
+#if !BUILDFLAG(IS_IOS)
+  // TODO(https://crbug.com/367181093): clean this up.
+  registry->RegisterBooleanPref(kBug364820109AlreadyWorkedAroundPref, false);
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 DefaultProvider::DefaultProvider(PrefService* prefs,
@@ -378,6 +395,14 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
   prefs_->ClearPref(kObsoleteFederatedIdentityDefaultPref);
+
+#if !BUILDFLAG(IS_IOS)
+  // TODO(https://crbug.com/367181093): clean this up.
+  if (!prefs_->GetBoolean(kBug364820109AlreadyWorkedAroundPref)) {
+    prefs_->ClearPref(kBug364820109DefaultSettingToClear);
+    prefs_->SetBoolean(kBug364820109AlreadyWorkedAroundPref, true);
+  }
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 void DefaultProvider::RecordHistogramMetrics() {

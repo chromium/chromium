@@ -197,7 +197,7 @@ suite('Main', function() {
     assertTrue(!!link);
     link.click();
     assertEquals(
-        routes.SITE_SETTINGS_JAVASCRIPT_JIT,
+        routes.SITE_SETTINGS_JAVASCRIPT_OPTIMIZER,
         Router.getInstance().getCurrentRoute());
   });
 

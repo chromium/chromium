@@ -132,7 +132,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       case ContentSettingsTypes.FEDERATED_IDENTITY_API:
       case ContentSettingsTypes.IMAGES:
       case ContentSettingsTypes.JAVASCRIPT:
-      case ContentSettingsTypes.JAVASCRIPT_JIT:
+      case ContentSettingsTypes.JAVASCRIPT_OPTIMIZER:
       case ContentSettingsTypes.MIXEDSCRIPT:
       case ContentSettingsTypes.PAYMENT_HANDLER:
       case ContentSettingsTypes.POPUPS:
