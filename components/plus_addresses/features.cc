@@ -92,6 +92,12 @@ BASE_FEATURE(kPlusAddressInlineCreation,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_IOS)
+// When enabled, plus address creation bottom sheet shows enhanced UI for
+// different error states on iOS.
+BASE_FEATURE(kPlusAddressIOSErrorStatesEnabled,
+             "PlusAddressIOSErrorStatesEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, mobile manual fallbacks for addresses and passwords show plus
 // address filling information.
 BASE_FEATURE(kPlusAddressIOSManualFallbackEnabled,
