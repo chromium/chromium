@@ -5988,13 +5988,15 @@
                 {
                     "name": "Enabled_Dogfood",
                     "enable_features": [
-                        "ProductSpecifications"
+                        "ProductSpecifications",
+                        "ProductSpecificationsMqlsLogging"
                     ]
                 },
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "ProductSpecifications"
+                        "ProductSpecifications",
+                        "ProductSpecificationsMqlsLogging"
                     ]
                 }
             ]
