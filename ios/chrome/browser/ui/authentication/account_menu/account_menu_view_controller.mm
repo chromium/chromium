@@ -44,19 +44,13 @@ namespace {
 constexpr CGFloat kErrorSymbolSize = 22.;
 
 // Height and width of the buttons.
-constexpr CGFloat kButtonSize = 24;
+constexpr CGFloat kButtonSize = 30.;
 
-// UIButton scales the image by this much.
-constexpr CGFloat kImageScaleFactor = 43.0 / 36.0;
 // Per Apple guidelines, touch targets should be at least 44x44.
 constexpr CGFloat kMinimumTouchTargetSize = 44.0;
-// Padding to add on all sides of a kButtonSize button, to make it a 44x44 touch
-// target.
-constexpr CGFloat kButtonInsets =
-    (kMinimumTouchTargetSize - kButtonSize * kImageScaleFactor) / 2.0;
 // Move navigation buttons towards the "out side" by this much, so they visually
 // align with the table views.
-constexpr CGFloat kButtonExtraSpacingOnOutside = 5.0;
+constexpr CGFloat kButtonExtraSpacingOnOutside = 3.0;
 
 constexpr CGFloat kHalfSheetCornerRadius = 10.0;
 
@@ -142,15 +136,17 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   UIImage* image = SymbolWithPalette(
       DefaultSymbolWithConfiguration(symbolName, symbolConfiguration), colors);
 
+  // Add padding on all sides of the button, to make it a 44x44 touch target.
+  CGFloat verticalInsets = (kMinimumTouchTargetSize - image.size.height) / 2.0;
+  CGFloat horizontalInsets = (kMinimumTouchTargetSize - image.size.width) / 2.0;
+  CGFloat outsideInsets = horizontalInsets - kButtonExtraSpacingOnOutside;
+  CGFloat insideInsets = horizontalInsets + kButtonExtraSpacingOnOutside;
+
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
   buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kButtonInsets,
-      isLeading ? kButtonInsets - kButtonExtraSpacingOnOutside
-                : kButtonInsets + kButtonExtraSpacingOnOutside,
-      kButtonInsets,
-      isLeading ? kButtonInsets + kButtonExtraSpacingOnOutside
-                : kButtonInsets - kButtonExtraSpacingOnOutside);
+      verticalInsets, isLeading ? outsideInsets : insideInsets, verticalInsets,
+      isLeading ? insideInsets : outsideInsets);
   UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
                                          primaryAction:nil];
   [button setImage:image forState:UIControlStateNormal];
@@ -162,7 +158,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (void)setUpNavigationController {
   UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
       configurationWithPointSize:kButtonSize
-                          weight:UIImageSymbolWeightSemibold
+                          weight:UIImageSymbolWeightRegular
                            scale:UIImageSymbolScaleMedium];
   // Stop button
   UIUserInterfaceIdiom idiom = [[UIDevice currentDevice] userInterfaceIdiom];
