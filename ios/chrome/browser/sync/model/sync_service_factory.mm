@@ -99,7 +99,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
       ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
           browser_state));
   builder.SetConsentAuditor(
-      ConsentAuditorFactory::GetForBrowserState(browser_state));
+      ConsentAuditorFactory::GetForProfile(browser_state));
   builder.SetDataSharingService(
       data_sharing::DataSharingServiceFactory::GetForBrowserState(
           browser_state));

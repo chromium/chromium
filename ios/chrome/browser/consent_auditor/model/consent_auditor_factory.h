@@ -17,8 +17,7 @@ class ConsentAuditor;
 // ProfileIOS.
 class ConsentAuditorFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static consent_auditor::ConsentAuditor* GetForBrowserState(
-      ProfileIOS* profile);
+  static consent_auditor::ConsentAuditor* GetForProfile(ProfileIOS* profile);
   static consent_auditor::ConsentAuditor* GetForProfileIfExists(
       ProfileIOS* profile);
   static ConsentAuditorFactory* GetInstance();
