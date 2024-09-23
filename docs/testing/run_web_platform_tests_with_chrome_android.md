@@ -1,5 +1,11 @@
 # Running Web Platform Tests with Chrome Android
 
+## Overview
+
+This document provides a guide to running Web Platform Tests with Chrome Android.
+
+For general instruction for running the Web Platform Tests, you should read [Running Web Platform Tests with run_wpt_tests.py](./run_web_platform_tests.md).
+
 [TOC]
 
 ## Initial Setup
@@ -24,18 +30,22 @@ emulator or a real Android device.
 You will need to follow the steps in ["Using an Android Emulator"](/docs/android_emulator.md) to be ready
 to run the Android Emulator. Passing the `--avd-config` option to `run_wpt_tests.py` will launch an emulator
 that will be shut down after running the tests. The example below runs
-`external/wpt/badging/badge-success.https.html` on Android 11:
+`external/wpt/badging/badge-success.https.html` on Android 13:
 
 ```bash
-$ third_party/blink/tools/run_wpt_tests.py -t Default -p clank --avd-config=tools/android/avd/proto/generic_android30.textpb external/wpt/badging/badge-success.https.html
+$ third_party/blink/tools/run_wpt_tests.py -t Default -p clank --avd-config=tools/android/avd/proto/android_33_google_apis_x64.textpb external/wpt/badging/badge-success.https.html
 ```
+
+* `-t Default`: Use the build in `//out/Default/`
+* `-p clank`: Runs the tests using Chrome for Android (clank).
+* `--avd-config=tools/.../android_33_google_apis_x64.textpb`: Runs the tests on Android 13 emulator (Google API 33).
 
 Alternatively, you can launch the emulator yourself and `run_wpt_tests.py` will
 detect and connect to the emulator and run WPTs with it. This can save you the
 time to repeatedly launch the emulator. The commands below show how this works.
 
 ```bash
-$ tools/android/avd/avd.py start --avd-config=tools/android/avd/proto/generic_android30.textpb
+$ tools/android/avd/avd.py start --avd-config=tools/android/avd/proto/android_33_google_apis_x64.textpb
 $ third_party/blink/tools/run_wpt_tests.py -t Default -p clank external/wpt/badging/badge-success.https.html
 ```
 
@@ -59,7 +69,7 @@ you should trigger `android-chrome-13-x64-wpt-android-specific` and run [rebasel
 
 ## Test List
 
-The builder `android-webview-13-x64-wpt-android-specific` runs tests specified by the [android.filter](../../third_party/blink/web_tests/TestLists/android.filter) file, which tests Android specific behaviors. Developers can add additional tests to the list when necessary.
+The builder `android-chrome-13-x64-wpt-android-specific` runs tests specified by the [android.filter](../../third_party/blink/web_tests/TestLists/android.filter) file, which tests Android specific behaviors. Developers can add additional tests to the list when necessary.
 
 Please [file bugs and feature requests](https://crbug.com/new) against
 [`Blink>Infra` with the `wptrunner`
