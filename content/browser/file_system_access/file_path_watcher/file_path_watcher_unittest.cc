@@ -3194,7 +3194,13 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DirectoryInDirectory) {
   delegate.RunUntilEventsMatch(matcher);
 }
 
-TEST_P(FilePathWatcherWithChangeInfoTest, NestedDirectoryInDirectory) {
+// TODO(crbug.com/368982619): Disable due to flakiness.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_NestedDirectoryInDirectory DISABLED_NestedDirectoryInDirectory
+#else
+#define MAYBE_NestedDirectoryInDirectory NestedDirectoryInDirectory
+#endif  // BUILDFLAG(IS_MAC)
+TEST_P(FilePathWatcherWithChangeInfoTest, MAYBE_NestedDirectoryInDirectory) {
   base::FilePath parent(temp_dir_.GetPath().AppendASCII("parent"));
   base::FilePath child(parent.AppendASCII("child"));
   base::FilePath grandchild(child.AppendASCII("grandchild"));
