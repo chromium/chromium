@@ -998,6 +998,23 @@ void SessionImpl::GetSizeInTokens(
   GetOrCreateSession().GetSizeInTokens(std::move(input), std::move(callback));
 }
 
+void SessionImpl::GetContextSizeInTokens(
+    const google::protobuf::MessageLite& request,
+    OptimizationGuideModelSizeInTokenCallback callback) {
+  auto input = on_device_state_->opts.adapter->ConstructInputString(
+      request, /*want_input_context=*/true);
+  if (!input) {
+    std::move(callback).Run(0);
+    return;
+  }
+  GetOrCreateSession().GetSizeInTokens(std::move(input->input),
+                                       std::move(callback));
+}
+
+const proto::Any& SessionImpl::GetOnDeviceFeatureMetadata() const {
+  return on_device_state_->opts.adapter->GetFeatureMetadata();
+}
+
 const SamplingParams SessionImpl::GetSamplingParams() const {
   return sampling_params_;
 }

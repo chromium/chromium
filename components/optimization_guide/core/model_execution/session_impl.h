@@ -144,6 +144,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
   // optimization_guide::OptimizationGuideModelExecutor::Session:
   const TokenLimits& GetTokenLimits() const override;
+  const proto::Any& GetOnDeviceFeatureMetadata() const override;
   void AddContext(
       const google::protobuf::MessageLite& request_metadata) override;
   void Score(const std::string& text,
@@ -153,6 +154,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       OptimizationGuideModelExecutionResultStreamingCallback callback) override;
   void GetSizeInTokens(
       const std::string& text,
+      OptimizationGuideModelSizeInTokenCallback callback) override;
+  void GetContextSizeInTokens(
+      const google::protobuf::MessageLite& request_metadata,
       OptimizationGuideModelSizeInTokenCallback callback) override;
   const SamplingParams GetSamplingParams() const override;
 

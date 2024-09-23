@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <sstream>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
@@ -21,6 +22,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_text_session_info.mojom.h"
@@ -28,47 +30,91 @@
 
 namespace {
 
-// The format for the prompt and the context. The prompt structure helps the
-// model distinguish the roles in the previous conversation.
+using optimization_guide::proto::PromptApiMetadata;
+using optimization_guide::proto::PromptApiPrompt;
+using optimization_guide::proto::PromptApiRequest;
+using optimization_guide::proto::PromptApiRole;
 
-// The template used to format each prompt input. Example:
-// ```
-// User: what is the opposite of large?
-// Model:
-// ```
-const char kPromptFormat[] = "%s: %s\n%s: ";
-// The template used to format each context entry. Example:
-// ```
-// User: what is the opposite of large?
-// Model: small.
-// ```
-const char kContextFormat[] = "%s%s\n";
+PromptApiRole ConvertRole(blink::mojom::AIAssistantInitialPromptRole role) {
+  switch (role) {
+    case blink::mojom::AIAssistantInitialPromptRole::kSystem:
+      return PromptApiRole::PROMPT_API_ROLE_SYSTEM;
+    case blink::mojom::AIAssistantInitialPromptRole::kUser:
+      return PromptApiRole::PROMPT_API_ROLE_USER;
+    case blink::mojom::AIAssistantInitialPromptRole::kAssistant:
+      return PromptApiRole::PROMPT_API_ROLE_ASSISTANT;
+  }
+}
 
-// The templates used to format different parts of the system prompt. Example:
-// ```
-// You are a professor of antonyms.      [system prompt]
-// User: what is the opposite of big?    [initial prompt for `User` role]
-// Model: small.                         [initial prompt for `Assistant` role]
-// User: what is the opposite of cheap?  [initial prompt for `User` role]
-// Model: expensive.                     [initial prompt for `Assistant` role]
-// ```
-const char kSystemPromptFormat[] = "%s\n";
-const char kInitialPromptFormat[] = "%s: %s\n";
+PromptApiPrompt MakePrompt(PromptApiRole role, const std::string& content) {
+  PromptApiPrompt prompt;
+  prompt.set_role(role);
+  prompt.set_content(content);
+  return prompt;
+}
+
+const char* FormatPromptRole(PromptApiRole role) {
+  switch (role) {
+    case PromptApiRole::PROMPT_API_ROLE_SYSTEM:
+      return "";  // No prefix for system prompt.
+    case PromptApiRole::PROMPT_API_ROLE_USER:
+      return "User: ";
+    case PromptApiRole::PROMPT_API_ROLE_ASSISTANT:
+      return "Model: ";
+    default:
+      NOTREACHED();
+  }
+}
+
+PromptApiMetadata ParseMetadata(const optimization_guide::proto::Any& any) {
+  PromptApiMetadata metadata;
+  if (any.type_url() == "type.googleapis.com/" + metadata.GetTypeName()) {
+    metadata.ParseFromString(any.value());
+  }
+  return metadata;
+}
+
+std::unique_ptr<optimization_guide::proto::StringValue> ToStringValue(
+    const PromptApiRequest& request) {
+  std::ostringstream oss;
+  auto FormatPrompts =
+      [](std::ostringstream& oss,
+         const google::protobuf::RepeatedPtrField<PromptApiPrompt> prompts) {
+        for (const auto& prompt : prompts) {
+          oss << FormatPromptRole(prompt.role()) << prompt.content() << "\n";
+        }
+      };
+  FormatPrompts(oss, request.initial_prompts());
+  FormatPrompts(oss, request.prompt_history());
+  FormatPrompts(oss, request.current_prompts());
+  if (request.current_prompts_size() > 0) {
+    oss << FormatPromptRole(PromptApiRole::PROMPT_API_ROLE_ASSISTANT);
+  }
+  auto value = std::make_unique<optimization_guide::proto::StringValue>();
+  value->set_value(oss.str());
+  return value;
+}
 
 }  // namespace
+
+AITextSession::Context::ContextItem::ContextItem() = default;
+AITextSession::Context::ContextItem::ContextItem(const ContextItem&) = default;
+AITextSession::Context::ContextItem::ContextItem(ContextItem&&) = default;
+AITextSession::Context::ContextItem::~ContextItem() = default;
 
 using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
 AITextSession::Context::Context(uint32_t max_tokens,
-                                std::optional<ContextItem> initial_prompts)
-    : max_tokens_(max_tokens), initial_prompts_(initial_prompts) {
-  if (initial_prompts.has_value()) {
-    CHECK_GE(max_tokens_, initial_prompts->tokens)
-        << "the caller shouldn't create an AITextSession with the initial "
-           "prompts containing more tokens than the limit.";
-    current_tokens_ += initial_prompts->tokens;
-  }
+                                ContextItem initial_prompts,
+                                bool use_prompt_api_proto)
+    : max_tokens_(max_tokens),
+      initial_prompts_(std::move(initial_prompts)),
+      use_prompt_api_proto_(use_prompt_api_proto) {
+  CHECK_GE(max_tokens_, initial_prompts_.tokens)
+      << "the caller shouldn't create an AITextSession with the initial "
+         "prompts containing more tokens than the limit.";
+  current_tokens_ += initial_prompts.tokens;
 }
 
 AITextSession::Context::Context(const Context& context) = default;
@@ -84,20 +130,26 @@ void AITextSession::Context::AddContextItem(ContextItem context_item) {
   }
 }
 
-std::string AITextSession::Context::GetContextString() {
-  std::string context;
-  if (initial_prompts_.has_value()) {
-    context =
-        base::StringPrintf(kSystemPromptFormat, initial_prompts_->text.c_str());
+std::unique_ptr<google::protobuf::MessageLite>
+AITextSession::Context::MaybeFormatRequest(PromptApiRequest request) {
+  if (use_prompt_api_proto_) {
+    return std::make_unique<PromptApiRequest>(std::move(request));
   }
+  return ToStringValue(request);
+}
+
+std::unique_ptr<google::protobuf::MessageLite>
+AITextSession::Context::MakeRequest() {
+  PromptApiRequest request;
+  request.mutable_initial_prompts()->MergeFrom(initial_prompts_.prompts);
   for (auto& context_item : context_items_) {
-    context.append(context_item.text);
+    request.mutable_prompt_history()->MergeFrom((context_item.prompts));
   }
-  return context;
+  return MaybeFormatRequest(std::move(request));
 }
 
 bool AITextSession::Context::HasContextItem() {
-  return initial_prompts_.has_value() || !context_items_.empty();
+  return current_tokens_;
 }
 
 AITextSession::AITextSession(
@@ -120,7 +172,8 @@ AITextSession::AITextSession(
   // If the context is not provided, initialize a new context with the default
   // configuration.
   context_ = std::make_unique<Context>(
-      session_->GetTokenLimits().max_context_tokens, std::nullopt);
+      session_->GetTokenLimits().max_context_tokens, Context::ContextItem(),
+      ParseMetadata(session_->GetOnDeviceFeatureMetadata()).version() >= 1);
 }
 
 AITextSession::~AITextSession() = default;
@@ -129,18 +182,19 @@ void AITextSession::SetInitialPrompts(
     const std::optional<std::string> system_prompt,
     std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
     CreateTextSessionCallback callback) {
-  std::string initial_prompts_str = base::StringPrintf(
-      kSystemPromptFormat, system_prompt.value_or("").c_str());
-  for (auto& initial_prompt : initial_prompts) {
-    initial_prompts_str += base::StringPrintf(
-        kInitialPromptFormat, FormatPromptRole(initial_prompt->role),
-        initial_prompt->content.c_str());
+  PromptApiRequest request;
+  if (system_prompt) {
+    *request.add_initial_prompts() =
+        MakePrompt(PromptApiRole::PROMPT_API_ROLE_SYSTEM, *system_prompt);
   }
-  base::TrimString(initial_prompts_str, "\n", &initial_prompts_str);
-  session_->GetSizeInTokens(
-      initial_prompts_str,
+  for (const auto& prompt : initial_prompts) {
+    *request.add_initial_prompts() =
+        MakePrompt(ConvertRole(prompt->role), prompt->content);
+  }
+  session_->GetContextSizeInTokens(
+      *context_->MaybeFormatRequest(request),
       base::BindOnce(&AITextSession::InitializeContextWithInitialPrompts,
-                     weak_ptr_factory_.GetWeakPtr(), initial_prompts_str,
+                     weak_ptr_factory_.GetWeakPtr(), request,
                      std::move(callback)));
 }
 
@@ -149,7 +203,7 @@ void AITextSession::SetDeletionCallback(base::OnceClosure deletion_callback) {
 }
 
 void AITextSession::InitializeContextWithInitialPrompts(
-    const std::string& initial_prompts_text,
+    optimization_guide::proto::PromptApiRequest initial_request,
     CreateTextSessionCallback callback,
     uint32_t size) {
   // If the on device model service fails to get the size, it will be 0.
@@ -160,7 +214,7 @@ void AITextSession::InitializeContextWithInitialPrompts(
     return;
   }
 
-  uint32_t max_token = session_->GetTokenLimits().max_context_tokens;
+  uint32_t max_token = context_->max_tokens();
   if (size > max_token) {
     // The session cannot be created if the system prompt contains more tokens
     // than the limit.
@@ -168,27 +222,33 @@ void AITextSession::InitializeContextWithInitialPrompts(
     return;
   }
 
-  context_ = std::make_unique<Context>(
-      max_token, Context::ContextItem{initial_prompts_text, size});
+  auto initial_prompts = Context::ContextItem();
+  initial_prompts.tokens = size;
+  initial_prompts.prompts.Swap(initial_request.mutable_initial_prompts());
+  context_ = std::make_unique<Context>(max_token, std::move(initial_prompts),
+                                       context_->use_prompt_api_proto());
   std::move(callback).Run(GetTextSessionInfo());
 }
 
-void AITextSession::OnGetSizeInTokensComplete(
-    const std::string& text,
+void AITextSession::AddPromptHistoryAndSendCompletion(
+    const PromptApiRequest& history_request,
     blink::mojom::ModelStreamingResponder* responder,
     uint32_t size) {
   // If the on device model service fails to get the size, it will be 0.
   // TODO(crbug.com/351935691): make sure the error is explicitly returned and
   // handled accordingly.
   if (size) {
-    context_->AddContextItem({text, size});
+    auto item = Context::ContextItem();
+    item.tokens = size;
+    item.prompts = history_request.prompt_history();
+    context_->AddContextItem(std::move(item));
   }
   responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
                         std::nullopt, context_->current_tokens());
 }
 
 void AITextSession::ModelExecutionCallback(
-    const std::string& input,
+    const PromptApiRequest& input,
     mojo::RemoteSetElementId responder_id,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
   blink::mojom::ModelStreamingResponder* responder =
@@ -211,15 +271,17 @@ void AITextSession::ModelExecutionCallback(
                           response->value(), /*current_tokens=*/std::nullopt);
   }
   if (result.response->is_complete) {
-    std::string new_context = base::StringPrintf(kContextFormat, input.c_str(),
-                                                 response->value().c_str());
     // TODO(crbug.com/351935390): instead of calculating this from the
-    // AITextSession, it should be returned by the model since the token should
-    // be calculated during the execution.
-    session_->GetSizeInTokens(
-        new_context,
-        base::BindOnce(&AITextSession::OnGetSizeInTokensComplete,
-                       weak_ptr_factory_.GetWeakPtr(), new_context, responder));
+    // AITextSession, it should be returned by the model since the token
+    // should be calculated during the execution.
+    PromptApiRequest request;
+    request.mutable_prompt_history()->CopyFrom(input.current_prompts());
+    *request.add_prompt_history() =
+        MakePrompt(PromptApiRole::PROMPT_API_ROLE_ASSISTANT, response->value());
+    session_->GetContextSizeInTokens(
+        *context_->MaybeFormatRequest(request),
+        base::BindOnce(&AITextSession::AddPromptHistoryAndSendCompletion,
+                       weak_ptr_factory_.GetWeakPtr(), request, responder));
   }
 }
 
@@ -237,32 +299,27 @@ void AITextSession::Prompt(
   }
 
   if (context_->HasContextItem()) {
-    optimization_guide::proto::StringValue context;
-    context.set_value(context_->GetContextString());
-    session_->AddContext(context);
+    session_->AddContext(*context_->MakeRequest());
   }
 
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
-  optimization_guide::proto::StringValue request;
-  const std::string formatted_input = base::StringPrintf(
-      kPromptFormat,
-      FormatPromptRole(blink::mojom::AIAssistantInitialPromptRole::kUser),
-      input.c_str(),
-      FormatPromptRole(blink::mojom::AIAssistantInitialPromptRole::kAssistant));
-  request.set_value(formatted_input);
+  PromptApiRequest request;
+  *request.add_current_prompts() =
+      MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
   session_->ExecuteModel(
-      request, base::BindRepeating(&AITextSession::ModelExecutionCallback,
-                                   weak_ptr_factory_.GetWeakPtr(),
-                                   formatted_input, responder_id));
+      *context_->MaybeFormatRequest(request),
+      base::BindRepeating(&AITextSession::ModelExecutionCallback,
+                          weak_ptr_factory_.GetWeakPtr(), request,
+                          responder_id));
 }
 
 void AITextSession::Fork(
     mojo::PendingReceiver<blink::mojom::AITextSession> session,
     ForkCallback callback) {
   if (!browser_context_) {
-    // The `browser_context_` is already destroyed before the renderer owner is
-    // gone.
+    // The `browser_context_` is already destroyed before the renderer owner
+    // is gone.
     std::move(callback).Run(nullptr);
     return;
   }
@@ -302,18 +359,4 @@ blink::mojom::AITextSessionInfoPtr AITextSession::GetTextSessionInfo() {
       context_->max_tokens(),
       blink::mojom::AITextSessionSamplingParams::New(
           session_sampling_params.top_k, session_sampling_params.temperature));
-}
-
-// static
-const char* AITextSession::FormatPromptRole(
-    blink::mojom::AIAssistantInitialPromptRole role) {
-  switch (role) {
-    case blink::mojom::AIAssistantInitialPromptRole::kSystem:
-      return "System";
-    case blink::mojom::AIAssistantInitialPromptRole::kUser:
-      return "User";
-    case blink::mojom::AIAssistantInitialPromptRole::kAssistant:
-      return "Model";
-  }
-  NOTREACHED();
 }

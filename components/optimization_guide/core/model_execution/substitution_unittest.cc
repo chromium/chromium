@@ -14,6 +14,7 @@
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
+#include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,6 +55,27 @@ auto TabTitle() {
   return ProtoField({2});
 }
 
+// PromptApiRequest::prompts
+auto InitialPromptsField() {
+  return ProtoField({1});
+}
+// PromptApiRequest::current_prompts
+auto PromptHistoryField() {
+  return ProtoField({2});
+}
+// PromptApiRequest::current_prompts
+auto CurrentPromptField() {
+  return ProtoField({3});
+}
+// PromptApiPrompt::role
+auto RoleField() {
+  return ProtoField({1});
+}
+// PromptApiPrompt::content
+auto ContentField() {
+  return ProtoField({2});
+}
+
 auto Condition(proto::ProtoField&& p,
                proto::OperatorType op,
                proto::Value&& val) {
@@ -86,6 +108,73 @@ auto ConditionCheckExpr(const std::string& cond_name,
   *c->mutable_conditions() = std::move(cond_list);
   sub->add_candidates()->set_raw_string("not_matched");
   return expr;
+}
+
+auto EnumCaseConditionList(proto::ProtoField&& field, auto v) {
+  return ConditionList(
+      proto::CONDITION_EVALUATION_TYPE_OR,
+      {
+          Condition(std::move(field), proto::OPERATOR_TYPE_EQUAL_TO,
+                    Int32Proto(static_cast<uint32_t>(v))),
+      });
+}
+
+proto::PromptApiPrompt RolePrompt(proto::PromptApiRole role,
+                                  std::string content) {
+  proto::PromptApiPrompt prompt;
+  prompt.set_role(role);
+  prompt.set_content(content);
+  return prompt;
+}
+
+proto::SubstitutedString ResolvePromptApiPrompt() {
+  proto::SubstitutedString prompt_expr;
+  prompt_expr.set_string_template("%s%s%s");
+  {
+    auto* role = prompt_expr.add_substitutions();
+    auto* sys = role->add_candidates();
+    *sys->mutable_conditions() =
+        EnumCaseConditionList(RoleField(), proto::PROMPT_API_ROLE_SYSTEM);
+    sys->set_control_token(proto::CONTROL_TOKEN_SYSTEM);
+    auto* user = role->add_candidates();
+    *user->mutable_conditions() =
+        EnumCaseConditionList(RoleField(), proto::PROMPT_API_ROLE_USER);
+    user->set_control_token(proto::CONTROL_TOKEN_USER);
+    auto* assistant = role->add_candidates();
+    assistant->set_control_token(proto::CONTROL_TOKEN_MODEL);
+  }
+  *prompt_expr.add_substitutions()->add_candidates()->mutable_proto_field() =
+      ContentField();
+  prompt_expr.add_substitutions()->add_candidates()->set_control_token(
+      proto::CONTROL_TOKEN_END);
+  return prompt_expr;
+}
+
+auto PromptApiConfig() {
+  google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
+  auto* root = subs.Add();
+  root->set_string_template("%s%s%s%s");
+  {
+    auto* range =
+        root->add_substitutions()->add_candidates()->mutable_range_expr();
+    *range->mutable_proto_field() = InitialPromptsField();
+    *range->mutable_expr() = ResolvePromptApiPrompt();
+  }
+  {
+    auto* range =
+        root->add_substitutions()->add_candidates()->mutable_range_expr();
+    *range->mutable_proto_field() = PromptHistoryField();
+    *range->mutable_expr() = ResolvePromptApiPrompt();
+  }
+  {
+    auto* range =
+        root->add_substitutions()->add_candidates()->mutable_range_expr();
+    *range->mutable_proto_field() = CurrentPromptField();
+    *range->mutable_expr() = ResolvePromptApiPrompt();
+  }
+  root->add_substitutions()->add_candidates()->set_control_token(
+      proto::CONTROL_TOKEN_MODEL);
+  return subs;
 }
 
 TEST_F(SubstitutionTest, RawString) {
@@ -338,6 +427,65 @@ TEST_F(SubstitutionTest, RepeatedCondition) {
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: Ten,NotTen,");
   EXPECT_FALSE(result->should_ignore_input_context);
+}
+
+TEST_F(SubstitutionTest, PromptApiNShot) {
+  // https://github.com/explainers-by-googlers/prompt-api?tab=readme-ov-file#n-shot-prompting
+  proto::PromptApiRequest request;
+  *request.add_initial_prompts() =
+      RolePrompt(proto::PROMPT_API_ROLE_SYSTEM,
+                 "Predict up to 5 emojis as a response to a "
+                 "comment. Output emojis, comma-separated.");
+  *request.add_initial_prompts() =
+      RolePrompt(proto::PROMPT_API_ROLE_USER, "This is amazing!");
+  *request.add_initial_prompts() =
+      RolePrompt(proto::PROMPT_API_ROLE_ASSISTANT, "❤️, ➕");
+  *request.add_initial_prompts() =
+      RolePrompt(proto::PROMPT_API_ROLE_USER, "LGTM");
+  *request.add_initial_prompts() =
+      RolePrompt(proto::PROMPT_API_ROLE_ASSISTANT, "👍, 🚢");
+  *request.add_current_prompts() =
+      RolePrompt(proto::PROMPT_API_ROLE_USER, "Back to the drawing board");
+  auto result = CreateSubstitutions(request, PromptApiConfig());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->ToString(),
+            "<system>Predict up to 5 emojis as a response to a comment. Output "
+            "emojis, comma-separated.<end>"
+            "<user>This is amazing!<end>"
+            "<model>❤️, ➕<end>"
+            "<user>LGTM<end>"
+            "<model>👍, 🚢<end>"
+            "<user>Back to the drawing board<end>"
+            "<model>");
+}
+
+TEST_F(SubstitutionTest, PromptApiPersistence) {
+  // https://github.com/explainers-by-googlers/prompt-api#session-persistence-and-cloning
+  proto::PromptApiRequest request;
+  *request.add_initial_prompts() = RolePrompt(
+      proto::PROMPT_API_ROLE_SYSTEM,
+      "You are a friendly, helpful assistant specialized in clothing choices.");
+  *request.add_prompt_history() =
+      RolePrompt(proto::PROMPT_API_ROLE_USER,
+                 "What should I wear today? It's sunny and I'm unsure between "
+                 "a t-shirt and a polo.");
+  *request.add_prompt_history() =
+      RolePrompt(proto::PROMPT_API_ROLE_ASSISTANT, "Wear the t-shirt!");
+  *request.add_current_prompts() =
+      RolePrompt(proto::PROMPT_API_ROLE_USER,
+                 "That sounds great, but oh no, it's actually going to rain! "
+                 "New advice??");
+  auto result = CreateSubstitutions(request, PromptApiConfig());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->ToString(),
+            "<system>You are a friendly, helpful assistant specialized in "
+            "clothing choices.<end>"
+            "<user>What should I wear today? It's sunny and I'm unsure between "
+            "a t-shirt and a polo.<end>"
+            "<model>Wear the t-shirt!<end>"
+            "<user>That sounds great, but oh no, it's actually going to rain! "
+            "New advice??<end>"
+            "<model>");
 }
 
 }  // namespace

@@ -133,4 +133,8 @@ std::optional<SamplingParams> OnDeviceModelFeatureAdapter::MaybeSamplingParams()
   };
 }
 
+const proto::Any& OnDeviceModelFeatureAdapter::GetFeatureMetadata() const {
+  return config_.feature_metadata();
+}
+
 }  // namespace optimization_guide

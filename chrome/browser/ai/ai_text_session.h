@@ -14,6 +14,7 @@
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -29,6 +30,8 @@
 class AITextSession : public AIContextBoundObject,
                       public blink::mojom::AITextSession {
  public:
+  using PromptApiPrompt = optimization_guide::proto::PromptApiPrompt;
+  using PromptApiRequest = optimization_guide::proto::PromptApiRequest;
   using CreateTextSessionCallback =
       base::OnceCallback<void(blink::mojom::AITextSessionInfoPtr)>;
 
@@ -40,11 +43,18 @@ class AITextSession : public AIContextBoundObject,
     // The structure storing the text in context and the number of tokens in the
     // text.
     struct ContextItem {
-      const std::string text;
-      uint32_t tokens;
+      ContextItem();
+      ContextItem(const ContextItem&);
+      ContextItem(ContextItem&&);
+      ~ContextItem();
+
+      google::protobuf::RepeatedPtrField<PromptApiPrompt> prompts;
+      uint32_t tokens = 0;
     };
 
-    Context(uint32_t max_tokens, std::optional<ContextItem> system_prompt);
+    Context(uint32_t max_tokens,
+            ContextItem initial_prompts,
+            bool use_prompt_api_proto);
     Context(const Context&);
     ~Context();
 
@@ -52,22 +62,32 @@ class AITextSession : public AIContextBoundObject,
     // total number of tokens in the context is below the limit.
     void AddContextItem(ContextItem context_item);
 
-    // Puts all the texts in the context together into a string.
-    std::string GetContextString();
+    // Combines the initial prompts and all current items into a request.
+    // The type of request produced is either PromptApiRequest or StringValue,
+    // depending on use_prompt_api_proto = true.
+    std::unique_ptr<google::protobuf::MessageLite> MakeRequest();
+
+    // Either returns it's argument wrapped in unique_ptr, or converts it to a
+    // StringValue depending on whether this Context has
+    // use_prompt_api_proto = true.
+    std::unique_ptr<google::protobuf::MessageLite> MaybeFormatRequest(
+        PromptApiRequest request);
+
     // Returns true if the system prompt is set or there is at least one context
     // item.
     bool HasContextItem();
-    // Clone a context with the same content.
-    std::unique_ptr<Context> CloneContext();
 
     uint32_t max_tokens() const { return max_tokens_; }
     uint32_t current_tokens() const { return current_tokens_; }
+    bool use_prompt_api_proto() const { return use_prompt_api_proto_; }
 
    private:
     uint32_t max_tokens_;
     uint32_t current_tokens_ = 0;
-    std::optional<ContextItem> initial_prompts_;
+    ContextItem initial_prompts_;
     std::deque<ContextItem> context_items_;
+    // Whether this should use PromptApiRequest or StringValue as request type.
+    bool use_prompt_api_proto_;
   };
 
   // The `AITextSession` will be owned by the `AITextSessionSet` which is bound
@@ -111,35 +131,30 @@ class AITextSession : public AIContextBoundObject,
       CreateTextSessionCallback callback);
   blink::mojom::AITextSessionInfoPtr GetTextSessionInfo();
 
-  static const char* FormatPromptRole(
-      blink::mojom::AIAssistantInitialPromptRole role);
-
  private:
   void ModelExecutionCallback(
-      const std::string& input,
+      const PromptApiRequest& input,
       mojo::RemoteSetElementId responder_id,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
 
   void InitializeContextWithInitialPrompts(
-      const std::string& initial_prompts_text,
+      optimization_guide::proto::PromptApiRequest request,
       CreateTextSessionCallback callback,
       uint32_t size);
 
   // This function is passed as a completion callback to the
   // `GetSizeInTokens()`. It will
-  // - Add the text into context, and remove the oldest tokens to reduce the
+  // - Add the item into context, and remove the oldest items to reduce the
   // context size if the number of tokens in the current context exceeds the
   // limit.
   // - Signal the completion of model execution through the `responder` with the
-  // size returned from the `GetSizeInTokens()`.
-  void OnGetSizeInTokensComplete(
-      const std::string& text,
+  // new size of the context.
+  void AddPromptHistoryAndSendCompletion(
+      const PromptApiRequest& history_item,
       blink::mojom::ModelStreamingResponder* responder,
       uint32_t size);
 
-  void GetSizeInTokens(const std::string& text,
-                       base::OnceCallback<uint32_t> callback);
   // The underlying session provided by optimization guide component.
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
       session_;
