@@ -49,18 +49,16 @@ ContextualPanelModelServiceFactory::~ContextualPanelModelServiceFactory() {}
 std::unique_ptr<KeyedService>
 ContextualPanelModelServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
   if (IsContextualPanelForceShowEntrypointEnabled()) {
     models.emplace(ContextualPanelItemType::SamplePanelItem,
-                   SamplePanelModelFactory::GetForBrowserState(browser_state));
+                   SamplePanelModelFactory::GetForProfile(profile));
   }
 
-  if (IsPriceInsightsEnabled(browser_state)) {
-    models.emplace(
-        ContextualPanelItemType::PriceInsightsItem,
-        PriceInsightsModelFactory::GetForBrowserState(browser_state));
+  if (IsPriceInsightsEnabled(profile)) {
+    models.emplace(ContextualPanelItemType::PriceInsightsItem,
+                   PriceInsightsModelFactory::GetForProfile(profile));
   }
   return std::make_unique<ContextualPanelModelService>(models);
 }
