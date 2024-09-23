@@ -53,6 +53,7 @@
 #include "net/base/url_util.h"
 #include "net/socket/client_socket_factory.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/cloud_session_authz_service_client_factory.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/corp_session_authz_service_client_factory.h"
 #include "remoting/base/cpu_utils.h"
@@ -850,9 +851,9 @@ void HostProcess::CreateAuthenticatorFactory() {
       local_certificate, key_pair_);
   if (is_cloud_host_) {
     CHECK(require_session_authorization_);
-
-    // TODO: joedow - Implement SessionAuthz for Cloud hosts.
-    NOTIMPLEMENTED() << "SessionAuthz not yet implemented for Cloud hosts";
+    auth_config->AddSessionAuthzAuth(
+        base::MakeRefCounted<CloudSessionAuthzServiceClientFactory>(
+            oauth_token_getter_.get(), context_->url_loader_factory()));
   } else if (require_session_authorization_ ||
              (is_corp_host_ && !allow_pin_auth_.value_or(false))) {
     auth_config->AddSessionAuthzAuth(
