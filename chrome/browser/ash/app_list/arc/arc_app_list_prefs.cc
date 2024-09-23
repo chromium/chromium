@@ -1675,6 +1675,12 @@ void ArcAppListPrefs::AddAppAndShortcut(
 
   // Do not add Play Store in certain conditions.
   if (app_id == arc::kPlayStoreAppId) {
+    // Users can only use admin-approved and installed apps on the
+    // reven board, not from the Play Store.
+    if (ash::switches::IsRevenBranding()) {
+      return;
+    }
+
     // TODO(khmel): Use show_in_launcher flag to hide the Play Store app.
     // Display Play Store if we are in Demo Mode.
     // TODO(b/154290639): Remove check for |IsDemoModeOfflineEnrolled| when
