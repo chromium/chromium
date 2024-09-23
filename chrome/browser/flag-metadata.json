@@ -3353,14 +3353,14 @@
     "owners": [
       "xhwang@chromium.org", "media-dev@chromium.org"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 143
   },
   {
     "name": "enable-hardware-secure-decryption-fallback",
     "owners": [
       "xhwang@chromium.org", "media-dev@chromium.org"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 143
   },
   {
     "name": "enable-heatmap-palm-detection",
