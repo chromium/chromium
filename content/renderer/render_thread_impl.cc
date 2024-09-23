@@ -1118,7 +1118,7 @@ RenderThreadImpl::GetVideoFrameCompositorContextProvider(
 }
 
 scoped_refptr<gpu::ClientSharedImageInterface>
-RenderThreadImpl::GetVideoFrameCompositorSharedImageInterface() {
+RenderThreadImpl::GetRenderThreadSharedImageInterface() {
   if (shared_image_interface_ &&
       !shared_image_interface_->gpu_channel()->IsLost()) {
     return shared_image_interface_;
