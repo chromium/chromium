@@ -203,8 +203,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                    omniboxClient:std::make_unique<ChromeOmniboxClientIOS>(
                                      _locationBar.get(), self.browserState,
                                      feature_engagement::TrackerFactory::
-                                         GetForBrowserState(
-                                             self.browserState))];
+                                         GetForBrowserState(self.browserState))
+                   isLensOverlay:NO];
   self.omniboxCoordinator.focusDelegate = self.delegate;
 
   self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;

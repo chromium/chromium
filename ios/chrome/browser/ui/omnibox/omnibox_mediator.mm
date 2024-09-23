@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
@@ -34,6 +35,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -68,16 +70,21 @@ using base::UserMetricsAction;
 
 @implementation OmniboxMediator {
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
+
+  // Whether it's the lens overlay omnibox.
+  BOOL _isLensOverlay;
 }
 
 - (instancetype)initWithIncognito:(BOOL)isIncognito
-                          tracker:(feature_engagement::Tracker*)tracker {
+                          tracker:(feature_engagement::Tracker*)tracker
+                    isLensOverlay:(BOOL)isLensOverlay {
   self = [super init];
   if (self) {
     _searchEngineSupportsSearchByImage = NO;
     _searchEngineSupportsLens = NO;
     _isIncognito = isIncognito;
     _tracker = tracker;
+    _isLensOverlay = isLensOverlay;
   }
   return self;
 }
@@ -235,7 +242,7 @@ using base::UserMetricsAction;
   // Download the favicon.
   // The code below mimics that in OmniboxPopupMediator.
   self.faviconLoader->FaviconForPageUrl(
-      pageURL, kMinFaviconSizePt, kMinFaviconSizePt,
+      pageURL, self.faviconSize, self.faviconSize,
       /*fallback_to_google_server=*/false, handleFaviconResult);
 }
 
@@ -245,6 +252,7 @@ using base::UserMetricsAction;
 // thread.
 - (void)loadDefaultSearchEngineFaviconWithCompletion:
     (void (^)(UIImage* image))completion {
+  const CGFloat faviconSize = self.faviconSize;
   // If default search engine image is currently loaded, just use it.
   if (self.currentDefaultSearchEngineFavicon) {
     if (completion) {
@@ -269,7 +277,12 @@ using base::UserMetricsAction;
                              SEARCH_ENGINE_GOOGLE) {
     UIImage* bundledLogo = ios::provider::GetBrandedImage(
         ios::provider::BrandedImage::kOmniboxAnswer);
-
+    if (_isLensOverlay) {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+      bundledLogo = MakeSymbolMulticolor(
+          CustomSymbolWithPointSize(kGoogleIconSymbol, faviconSize));
+#endif
+    }
     if (bundledLogo) {
       self.currentDefaultSearchEngineFavicon = bundledLogo;
       if (completion) {
@@ -285,7 +298,7 @@ using base::UserMetricsAction;
   __weak __typeof(self) weakSelf = self;
   self.latestDefaultSearchEngine = defaultProvider;
   auto handleFaviconResult = ^void(FaviconAttributes* faviconCacheResult) {
-    DCHECK_LE(faviconCacheResult.faviconImage.size.width, kMinFaviconSizePt);
+    DCHECK_LE(faviconCacheResult.faviconImage.size.width, faviconSize);
     if (weakSelf.latestDefaultSearchEngine != defaultProvider ||
         !faviconCacheResult.faviconImage ||
         faviconCacheResult.usesDefaultImage) {
@@ -308,13 +321,13 @@ using base::UserMetricsAction;
         TemplateURLRef::SearchTermsArgs(std::u16string()),
         _templateURLService->search_terms_data());
     self.faviconLoader->FaviconForPageUrl(
-        GURL(emptyPageUrl), kMinFaviconSizePt, kMinFaviconSizePt,
+        GURL(emptyPageUrl), faviconSize, faviconSize,
         /*fallback_to_google_server=*/YES, handleFaviconResult);
   } else {
     // Download the favicon.
     // The code below mimics that in OmniboxPopupMediator.
     self.faviconLoader->FaviconForIconUrl(defaultProvider->favicon_url(),
-                                          kMinFaviconSizePt, kMinFaviconSizePt,
+                                          faviconSize, faviconSize,
                                           handleFaviconResult);
   }
 }
@@ -496,6 +509,15 @@ using base::UserMetricsAction;
   return ios::provider::IsLensSupported() &&
          base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage) &&
          self.searchEngineSupportsLens;
+}
+
+// Returns the size of the favicon.
+- (CGFloat)faviconSize {
+  if (_isLensOverlay) {
+    return kDesiredSmallFaviconSizePt;
+  } else {
+    return kMinFaviconSizePt;
+  }
 }
 
 @end

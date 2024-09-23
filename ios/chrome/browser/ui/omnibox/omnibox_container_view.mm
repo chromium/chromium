@@ -38,7 +38,7 @@ const CGFloat kThumbnailHeight = 40;
 /// Space between the thumbnail image and the omnibox text.
 const CGFloat kThumbnailImageTrailingMargin = 10;
 /// Space between the leading icon and the thumbnail image.
-const CGFloat kThumbnailImageLeadingMargin = 10;
+const CGFloat kThumbnailImageLeadingMargin = 9;
 
 /// Space between the clear button and the edge of the omnibox.
 const CGFloat kTextFieldClearButtonTrailingOffset = 4;

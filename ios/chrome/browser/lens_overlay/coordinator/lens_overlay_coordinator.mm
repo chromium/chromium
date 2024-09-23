@@ -586,7 +586,8 @@ const CGFloat kMenuSymbolSize = 18;
   _omniboxCoordinator = [[OmniboxCoordinator alloc]
       initWithBaseViewController:nil
                          browser:browser
-                   omniboxClient:std::move(omniboxClient)];
+                   omniboxClient:std::move(omniboxClient)
+                   isLensOverlay:YES];
 
   // TODO(crbug.com/355179721): Add omnibox focus delegate.
   _omniboxCoordinator.presenterDelegate = _resultViewController;

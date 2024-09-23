@@ -96,6 +96,9 @@
 
   // The handler for ToolbarCommands.
   id<ToolbarCommands> _toolbarHandler;
+
+  // Whether it's the lens overlay omnibox.
+  BOOL _isLensOverlay;
 }
 @synthesize viewController = _viewController;
 @synthesize mediator = _mediator;
@@ -105,10 +108,12 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                              omniboxClient:
-                                 (std::unique_ptr<OmniboxClient>)client {
+                                 (std::unique_ptr<OmniboxClient>)client
+                             isLensOverlay:(BOOL)isLensOverlay {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _client = std::move(client);
+    _isLensOverlay = isLensOverlay;
   }
   return self;
 }
@@ -131,7 +136,8 @@
   self.mediator = [[OmniboxMediator alloc]
       initWithIncognito:isIncognito
                 tracker:feature_engagement::TrackerFactory::GetForBrowserState(
-                            self.browser->GetBrowserState())];
+                            self.browser->GetBrowserState())
+          isLensOverlay:_isLensOverlay];
 
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(
