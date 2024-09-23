@@ -5,8 +5,10 @@
 #define CHROME_BROWSER_UI_WEBAUTHN_AMBIENT_AMBIENT_SIGNIN_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/webauthn/ambient/ambient_signin_bubble_view.h"
@@ -65,12 +67,13 @@ class AmbientSigninController
       password_manager::PasswordManagerClient::CredentialsCallback callback);
 
   // Called when the user selects a passkey shown in the bubble.
-  void OnPasskeySelected(const std::vector<uint8_t>& account_id,
-                         const ui::Event& event);
+  void OnPasskeySelected(const std::vector<uint8_t>& account_id);
 
   // Called when the user selects a password shown in the bubble.
-  void OnPasswordSelected(const password_manager::PasswordForm* form,
-                          const ui::Event& event);
+  void OnPasswordSelected(const password_manager::PasswordForm* form);
+
+  std::u16string GetRpId() const;
+  base::OnceClosure GetSignInCallback();
 
   base::WeakPtr<AmbientSigninController> GetWeakPtr();
 

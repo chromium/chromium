@@ -16778,6 +16778,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LINK" desc="Link text that directs the user to the Google Password Manager passwords page within a bubble that is displayed as a confirmation that a passkey was deleted in Google Password Manager. See IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LABEL for more details.">
         Google Password Manager
       </message>
+
+      <!-- WebAuthn Ambient UI -->
+      <!-- TODO(crbug.com/358119268): Remove translateable property when the strings are final. -->
+      <message name="IDS_WEBAUTHN_AMBIENT_BUBBLE_TITLE" desc="The title of a bubble that displays passkeys or passwords for signing in to a given site." translateable="false">
+        Sign in to <ph name="RP_ID">$1<ex>webauthn.io</ex></ph>
+      </message>
+
       <!-- Web-modal dialog shown during Digital Credential request -->
       <message name="IDS_WEB_DIGITAL_CREDENTIALS_BLUETOOTH_POWER_ON_MANUAL_TITLE" translateable="false">
         Bluetooth is disabled
