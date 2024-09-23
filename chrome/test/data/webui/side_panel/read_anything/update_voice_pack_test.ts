@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
+// <if expr="chromeos_ash">
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
+// </if>
 import {BrowserProxy, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {AppElement, NotificationType, VoiceNotificationListener} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode, VoiceNotificationManager, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
@@ -124,6 +126,7 @@ suite('UpdateVoicePack', () => {
     });
   });
 
+  // <if expr="chromeos_ash">
   suite('download notification', () => {
     let toast: CrToastElement;
 
@@ -201,6 +204,7 @@ suite('UpdateVoicePack', () => {
           toast.querySelector('#toastTitle')!.textContent!.includes('ja-jp'));
     });
   });
+  // </if>
 
   test(
       'unavailable even if natural voices are in the list for a different lang',

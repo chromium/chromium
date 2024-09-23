@@ -985,7 +985,10 @@ export class AppElement extends AppElementBase {
             // Force a refresh of the voices list since we might not get an
             // update the voices have changed.
             this.getVoices_(true);
+
+            // <if expr="chromeos_ash">
             this.showToast_();
+            // </if>
           }
 
           this.autoSwitchVoice_(lang);
