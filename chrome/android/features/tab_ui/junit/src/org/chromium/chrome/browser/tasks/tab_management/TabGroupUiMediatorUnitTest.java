@@ -21,11 +21,13 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserverTestHelper.GROUP_MEMBER1;
+import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserverTestHelper.GROUP_MEMBER2;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -55,6 +57,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
@@ -87,6 +90,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -153,6 +157,8 @@ public class TabGroupUiMediatorUnitTest {
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mOmniboxFocusObserverCaptor;
+    @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
+    @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
 
     private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
@@ -176,6 +182,7 @@ public class TabGroupUiMediatorUnitTest {
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
     private LazyOneshotSupplier<TabGridDialogMediator.DialogController> mDialogControllerSupplier;
+    private SharedGroupObserverTestHelper mSharedGroupObserverTestHelper;
 
     private Tab prepareTab(int tabId, int rootId) {
         Tab tab = TabUiUnitTestUtils.prepareTab(tabId, rootId);
@@ -286,6 +293,9 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
+        mSharedGroupObserverTestHelper =
+                new SharedGroupObserverTestHelper(
+                        mDataSharingService, mTabGroupSyncService, mReadGroupCallbackCaptor);
 
         // Set up Tabs
         mTab1 = prepareTab(TAB1_ID, TAB1_ROOT_ID);
@@ -1124,38 +1134,66 @@ public class TabGroupUiMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.DATA_SHARING)
+    public void testImageTiles_NoDataSharing() {
+        setupSyncedGroup(/* isShared= */ true);
+
+        initAndAssertProperties(mTab2);
+
+        assertTrue(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
+        assertFalse(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
+    }
+
+    @Test
     public void testImageTiles_NoGroup() {
-        reset(mSharedImageTilesCoordinator);
         setupSyncedGroup(/* isShared= */ true);
 
         initAndAssertProperties(mTab1);
 
         assertTrue(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
         assertFalse(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
+    }
+
+    @Test
+    public void testImageTiles_2Members() {
+        setupSyncedGroup(/* isShared= */ true);
+
+        initAndAssertProperties(mTab2);
+        mSharedGroupObserverTestHelper.respondToReadGroup(
+                COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+
+        assertFalse(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
+        assertTrue(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
+        verify(mSharedImageTilesCoordinator).updateCollaborationId(COLLABORATION_ID1);
+
+        // Remove the collaboration data.
+        verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
+        mSharingObserverCaptor.getValue().onGroupRemoved(COLLABORATION_ID1);
+
+        assertTrue(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
+        assertFalse(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
         verify(mSharedImageTilesCoordinator).updateCollaborationId(null);
     }
 
     @Test
-    public void testImageTiles_CollaborationId() {
-        reset(mSharedImageTilesCoordinator);
+    public void testImageTiles_1Member() {
         setupSyncedGroup(/* isShared= */ true);
 
         initAndAssertProperties(mTab2);
+        mSharedGroupObserverTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
 
-        assertFalse(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
-        assertTrue(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
+        assertTrue(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
+        assertFalse(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
         verify(mSharedImageTilesCoordinator).updateCollaborationId(COLLABORATION_ID1);
     }
 
     @Test
     public void testImageTiles_NoCollaborationId() {
-        reset(mSharedImageTilesCoordinator);
         setupSyncedGroup(/* isShared= */ false);
 
         initAndAssertProperties(mTab2);
 
         assertTrue(mModel.get(TabGroupUiProperties.SHOW_GROUP_DIALOG_BUTTON_VISIBLE));
         assertFalse(mModel.get(TabGroupUiProperties.IMAGE_TILES_CONTAINER_VISIBLE));
-        verify(mSharedImageTilesCoordinator).updateCollaborationId(null);
     }
 }
