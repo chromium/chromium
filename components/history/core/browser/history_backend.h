@@ -860,15 +860,16 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // be 0 on failure.
   //
   // If the caller wants to add this visit to the VisitedLinkDatabase, it needs
-  // to provide values for the `top_level_url` and `frame_url` parameters.
-  // `top_level_url` is a GURL representing the top-level frame that this
-  // navigation originated from. `frame_url` is GURL representing the immediate
-  // frame that this navigation originated from. For example, if a link to
-  // `c.com` is clicked in an iframe `b.com` that is embedded in `a.com`, the
-  // `top_level_url` is `a.com` and the `frame_url` is `b.com` (and the `url` is
-  // `c.com`).
-  //
-  // This does not schedule database commits, it is intended to be used as a
+  // to provide values for the `top_level_url`, `frame_url`, `is_ephemeral`
+  // parameters. `top_level_url` is a GURL representing the top-level frame that
+  // this navigation originated from. `frame_url` is GURL representing the
+  // immediate frame that this navigation originated from. For example, if a
+  // link to `c.com` is clicked in an iframe `b.com` that is embedded in
+  // `a.com`, the `top_level_url` is `a.com` and the `frame_url` is `b.com` (and
+  // the `url` is `c.com`). `is_ephemeral` represents whether our navigation
+  // came from a credentialless iframe (which is an ephemeral context). When
+  // true, we want to avoid adding the visit into the VisitedLinkDatabase. This
+  // does not schedule database commits, it is intended to be used as a
   // subroutine for AddPage only. It also assumes the database is valid.
   // Note that |app_is| is used for mobile only; |nullopt| on other platforms.
   std::pair<URLID, VisitID> AddPageVisit(
@@ -892,7 +893,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       std::optional<VisitID> originator_visit_id = std::nullopt,
       std::optional<VisitID> originator_referring_visit = std::nullopt,
       std::optional<VisitID> originator_opener_visit = std::nullopt,
-      bool is_known_to_sync = false);
+      bool is_known_to_sync = false,
+      bool is_ephemeral = false);
 
   // Returns a redirect-or-referral chain in `redirects` for the VisitID
   // `cur_visit`. `cur_visit` is assumed to be valid. Assumes that

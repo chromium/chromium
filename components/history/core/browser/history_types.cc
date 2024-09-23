@@ -332,7 +332,8 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          std::nullopt,
                          std::nullopt,
                          std::nullopt,
-                         std::nullopt) {}
+                         std::nullopt,
+                         false) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(
     const GURL& url,
@@ -352,7 +353,8 @@ HistoryAddPageArgs::HistoryAddPageArgs(
     std::optional<Opener> opener,
     std::optional<int64_t> bookmark_id,
     std::optional<std::string> app_id,
-    std::optional<VisitContextAnnotations::OnVisitFields> context_annotations)
+    std::optional<VisitContextAnnotations::OnVisitFields> context_annotations,
+    bool is_ephemeral)
     : url(url),
       time(time),
       context_id(context_id),
@@ -370,7 +372,8 @@ HistoryAddPageArgs::HistoryAddPageArgs(
       opener(opener),
       bookmark_id(bookmark_id),
       app_id(app_id),
-      context_annotations(std::move(context_annotations)) {}
+      context_annotations(std::move(context_annotations)),
+      is_ephemeral(is_ephemeral) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const HistoryAddPageArgs& other) =
     default;

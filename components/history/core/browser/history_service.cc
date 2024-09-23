@@ -682,6 +682,11 @@ void HistoryService::AddPartitionedVisitedLinks(
   if (!args.top_level_url->is_valid() || !args.referrer.is_valid()) {
     return;
   }
+  // When links are partitioned and the navigation comes from an ephemeral
+  // context we want to avoid adding it to the hashtable.
+  if (args.is_ephemeral) {
+    return;
+  }
   // Add the VisitedLink representing each navigation to the partitioned
   // hashtable.
   if (!args.redirects.empty()) {
