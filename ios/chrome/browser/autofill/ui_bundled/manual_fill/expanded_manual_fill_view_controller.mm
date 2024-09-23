@@ -177,6 +177,17 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
     _headerViewLeadingConstraint,
     _headerViewTrailingConstraint,
   ]];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits =
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf resetHeaderViewOnTraitChange];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -217,20 +228,19 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (self.traitCollection.verticalSizeClass !=
       previousTraitCollection.verticalSizeClass) {
-    // Update the header view's layout when the view's vertical size class
-    // changes.
-    [self resetHeaderView:_headerView
-        headerViewHeightConstraint:_headerViewHeightConstraint
-                        chromeLogo:_chromeLogo
-                       closeButton:_closeButton
-                  segmentedControl:_segmentedControl
-                     headerTopView:_headerTopView];
+    [self resetHeaderViewOnTraitChange];
   }
 }
+#endif
 
 #pragma mark - Setters
 
@@ -517,6 +527,17 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
       static_cast<ManualFillDataType>(segmentedControl.selectedSegmentIndex);
   [self.delegate expandedManualFillViewController:self
                            didSelectSegmentOfType:selectedType];
+}
+
+// Update the header view's layout when the view's vertical size class
+// changes.
+- (void)resetHeaderViewOnTraitChange {
+  [self resetHeaderView:_headerView
+      headerViewHeightConstraint:_headerViewHeightConstraint
+                      chromeLogo:_chromeLogo
+                     closeButton:_closeButton
+                segmentedControl:_segmentedControl
+                   headerTopView:_headerTopView];
 }
 
 @end
