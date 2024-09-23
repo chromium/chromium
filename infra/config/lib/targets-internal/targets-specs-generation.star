@@ -98,7 +98,9 @@ def _apply_mixin(spec, settings, mixin_values):
         if os_specific_swarming and getattr(settings, settings_attr):
             spec_value["swarming"] = _targets_common.merge_swarming(spec_value["swarming"], os_specific_swarming)
 
-    spec_value["description"] = "\n".join(args_lib.listify(spec_value["description"], mixin_values.pop("description", None))) or None
+    description_mixin = mixin_values.pop("description", None)
+    if description_mixin:
+        spec_value["description"] = "\n".join(args_lib.listify(spec_value["description"], description_mixin)) or None
 
     spec_value.update(mixin_values)
 
