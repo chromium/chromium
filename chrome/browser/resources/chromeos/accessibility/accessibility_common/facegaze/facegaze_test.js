@@ -1449,3 +1449,52 @@ AX_TEST_F('FaceGazeTest', 'VelocityThreshold', async function() {
   this.processFaceLandmarkerResult(result);
   this.assertLatestCursorPosition({x: 590, y: 406});
 });
+
+AX_TEST_F('FaceGazeTest', 'BubbleTextSimple', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence);
+  await this.configureFaceGaze(config);
+
+  assertNullOrUndefined(this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  const result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result);
+
+  assertEquals(
+      'Left-click the mouse (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+});
+
+AX_TEST_F('FaceGazeTest', 'BubbleTextMultiple', async function() {
+  const gestureToMacroName =
+      new Map()
+          .set(FacialGesture.JAW_OPEN, MacroName.MOUSE_CLICK_LEFT)
+          .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_RIGHT);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.JAW_OPEN, 0.6)
+                                  .set(FacialGesture.BROW_INNER_UP, 0.6);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence);
+  await this.configureFaceGaze(config);
+
+  assertNullOrUndefined(this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  const result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9);
+  this.processFaceLandmarkerResult(result);
+
+  assertEquals(
+      'Right-click the mouse (Raise eyebrows), ' +
+          'Left-click the mouse (Open your mouth wide)',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+});

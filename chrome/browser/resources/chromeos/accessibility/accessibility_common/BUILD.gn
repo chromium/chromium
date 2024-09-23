@@ -62,6 +62,7 @@ ts_modules = [
   "dictation/parse/parse_strategy.ts",
   "dictation/parse/pumpkin/pumpkin_constants.ts",
   "dictation/parse/speech_parser.ts",
+  "facegaze/bubble_controller.ts",
   "facegaze/constants.ts",
   "facegaze/facegaze.ts",
   "facegaze/web_cam_face_landmarker.ts",

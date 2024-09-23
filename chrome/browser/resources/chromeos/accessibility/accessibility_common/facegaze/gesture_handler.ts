@@ -13,6 +13,7 @@ import {KeyCode} from '/common/key_code.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
+import {BubbleController} from './bubble_controller.js';
 import {FacialGesture} from './facial_gestures.js';
 import {GestureDetector} from './gesture_detector.js';
 import {MouseScrollMacro} from './macros/mouse_scroll_macro.js';
@@ -24,6 +25,11 @@ import StateType = chrome.automation.StateType;
 
 type AutomationNode = chrome.automation.AutomationNode;
 type PrefObject = chrome.settingsPrivate.PrefObject;
+
+interface DetectMacrosResult {
+  macros: Macro[];
+  displayText: string;
+}
 
 /** Handles converting facial gestures to Macros. */
 export class GestureHandler {
@@ -123,13 +129,13 @@ export class GestureHandler {
     });
   }
 
-  detectMacros(result: FaceLandmarkerResult): Macro[] {
+  detectMacros(result: FaceLandmarkerResult): DetectMacrosResult {
     const gestures = GestureDetector.detect(result, this.gestureToConfidence_);
-    const macros = this.gesturesToMacros_(gestures);
+    const {macros, displayText} = this.gesturesToMacros_(gestures);
     macros.push(
         ...this.popMacrosOnGestureEnd(gestures, this.previousGestures_));
     this.previousGestures_ = gestures;
-    return macros;
+    return {macros, displayText};
   }
 
   togglePaused(): void {
@@ -140,7 +146,7 @@ export class GestureHandler {
     this.paused_ = newPaused;
   }
 
-  private gesturesToMacros_(gestures: FacialGesture[]): Macro[] {
+  private gesturesToMacros_(gestures: FacialGesture[]): DetectMacrosResult {
     const macroNames: Map<MacroName, FacialGesture> = new Map();
     for (const gesture of gestures) {
       const currentTime = new Date().getTime();
@@ -160,6 +166,8 @@ export class GestureHandler {
       }
     }
 
+    // Construct display text.
+    const displayStrings = [];
     // Construct macros from all the macro names.
     const result: Macro[] = [];
     for (const [macroName, gesture] of macroNames) {
@@ -174,6 +182,7 @@ export class GestureHandler {
           }
         }
         result.push(macro);
+        displayStrings.push(BubbleController.getDisplayText(gesture, macro));
         if (macro.triggersAtActionStartAndEnd()) {
           // Cache this macro to be run a second time later,
           // e.g. for the mouse or key release.
@@ -182,7 +191,8 @@ export class GestureHandler {
       }
     }
 
-    return result;
+    const displayText = displayStrings.join(', ');
+    return {macros: result, displayText};
   }
 
   /**

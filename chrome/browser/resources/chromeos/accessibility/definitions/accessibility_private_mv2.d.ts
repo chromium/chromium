@@ -484,6 +484,8 @@ declare global {
       export function sendGestureInfoToSettings(gestureInfo: GestureInfo[]):
           void;
 
+      export function updateFaceGazeBubble(text: string): void;
+
       export const onIntroduceChromeVox: ChromeEvent<() => void>;
 
       export const onChromeVoxFocusChanged:

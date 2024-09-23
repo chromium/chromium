@@ -5,6 +5,7 @@
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
+import {BubbleController} from './bubble_controller.js';
 import {FaceGazeConstants} from './constants.js';
 import {GestureHandler} from './gesture_handler.js';
 import {MetricsUtils} from './metrics_utils.js';
@@ -25,6 +26,7 @@ export class FaceGaze {
   private metricsUtils_: MetricsUtils;
   private webCamFaceLandmarker_: WebCamFaceLandmarker;
   private weightsWindowId_ = -1;
+  private bubbleController_: BubbleController;
 
   constructor() {
     this.webCamFaceLandmarker_ = new WebCamFaceLandmarker(
@@ -36,6 +38,7 @@ export class FaceGaze {
     this.mouseController_ = new MouseController();
     this.gestureHandler_ = new GestureHandler(this.mouseController_);
     this.metricsUtils_ = new MetricsUtils();
+    this.bubbleController_ = new BubbleController();
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.init_();
   }
@@ -152,7 +155,7 @@ export class FaceGaze {
     }
 
     if (this.actionsEnabled_) {
-      const macros = this.gestureHandler_.detectMacros(result);
+      const {macros, displayText} = this.gestureHandler_.detectMacros(result);
       for (const macro of macros) {
         const checkContextResult = macro.checkContext();
         if (!checkContextResult.canTryAction) {
@@ -161,12 +164,17 @@ export class FaceGaze {
               checkContextResult.error, checkContextResult.failedContext);
           continue;
         }
+
         const runMacroResult = macro.run();
         if (!runMacroResult.isSuccess) {
           console.warn(
               'Failed to execute macro ', macro.getName(),
               runMacroResult.error);
         }
+      }
+
+      if (displayText) {
+        this.bubbleController_.updateBubble(displayText);
       }
     }
   }

@@ -171,6 +171,9 @@ class MockAccessibilityPrivate {
      */
     this.dictationBubbleProps_ = null;
 
+    /** @private {?string} */
+    this.faceGazeBubbleText_ = null;
+
     /** @private {Function} */
     this.onUpdateDictationBubble_ = null;
 
@@ -566,9 +569,19 @@ class MockAccessibilityPrivate {
     }
   }
 
+  /** @param {string} text */
+  updateFaceGazeBubble(text) {
+    this.faceGazeBubbleText_ = text;
+  }
+
   /** @return {!chrome.accessibilityPrivate.DictationBubbleProperties|null} */
   getDictationBubbleProps() {
     return this.dictationBubbleProps_;
+  }
+
+  /** @return {?string} */
+  getFaceGazeBubbleText() {
+    return this.faceGazeBubbleText_;
   }
 
   /**

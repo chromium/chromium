@@ -204,6 +204,7 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
 
     assertNotNullNorUndefined(accessibilityCommon);
+    assertNotNullNorUndefined(BubbleController);
     assertNotNullNorUndefined(FaceGaze);
     assertNotNullNorUndefined(FaceGazeConstants);
     assertNotNullNorUndefined(FacialGesture);
@@ -310,6 +311,10 @@ FaceGazeTestBase = class extends E2ETestBase {
     if (config.repeatDelayMs > 0) {
       faceGaze.gestureHandler_.repeatDelayMs_ = config.repeatDelayMs;
     }
+
+    // Increase the bubble controller timeout to avoid flaky behavior when
+    // asserting the text content of the bubble.
+    BubbleController.CLEAR_BUBBLE_TIMEOUT_MS = 100 * 1000;
 
     faceGaze.mouseController_.setLandmarkWeightsForTesting(
         config.useLandmarkWeights);
