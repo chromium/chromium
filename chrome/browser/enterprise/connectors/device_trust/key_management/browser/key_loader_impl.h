@@ -20,26 +20,13 @@ namespace enterprise_attestation {
 class CloudManagementDelegate;
 }  // namespace enterprise_attestation
 
-namespace policy {
-class BrowserDMTokenStorage;
-class DeviceManagementService;
-}  // namespace policy
-
 namespace enterprise_connectors {
-class KeyNetworkDelegate;
-class KeyUploadRequest;
 
 class KeyLoaderImpl : public KeyLoader {
  public:
   explicit KeyLoaderImpl(
       std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
           management_delegate);
-
-  // TODO(b/351201459): Remove when DTCKeyUploadedBySharedAPIEnabled is fully
-  // launched.
-  KeyLoaderImpl(policy::BrowserDMTokenStorage* dm_token_storage,
-                policy::DeviceManagementService* device_management_service,
-                std::unique_ptr<KeyNetworkDelegate> network_delegate);
 
   ~KeyLoaderImpl() override;
 
@@ -51,33 +38,20 @@ class KeyLoaderImpl : public KeyLoader {
   void SynchronizePublicKey(LoadKeyCallback callback, LoadedKey persisted_key);
 
   // Uses the `upload_request` to upload the `key_pair` to the DM Server.
-  void OnKeyUploadRequestCreated(
-      scoped_refptr<SigningKeyPair> key_pair,
-      LoadKeyCallback callback,
-      std::optional<const KeyUploadRequest> upload_request);
-
   void OnUploadPublicKeyRequestCreated(
       scoped_refptr<SigningKeyPair> key_pair,
       LoadKeyCallback callback,
       std::optional<const enterprise_management::DeviceManagementRequest>
           upload_request);
 
-  // Builds the load key result using the HTTP response `status_code` and
-  // `key_pair`,  and returns the result to the `callback`.
-  void OnKeyUploadCompleted(scoped_refptr<SigningKeyPair> key_pair,
-                            LoadKeyCallback callback,
-                            int status_code);
-
+  // Builds the load key result using the DMServerJobResult `result` and
+  // `key_pair`, and returns the result to the `callback`.
   void OnUploadPublicKeyCompleted(scoped_refptr<SigningKeyPair> key_pair,
                                   LoadKeyCallback callback,
                                   const policy::DMServerJobResult result);
 
   std::unique_ptr<enterprise_attestation::CloudManagementDelegate>
       cloud_management_delegate_;
-
-  raw_ptr<policy::BrowserDMTokenStorage> dm_token_storage_;
-  raw_ptr<policy::DeviceManagementService> device_management_service_;
-  std::unique_ptr<KeyNetworkDelegate> network_delegate_;
 
   // Checker used to validate that non-background tasks should be
   // running on the original sequence.

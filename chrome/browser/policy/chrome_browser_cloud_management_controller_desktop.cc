@@ -275,8 +275,7 @@ ChromeBrowserCloudManagementControllerDesktop::CreateDeviceTrustKeyManager() {
           browser_dm_token_storage, device_management_service,
           shared_url_loader_factory);
   auto key_loader = enterprise_connectors::KeyLoader::Create(
-      browser_dm_token_storage, device_management_service,
-      shared_url_loader_factory);
+      device_management_service, shared_url_loader_factory);
 
   return std::make_unique<enterprise_connectors::DeviceTrustKeyManagerImpl>(
       std::move(key_rotation_launcher), std::move(key_loader));

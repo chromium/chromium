@@ -10,7 +10,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/common/key_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
 
@@ -19,7 +18,6 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace policy {
-class BrowserDMTokenStorage;
 class DeviceManagementService;
 }  // namespace policy
 
@@ -60,7 +58,6 @@ class KeyLoader {
   using LoadKeyCallback = base::OnceCallback<void(DTCLoadKeyResult)>;
 
   static std::unique_ptr<KeyLoader> Create(
-      policy::BrowserDMTokenStorage* dm_token_storage,
       policy::DeviceManagementService* device_management_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
