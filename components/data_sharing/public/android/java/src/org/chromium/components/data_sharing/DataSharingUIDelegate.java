@@ -15,6 +15,9 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Callback;
 import org.chromium.components.data_sharing.configs.AvatarConfig;
+import org.chromium.components.data_sharing.configs.DataSharingCreateUiConfig;
+import org.chromium.components.data_sharing.configs.DataSharingJoinUiConfig;
+import org.chromium.components.data_sharing.configs.DataSharingManageUiConfig;
 import org.chromium.components.data_sharing.configs.GroupMemberConfig;
 import org.chromium.components.data_sharing.configs.MemberPickerConfig;
 import org.chromium.url.GURL;
@@ -46,11 +49,11 @@ public interface DataSharingUIDelegate {
      * @param memberResult This callback is invoked when members are selected.
      * @param config Used to set properties for the API.
      */
-    public void showMemberPicker(
+    default void showMemberPicker(
             @NonNull Activity activity,
             @NonNull ViewGroup view,
             MemberPickerListener memberResult,
-            MemberPickerConfig config);
+            MemberPickerConfig config) {}
 
     /**
      * Displays FullPicker UI for DataSharing UI.
@@ -60,11 +63,11 @@ public interface DataSharingUIDelegate {
      * @param memberResult This callback is invoked when members are selected.
      * @param config Used to set properties for the API.
      */
-    public void showFullPicker(
+    default void showFullPicker(
             @NonNull Activity activity,
             @NonNull ViewGroup view,
             MemberPickerListener memberResult,
-            MemberPickerConfig config);
+            MemberPickerConfig config) {}
 
     /**
      * Method to display avatars in a single tile.
@@ -75,12 +78,12 @@ public interface DataSharingUIDelegate {
      * @param success Callback to tell if the avatars are fetched successfully.
      * @param config Used to set properties for the API.
      */
-    public void showAvatars(
+    default void showAvatars(
             @NonNull Context context,
             List<ViewGroup> views,
             List<String> emails,
             Callback<Boolean> success,
-            AvatarConfig config);
+            AvatarConfig config) {}
 
     /**
      * Method to create group member list view.
@@ -91,12 +94,12 @@ public interface DataSharingUIDelegate {
      * @param tokenSecret Used to authenticate the user for whom the group member list is shown.
      * @param config Used to set properties for the API.
      */
-    public void createGroupMemberListView(
+    default void createGroupMemberListView(
             @NonNull Activity activity,
             @NonNull ViewGroup view,
             String groupId,
             String tokenSecret,
-            GroupMemberConfig config);
+            GroupMemberConfig config) {}
 
     /**
      * Handle the intercepted URL to show relevant data sharing group information.
@@ -105,4 +108,48 @@ public interface DataSharingUIDelegate {
      */
     @CalledByNative
     public void handleShareURLIntercepted(GURL url);
+
+    /**
+     * Method to show create flow.
+     *
+     * @param createUiConfig Used to set properties for data sharing create flow.
+     * @return A unique identifier for create flow.
+     */
+    default String showCreateFlow(DataSharingCreateUiConfig createUiConfig) {
+        return null;
+    }
+
+    /**
+     * Method to show join flow.
+     *
+     * @param joinUiConfig Used to set properties for data sharing join flow.
+     * @return A unique identifier for join flow.
+     */
+    default String showJoinFlow(DataSharingJoinUiConfig joinUiConfig) {
+        return null;
+    }
+
+    /**
+     * Method to show manage flow.
+     *
+     * @param manageUiConfig Used to set properties for data sharing manage flow.
+     * @return A unique identifier for manage flow.
+     */
+    default String showManageFlow(DataSharingManageUiConfig manageUiConfig) {
+        return null;
+    }
+
+    /**
+     * Method to display avatars in a single tile.
+     *
+     * @param avatarConfig Used to set properties for the avatars.
+     */
+    default void showAvatarsInTile(AvatarConfig avatarConfig) {}
+
+    /**
+     * Method to destroy UI flow based on `sessionId`.
+     *
+     * @param sessionId Used to identify the flow to be destroyed.
+     */
+    default void destroyFlow(String sessionId) {}
 }
