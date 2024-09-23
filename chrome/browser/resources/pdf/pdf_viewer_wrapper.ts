@@ -15,7 +15,7 @@ export {BrowserApi, ZoomBehavior} from './browser_api.js';
 // <if expr="enable_pdf_ink2">
 export {AnnotationBrush, AnnotationBrushType} from './constants.js';
 // </if>
-export {Attachment, FittingType, Point, Rect, SaveRequestType} from './constants.js';
+export {Attachment, FittingType, FormFieldFocusType, Point, Rect, SaveRequestType} from './constants.js';
 export {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">
 export {PluginControllerEventType} from './controller.js';
