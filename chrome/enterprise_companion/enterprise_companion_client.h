@@ -25,8 +25,6 @@ namespace enterprise_companion {
 // Controls the transmission of usage stats (i.e. crash reports).
 extern const char kEnableUsageStatsSwitch[];
 
-extern const char kInstallIfNeededSwitch[];
-
 // Returns the server name for establishing IPC via NamedMojoIpcServer.
 mojo::NamedPlatformChannel::ServerName GetServerName();
 

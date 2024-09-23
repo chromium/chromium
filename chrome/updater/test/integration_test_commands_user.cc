@@ -464,25 +464,9 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
 
   void DMCleanup() override { updater::test::DMCleanup(updater_scope_); }
 
-  void InstallEnterpriseCompanionApp() override {
-    updater::test::InstallEnterpriseCompanionApp();
-  }
-
-  void InstallBrokenEnterpriseCompanionApp() override {
-    updater::test::InstallBrokenEnterpriseCompanionApp();
-  }
-
-  void UninstallBrokenEnterpriseCompanionApp() override {
-    updater::test::UninstallBrokenEnterpriseCompanionApp();
-  }
-
-  void InstallEnterpriseCompanionAppOverrides(
+  void InstallEnterpriseCompanionApp(
       const base::Value::Dict& external_overrides) override {
-    updater::test::InstallEnterpriseCompanionAppOverrides(external_overrides);
-  }
-
-  void ExpectEnterpriseCompanionAppNotInstalled() override {
-    updater::test::ExpectEnterpriseCompanionAppNotInstalled();
+    updater::test::InstallEnterpriseCompanionApp(external_overrides);
   }
 
   void UninstallEnterpriseCompanionApp() override {

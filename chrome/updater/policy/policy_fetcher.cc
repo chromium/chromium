@@ -10,20 +10,15 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/process/launch.h"
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
-#include "base/time/time.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
@@ -33,7 +28,6 @@
 #include "chrome/updater/device_management/dm_response_validator.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/service.h"
-#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,33 +35,6 @@
 #include "url/gurl.h"
 
 namespace updater {
-
-namespace {
-
-void InstallCompanionAppIfNeeded() {
-  std::optional<base::FilePath> companion_exe =
-      GetBundledEnterpriseCompanionExecutablePath(GetUpdaterScope());
-  if (!companion_exe) {
-    return;
-  }
-  base::CommandLine command_line(*companion_exe);
-  command_line.AppendSwitch(enterprise_companion::kInstallIfNeededSwitch);
-  int exit_code = -1;
-  base::Process process = base::LaunchProcess(command_line, {});
-  if (!process.IsValid()) {
-    VLOG(1) << "Failed to launch " << command_line.GetCommandLineString();
-    return;
-  }
-  if (!process.WaitForExitWithTimeout(base::Minutes(5), &exit_code)) {
-    VLOG(1) << "Timed out waiting for " << command_line.GetCommandLineString();
-    process.Terminate(1, false);
-    return;
-  }
-  VLOG(1) << __func__ << ": " << command_line.GetCommandLineString()
-          << " exited with code " << exit_code;
-}
-
-}  // namespace
 
 using PolicyFetchCompleteCallback =
     base::OnceCallback<void(int, scoped_refptr<PolicyManagerInterface>)>;
@@ -268,7 +235,6 @@ class OutOfProcessPolicyFetcher : public PolicyFetcher {
  private:
   ~OutOfProcessPolicyFetcher() override;
 
-  void OnInstallIfNeededComplete();
   void OnConnected(
       std::unique_ptr<mojo::IsolatedConnection> connection,
       mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote);
@@ -297,22 +263,12 @@ void OutOfProcessPolicyFetcher::FetchPolicies(
   VLOG(1) << __func__;
   CHECK(!fetch_complete_callback_);
   fetch_complete_callback_ = std::move(callback);
-
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
-      base::BindOnce(&InstallCompanionAppIfNeeded),
-      base::BindOnce(&OutOfProcessPolicyFetcher::OnInstallIfNeededComplete,
-                     base::WrapRefCounted(this)));
-}
-
-void OutOfProcessPolicyFetcher::OnInstallIfNeededComplete() {
   enterprise_companion::ConnectAndLaunchServer(
       base::DefaultClock::GetInstance(), base::Seconds(60),
       usage_stats_enabled_,
       base::BindOnce(&OutOfProcessPolicyFetcher::OnConnected,
-                     base::WrapRefCounted(this)));
+                     base::Unretained(this)));
 }
-
 void OutOfProcessPolicyFetcher::OnConnected(
     std::unique_ptr<mojo::IsolatedConnection> connection,
     mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote) {
@@ -330,9 +286,9 @@ void OutOfProcessPolicyFetcher::OnConnected(
   remote_ = std::move(remote);
   remote_->FetchPolicies(mojo::WrapCallbackWithDropHandler(
       base::BindOnce(&OutOfProcessPolicyFetcher::OnPoliciesFetched,
-                     base::WrapRefCounted(this)),
+                     base::Unretained(this)),
       base::BindOnce(&OutOfProcessPolicyFetcher::OnRPCDropped,
-                     base::WrapRefCounted(this))));
+                     base::Unretained(this))));
 }
 
 void OutOfProcessPolicyFetcher::OnPoliciesFetched(

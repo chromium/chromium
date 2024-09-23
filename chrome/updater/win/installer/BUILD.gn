@@ -31,7 +31,6 @@ shared_library("msi_custom_action") {
   deps = [
     ":msi_custom_action_sources",
     ":version",
-    "//chrome/updater:constants_prod",
   ]
 
   configs += [ "//build/config/win:windowed" ]

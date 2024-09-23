@@ -557,24 +557,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
   void DMDeregisterDevice() override { RunCommand("dm_deregister_device"); }
   void DMCleanup() override { RunCommand("dm_cleanup"); }
-  void InstallEnterpriseCompanionApp() override {
-    RunCommand("install_enterprise_companion_app");
-  }
-  void InstallBrokenEnterpriseCompanionApp() override {
-    RunCommand("install_broken_enterprise_companion_app");
-  }
-  void UninstallBrokenEnterpriseCompanionApp() override {
-    RunCommand("uninstall_broken_enterprise_companion_app");
-  }
-  void InstallEnterpriseCompanionAppOverrides(
+  void InstallEnterpriseCompanionApp(
       const base::Value::Dict& external_overrides) override {
     RunCommand(
-        "install_enterprise_companion_app_overrides",
+        "install_enterprise_companion_app",
         {Param("external_overrides",
                StringFromValue(base::Value(external_overrides.Clone())))});
-  }
-  void ExpectEnterpriseCompanionAppNotInstalled() override {
-    RunCommand("expect_enterprise_companion_app_not_installed");
   }
   void UninstallEnterpriseCompanionApp() override {
     RunCommand("uninstall_enterprise_companion_app");

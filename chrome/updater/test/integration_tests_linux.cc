@@ -119,10 +119,6 @@ void Clean(UpdaterScope scope) {
   }
 
   EXPECT_TRUE(UninstallSystemdUnits(scope));
-
-  if (IsSystemInstall(scope)) {
-    ASSERT_NO_FATAL_FAILURE(UninstallEnterpriseCompanionApp());
-  }
 }
 
 // The uninstaller cannot reliably completely remove the installer directory
@@ -151,7 +147,6 @@ void ExpectClean(UpdaterScope scope) {
   ExpectMostlyClean(GetInstallDirectory(scope));
   ExpectMostlyClean(GetCacheBaseDirectory(scope));
   EXPECT_FALSE(SystemdUnitsInstalled(scope));
-  ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
 }
 
 void EnterTestMode(const GURL& update_url,

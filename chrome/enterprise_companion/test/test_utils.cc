@@ -28,7 +28,6 @@
 #include "base/time/time.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
-#include "chrome/enterprise_companion/enterprise_companion_client.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 
 namespace enterprise_companion {

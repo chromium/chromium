@@ -78,8 +78,7 @@ mac_app_bundle("updater_bundle_test") {
     ":keystone_agent_bundle_resource_executable_test",
     ":keystone_agent_bundle_resource_plist",
     ":ksadmin_test_copy",
-    ":updater_bundle_helpers_enterprise_companion_test",
-    ":updater_bundle_helpers_launcher_test",
+    ":updater_bundle_helpers_test",
     ":updater_bundle_keystone_executable",
     ":updater_bundle_keystone_helpers_ksinstall",
     ":updater_bundle_keystone_plist",
@@ -92,10 +91,6 @@ mac_app_bundle("updater_bundle_test") {
     "//chrome/updater:base",
     "//chrome/updater:constants_test",
   ]
-
-  if (include_enterprise_companion_in_installer) {
-    public_deps += [ ":updater_bundle_helpers_enterprise_companion_test" ]
-  }
 }
 
 source_set("privileged_helper_sources") {
@@ -528,78 +523,17 @@ bundle_data("updater_bundle_helpers") {
   public_deps = [ ":launcher" ]
 
   if (include_enterprise_companion_in_installer) {
-    public_deps += [ ":updater_bundle_helpers_enterprise_companion" ]
+    sources += [ "$root_out_dir/$enterprise_companion_product_full_name.app" ]
+    public_deps +=
+        [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle" ]
   }
 }
 
-# Because the launcher needs to be renamed to strip the "_test" suffix, it needs
-# it's own bundle_data target as no single source expansion string can represent
-# a conditional rename. See `gn help source_expansion`.
-bundle_data("updater_bundle_helpers_launcher_test") {
+bundle_data("updater_bundle_helpers_test") {
   sources = [ "$root_out_dir/launcher_test" ]
   outputs = [ "{{bundle_contents_dir}}/Helpers/launcher" ]
 
   public_deps = [ ":launcher_test" ]
-}
-
-if (include_enterprise_companion_in_installer) {
-  bundle_data("updater_bundle_helpers_enterprise_companion_executable") {
-    sources = [ "$root_out_dir/${enterprise_companion_product_full_name}.app/Contents/MacOS/${enterprise_companion_product_full_name}" ]
-    outputs = [ "{{bundle_contents_dir}}/Helpers/${enterprise_companion_product_full_name}.app/Contents/MacOS/{{source_file_part}}" ]
-    public_deps =
-        [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle" ]
-  }
-
-  bundle_data("updater_bundle_helpers_enterprise_companion_plist") {
-    sources = [ "$root_out_dir/${enterprise_companion_product_full_name}.app/Contents/Info.plist" ]
-    outputs = [ "{{bundle_contents_dir}}/Helpers/${enterprise_companion_product_full_name}.app/Contents/{{source_file_part}}" ]
-    public_deps =
-        [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle" ]
-  }
-
-  bundle_data("updater_bundle_helpers_enterprise_companion_pkginfo") {
-    sources = [ "$root_out_dir/${enterprise_companion_product_full_name}.app/Contents/PkgInfo" ]
-    outputs = [ "{{bundle_contents_dir}}/Helpers/${enterprise_companion_product_full_name}.app/Contents/{{source_file_part}}" ]
-    public_deps =
-        [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle" ]
-  }
-
-  group("updater_bundle_helpers_enterprise_companion") {
-    public_deps = [
-      ":updater_bundle_helpers_enterprise_companion_executable",
-      ":updater_bundle_helpers_enterprise_companion_pkginfo",
-      ":updater_bundle_helpers_enterprise_companion_plist",
-    ]
-  }
-
-  bundle_data("updater_bundle_helpers_enterprise_companion_test_executable") {
-    sources = [ "$root_out_dir/${enterprise_companion_product_full_name}_test.app/Contents/MacOS/${enterprise_companion_product_full_name}_test" ]
-    outputs = [ "{{bundle_contents_dir}}/Helpers/${enterprise_companion_product_full_name}_test.app/Contents/MacOS/{{source_file_part}}" ]
-    public_deps =
-        [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test" ]
-  }
-
-  bundle_data("updater_bundle_helpers_enterprise_companion_test_plist") {
-    sources = [ "$root_out_dir/${enterprise_companion_product_full_name}_test.app/Contents/Info.plist" ]
-    outputs = [ "{{bundle_contents_dir}}/Helpers/${enterprise_companion_product_full_name}_test.app/Contents/{{source_file_part}}" ]
-    public_deps =
-        [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test" ]
-  }
-
-  bundle_data("updater_bundle_helpers_enterprise_companion_test_pkginfo") {
-    sources = [ "$root_out_dir/${enterprise_companion_product_full_name}_test.app/Contents/PkgInfo" ]
-    outputs = [ "{{bundle_contents_dir}}/Helpers/${enterprise_companion_product_full_name}_test.app/Contents/{{source_file_part}}" ]
-    public_deps =
-        [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test" ]
-  }
-
-  group("updater_bundle_helpers_enterprise_companion_test") {
-    public_deps = [
-      ":updater_bundle_helpers_enterprise_companion_test_executable",
-      ":updater_bundle_helpers_enterprise_companion_test_pkginfo",
-      ":updater_bundle_helpers_enterprise_companion_test_plist",
-    ]
-  }
 }
 
 if (!is_component_build && enable_dsyms) {
@@ -698,17 +632,4 @@ artifact_zip("updater_zip") {
     "//chrome/updater/test/qualification_app",
     "//chrome/updater/tools:${updater_product_full_name}Util",
   ]
-
-  if (include_enterprise_companion_in_installer) {
-    _app_root = "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/${enterprise_companion_product_full_name}.app"
-    _test_app_root = "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/${enterprise_companion_product_full_name}_test.app"
-    inputs += [
-      "$_app_root/Contents/Info.plist",
-      "$_app_root/Contents/MacOS/${enterprise_companion_product_full_name}",
-      "$_app_root/Contents/PkgInfo",
-      "$_test_app_root/Contents/Info.plist",
-      "$_test_app_root/Contents/MacOS/${enterprise_companion_product_full_name}_test",
-      "$_test_app_root/Contents/PkgInfo",
-    ]
-  }
 }

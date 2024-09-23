@@ -165,7 +165,6 @@ source_set("test_utils") {
   deps = [
     ":base",
     ":branding_header",
-    ":client",
     ":installer_paths",
     ":version_header",
     "//base",
@@ -354,7 +353,6 @@ static_library("constants_test") {
   ]
   visibility = [
     ":*",
-    "//chrome/enterprise_companion/mac:*",
     "//chrome/updater:*",
   ]
   defines = [ "ENTERPRISE_COMPANION_TEST_ONLY" ]
@@ -380,7 +378,7 @@ executable("enterprise_companion_test") {
   deps = [
     ":base",
     ":constants_test",
-    "//chrome/updater:constants_test",
+    "//chrome/updater:constants_prod",
   ]
 
   if (is_win) {
