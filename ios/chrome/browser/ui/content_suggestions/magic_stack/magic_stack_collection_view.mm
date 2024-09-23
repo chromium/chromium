@@ -354,9 +354,6 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   CGFloat moduleWidth =
       self.view.frame.size.width -
       ModuleNarrowerWidthToAllowPeekingForTraitCollection(self.traitCollection);
-  NSUInteger moduleCount = [[self.diffableDataSource.snapshot
-      itemIdentifiersInSectionWithIdentifier:kMagicStackSectionIdentifier]
-      count];
 
   // Find closest page to the current scroll offset.
   CGFloat closestPage = roundf(offset / moduleWidth);
@@ -371,13 +368,13 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
     UMA_HISTOGRAM_EXACT_LINEAR(kMagicStackScrollToIndexHistogram, closestPage,
                                kMaxModuleHistogramIndex);
   }
-  closestPage = std::clamp<CGFloat>(closestPage, 0, moduleCount);
+  NSArray<MagicStackModule*>* items =
+      [self.diffableDataSource.snapshot itemIdentifiers];
+  closestPage = std::clamp<CGFloat>(closestPage, 0, [items count] - 1);
   _magicStackPage = closestPage;
   if (base::FeatureList::IsEnabled(
           segmentation_platform::features::
               kSegmentationPlatformEphemeralCardRanker)) {
-    NSArray<MagicStackModule*>* items =
-        [self.diffableDataSource.snapshot itemIdentifiers];
     if ([items count] > 0 && !_hasSeenEphemeralCard &&
         [self isCardEphemeral:items[_magicStackPage]]) {
       [self.audience logEphemeralCardVisibility:items[_magicStackPage].type];
