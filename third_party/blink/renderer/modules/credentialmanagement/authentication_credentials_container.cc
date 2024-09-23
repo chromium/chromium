@@ -1289,10 +1289,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
       options->federated()->providers().size() > 0 && !options->hasIdentity()) {
     UseCounter::Count(
         context, WebFeature::kCredentialManagerGetLegacyFederatedCredential);
-  }
-  if (options->hasPassword() && options->password()) {
-    UseCounter::Count(context,
-                      WebFeature::kCredentialManagerGetPasswordCredential);
     requested_credential_types |=
         static_cast<int>(mojom::blink::CredentialTypeFlags::kFederated);
   }
@@ -1303,6 +1299,8 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   }
 
   if (options->hasPassword() && options->password()) {
+    UseCounter::Count(context,
+                      WebFeature::kCredentialManagerGetPasswordCredential);
     requested_credential_types |=
         static_cast<int>(mojom::blink::CredentialTypeFlags::kPassword);
   }
@@ -1311,7 +1309,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   if (RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled() &&
       options->hasPublicKey() && options->hasPassword() &&
       options->password() && options->mediation() == "conditional") {
-    // TODO(358119268): For prototyping we allow this for all
+    // TODO(crbug.com/358119268): For prototyping we allow this for all
     // conditionally-mediated requests that contain both credential types. This
     // will change.
     ambient_request_enabled = true;
