@@ -285,8 +285,6 @@ source_set("extensions") {
     "api/settings_private/settings_private_event_router.h",
     "api/settings_private/settings_private_event_router_factory.cc",
     "api/settings_private/settings_private_event_router_factory.h",
-    "api/side_panel/side_panel_api.cc",
-    "api/side_panel/side_panel_api.h",
     "api/side_panel/side_panel_service.cc",
     "api/side_panel/side_panel_service.h",
     "api/storage/managed_value_store_cache.cc",
