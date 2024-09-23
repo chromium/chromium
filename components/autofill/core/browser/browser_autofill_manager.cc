@@ -3123,45 +3123,63 @@ bool BrowserAutofillManager::EvaluateAblationStudy(
       context.filling_product == FillingProduct::kCreditCard
           ? FormTypeForAblationStudy::kPayment
           : FormTypeForAblationStudy::kAddress;
-  // If ablation_group is AblationGroup::kDefault or AblationGroup::kControl,
-  // no ablation happens in the following.
-  context.ablation_group = client().GetAblationStudy().GetAblationGroup(
+
+  // The `ablation_group` indicates if the form filling is under ablation,
+  // meaning that autofill popups are suppressed. If ablation_group is
+  // AblationGroup::kDefault or AblationGroup::kControl, no ablation happens
+  // in the following.
+  AblationGroup ablation_group = client().GetAblationStudy().GetAblationGroup(
       client().GetLastCommittedPrimaryMainFrameURL(), form_type,
       client().GetAutofillOptimizationGuide());
-  // Note that we don't set the ablation group if there are no suggestions.
-  // In that case we stick to kDefault.
-  context.conditional_ablation_group =
-      !address_and_credit_card_suggestions.empty() ? context.ablation_group
-                                                   : AblationGroup::kDefault;
-  context.day_in_ablation_window = GetDayInAblationWindow(AutofillClock::Now());
 
-  // In both cases (credit card and address forms), we inform the other event
-  // logger also about the ablation.
-  // This prevents for example that for an encountered address form we log a
-  // sample Autofill.Funnel.ParsedAsType.CreditCard = 0 (which would be
-  // recorded by the metrics_->credit_card_form_event_logger). For the
-  // complementary event logger, the conditional ablation status is logged as
-  // kDefault to not imply that data would be filled without ablation.
+  // The conditional_ablation_group indicates whether the form filling is
+  // under ablation, under the condition that the user has data to fill on
+  // file. All users that don't have data to fill are in the
+  // AbationGroup::kDefault. Note that it is possible (due to implementation
+  // details) that this is incorrectly set to kDefault: If the user has typed
+  // some characters into a text field, it may look like no suggestions are
+  // available, but in practice the suggestions are just filtered out
+  // (Autofill only suggests matches that start with the typed prefix). Any
+  // consumers of the conditional_ablation_group attribute should monitor it
+  // over time. Any transitions of conditional_ablation_group from {kAblation,
+  // kControl} to kDefault should just be ignored and the previously reported
+  // value should be used. As the ablation experience is stable within period
+  // of time, such a transition typically indicates that the user has typeed a
+  // prefix which led to the filtering of all autofillable data. In short:
+  // once either kAblation or kControl were reported, consumers should stick
+  // to that. Note that we don't set the ablation group if there are no
+  // suggestions. In that case we stick to kDefault.
+  AblationGroup conditional_ablation_group =
+      !address_and_credit_card_suggestions.empty() ? ablation_group
+                                                   : AblationGroup::kDefault;
+
+  // For both form types (credit card and address forms), we inform the other
+  // event logger also about the ablation. This prevents for example that for
+  // an encountered address form we log a sample
+  // Autofill.Funnel.ParsedAsType.CreditCard = 0 (which would be recorded by
+  // the metrics_->credit_card_form_event_logger). For the complementary event
+  // logger, the conditional ablation status is logged as kDefault to not
+  // imply that data would be filled without ablation.
   if (context.filling_product == FillingProduct::kCreditCard) {
     metrics_->credit_card_form_event_logger.SetAblationStatus(
-        context.ablation_group, context.conditional_ablation_group);
+        ablation_group, conditional_ablation_group);
     metrics_->address_form_event_logger.SetAblationStatus(
-        context.ablation_group, AblationGroup::kDefault);
+        ablation_group, AblationGroup::kDefault);
   } else if (context.filling_product == FillingProduct::kAddress) {
     metrics_->address_form_event_logger.SetAblationStatus(
-        context.ablation_group, context.conditional_ablation_group);
+        ablation_group, conditional_ablation_group);
     metrics_->credit_card_form_event_logger.SetAblationStatus(
-        context.ablation_group, AblationGroup::kDefault);
+        ablation_group, AblationGroup::kDefault);
   }
 
-  if (autofill_field && context.ablation_group != AblationGroup::kDefault) {
-    autofill_field->AppendLogEventIfNotRepeated(AblationFieldLogEvent{
-        context.ablation_group, context.conditional_ablation_group,
-        context.day_in_ablation_window});
+  if (autofill_field && ablation_group != AblationGroup::kDefault) {
+    autofill_field->AppendLogEventIfNotRepeated(
+        AblationFieldLogEvent{ablation_group, conditional_ablation_group,
+                              GetDayInAblationWindow(AutofillClock::Now())});
   }
 
   if (!address_and_credit_card_suggestions.empty() &&
-      context.ablation_group == AblationGroup::kAblation &&
+      ablation_group == AblationGroup::kAblation &&
       !features::kAutofillAblationStudyIsDryRun.Get()) {
     // Logic for disabling/ablating autofill.
     context.suppress_reason = SuppressReason::kAblation;
