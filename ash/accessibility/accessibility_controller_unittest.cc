@@ -47,6 +47,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/message_center/message_center.h"
+#include "ui/message_center/public/cpp/notification.h"
 
 using message_center::MessageCenter;
 
@@ -137,6 +138,18 @@ class AccessibilityControllerTest : public AshTestBase {
         "Accessibility." + feature_name + ".SessionDuration", count);
   }
 
+  void ShowNotification(const message_center::RichNotificationData& data) {
+    const std::string notification_id("id");
+    const std::string notification_title("title");
+    message_center::MessageCenter::Get()->AddNotification(
+        std::make_unique<message_center::Notification>(
+            message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+            base::UTF8ToUTF16(notification_title), u"test message",
+            ui::ImageModel(), std::u16string() /* display_source */, GURL(),
+            message_center::NotifierId(), data,
+            new message_center::NotificationDelegate()));
+  }
+
   void ExpectFlashNotificationShown() {
     gfx::AnimationTestApi animation_api(
         AccessibilityController::Get()
@@ -151,6 +164,15 @@ class AccessibilityControllerTest : public AshTestBase {
       const cc::FilterOperation::Matrix* matrix =
           root_window->layer()->GetLayerCustomColorMatrix();
       EXPECT_TRUE(matrix);
+    }
+  }
+
+  void ExpectFlashNotificationNotShown() {
+    // A custom color matrix has not been shown.
+    for (aura::Window* root_window : Shell::GetAllRootWindows()) {
+      const cc::FilterOperation::Matrix* matrix =
+          root_window->layer()->GetLayerCustomColorMatrix();
+      EXPECT_FALSE(matrix);
     }
   }
 
@@ -1750,9 +1772,7 @@ TEST_F(AccessibilityControllerTest, FlashNotificationsWhenEnabled) {
       prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
 
   // Show a normal notification. Flashing should occur.
-  // Use dictation notification as an easy way to show any notification.
-  accessibility_controller->ShowNotificationForDictation(
-      DictationNotificationType::kAllDlcsDownloaded, u"en-us");
+  ShowNotification(message_center::RichNotificationData());
 
   ExpectFlashNotificationShown();
 
@@ -1784,15 +1804,39 @@ TEST_F(AccessibilityControllerTest, DoesNotFlashNotificationsWhenNotEnabled) {
   EXPECT_FALSE(
       prefs->GetBoolean(prefs::kAccessibilityFlashNotificationsEnabled));
 
+  ShowNotification(message_center::RichNotificationData());
+
+  ExpectFlashNotificationNotShown();
+}
+
+TEST_F(AccessibilityControllerTest, DoesNotFlashSilentNotifications) {
   auto* accessibility_controller = Shell::Get()->accessibility_controller();
-  accessibility_controller->ShowNotificationForDictation(
-      DictationNotificationType::kAllDlcsDownloaded, u"en-us");
-  // A custom color matrix has been shown.
-  for (aura::Window* root_window : Shell::GetAllRootWindows()) {
-    const cc::FilterOperation::Matrix* matrix =
-        root_window->layer()->GetLayerCustomColorMatrix();
-    EXPECT_FALSE(matrix);
-  }
+  accessibility_controller->flash_notifications().SetEnabled(true);
+
+  message_center::RichNotificationData data =
+      message_center::RichNotificationData();
+  data.silent = true;
+  ShowNotification(data);
+  ExpectFlashNotificationNotShown();
+
+  // Send a second notification that is similar in order to create a group.
+  // Ensure that the screen is still not flashed.
+  ShowNotification(data);
+  ExpectFlashNotificationNotShown();
+}
+
+TEST_F(AccessibilityControllerTest, DoesNotFlashWhenInQuietMode) {
+  auto* accessibility_controller = Shell::Get()->accessibility_controller();
+  accessibility_controller->flash_notifications().SetEnabled(true);
+
+  message_center::MessageCenter::Get()->SetQuietMode(true);
+  ShowNotification(message_center::RichNotificationData());
+  ExpectFlashNotificationNotShown();
+
+  // Turn off quiet mode and notifications will be shown.
+  message_center::MessageCenter::Get()->SetQuietMode(false);
+  ShowNotification(message_center::RichNotificationData());
+  ExpectFlashNotificationShown();
 }
 
 TEST_F(AccessibilityControllerTest, EnableOrToggleDictation) {

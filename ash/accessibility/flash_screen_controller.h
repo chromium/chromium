@@ -48,6 +48,7 @@ class FlashScreenController : public message_center::MessageCenterObserver,
   gfx::ThrobAnimation* GetAnimationForTesting() { return &throb_animation_; }
 
  private:
+  void MaybeFlashOn(const std::string& notification_id);
   void FlashOn();
   void FlashOff();
 

@@ -30,12 +30,12 @@ FlashScreenController::~FlashScreenController() = default;
 void FlashScreenController::OnNotificationDisplayed(
     const std::string& notification_id,
     const message_center::DisplaySource display_source) {
-  FlashOn();
+  MaybeFlashOn(notification_id);
 }
 
 void FlashScreenController::OnNotificationAdded(
     const std::string& notification_id) {
-  FlashOn();
+  MaybeFlashOn(notification_id);
 }
 
 void FlashScreenController::AnimationEnded(const gfx::Animation* animation) {
@@ -78,6 +78,26 @@ void FlashScreenController::AnimationProgressed(
 
 void FlashScreenController::AnimationCanceled(const gfx::Animation* animation) {
   FlashOff();
+}
+
+void FlashScreenController::MaybeFlashOn(const std::string& notification_id) {
+  auto* message_center = message_center::MessageCenter::Get();
+  if (!message_center || message_center->IsQuietMode()) {
+    // Do not flash when in quiet mode.
+    return;
+  }
+  message_center::Notification* notification =
+      message_center->FindNotificationById(notification_id);
+  if (!notification || notification->silent()) {
+    // Do not flash for silent notifications.
+    return;
+  }
+  if (notification->group_parent()) {
+    // Do not flash for new groupings of notifications (only for individual
+    // notifications).
+    return;
+  }
+  FlashOn();
 }
 
 void FlashScreenController::FlashOn() {
