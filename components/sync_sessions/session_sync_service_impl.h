@@ -28,16 +28,11 @@ class SessionSyncServiceImpl : public SessionSyncService {
 
   ~SessionSyncServiceImpl() override;
 
+  // SessionSyncService overrides.
   syncer::GlobalIdMapper* GetGlobalIdMapper() const override;
-
-  // Return the active OpenTabsUIDelegate. If open/proxy tabs is not enabled or
-  // not currently syncing, returns nullptr.
   OpenTabsUIDelegate* GetOpenTabsUIDelegate() override;
-
-  // Allows client code to be notified when foreign sessions change.
   [[nodiscard]] base::CallbackListSubscription
   SubscribeToForeignSessionsChanged(const base::RepeatingClosure& cb) override;
-
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override;
 

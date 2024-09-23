@@ -272,7 +272,7 @@ class SingleClientSessionsSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
-                       RequireProxyTabsForUiDelegate) {
+                       RequireUserSelectableTypeTabsForUiDelegate) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(CheckInitialState(0));
 

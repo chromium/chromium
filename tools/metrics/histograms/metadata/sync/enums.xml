@@ -777,7 +777,7 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="(Obsolete) Favicon Images. Removed on 01/2021 (M90)."/>
   <int value="24"
       label="(Obsolete) Favicon Tracking. Removed on 01/2021 (M90)."/>
-  <int value="25" label="Proxy Tabs"/>
+  <int value="25" label="(Obsolete) Proxy Tabs. Removed 10/2023 (M120)"/>
   <int value="26" label="Managed User Settings"/>
   <int value="27" label="(Obsolete) Managed Users"/>
   <int value="28" label="(Obsolete) Articles"/>

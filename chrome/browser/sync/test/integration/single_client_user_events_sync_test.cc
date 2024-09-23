@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoSessions) {
 
   event_service->RecordUserEvent(specifics);
 
-  // PROXY_TABS shouldn't affect us in any way.
+  // UserSelectableType::kTabs shouldn't affect UserEvents in any way.
   EXPECT_TRUE(ExpectUserEvents({specifics}));
 }
 
