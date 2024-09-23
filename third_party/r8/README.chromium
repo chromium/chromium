@@ -126,3 +126,7 @@ How to check the size impact of recent R8 rolls:
 tools/binary_size/print_trybot_sizes.py --grep "Roll R8" -n 20
 # To internal APK:
 tools/binary_size/print_trybot_sizes.py --grep "Roll R8" -n 20 --internal
+
+R8's Chrome Benchmark
+R8 team periodically snapshots chrome's java for benchmarking, which you can find here:
+https://storage.googleapis.com/r8-perf-results/r8.html#ChromeApp
