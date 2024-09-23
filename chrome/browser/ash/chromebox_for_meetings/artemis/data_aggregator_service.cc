@@ -32,6 +32,14 @@ constexpr size_t kMaxPayloadQueueSize = 3;  // # payloads
 constexpr base::TimeDelta kServiceAdaptorRetryDelay = base::Seconds(1);
 constexpr size_t kServiceAdaptorRetryMaxTries = 5;
 
+// Log data labels (processed on the Ratchet side)
+constexpr char kRatchetChromeVersionLabel[] = "chrome";
+constexpr char kRatchetDeviceIdLabel[] = "device_id";
+constexpr char kRatchetEmailLabel[] = "name";
+constexpr char kRatchetHwidLabel[] = "hwid";
+constexpr char kRatchetOsChannelLabel[] = "os_release_track";
+constexpr char kRatchetOsVersionLabel[] = "os";
+
 constexpr net::BackoffEntry::Policy kEnqueueRetryBackoffPolicy = {
     0,              // Number of initial errors to ignore.
     1000,           // Initial delay in ms.
@@ -359,7 +367,7 @@ void DataAggregatorService::OnRequestBindDeviceInfoService(
           << " for interface: " << interface_name;
 
   if (success) {
-    RequestDeviceId();
+    RequestDeviceInfo();
     return;
   }
 
@@ -378,23 +386,75 @@ void DataAggregatorService::OnRequestBindDeviceInfoService(
       kServiceAdaptorRetryDelay);
 }
 
-void DataAggregatorService::RequestDeviceId() {
+void DataAggregatorService::RequestDeviceInfo() {
   device_info_remote_->GetPolicyInfo(base::BindOnce(
-      &DataAggregatorService::StoreDeviceId, weak_ptr_factory_.GetWeakPtr()));
+      &DataAggregatorService::StorePolicyInfo, weak_ptr_factory_.GetWeakPtr()));
+  // NB: we make 3 async calls here, but only the PolicyInfo data is
+  // required for transporting payloads. The two calls below will fill
+  // up a shared labels field that we'll use later, but we can start
+  // collecting data without that info. If any payloads are sent to the
+  // ERP endpoint without the labels populated, they will be populated
+  // manually on the server side. This is merely a convenience for Fleet
+  // to avoid performing this computation for every log.
+  device_info_remote_->GetSysInfo(base::BindOnce(
+      &DataAggregatorService::StoreSysInfo, weak_ptr_factory_.GetWeakPtr()));
+  device_info_remote_->GetMachineStatisticsInfo(
+      base::BindOnce(&DataAggregatorService::StoreMachineStatisticsInfo,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DataAggregatorService::StoreDeviceId(
+void DataAggregatorService::StorePolicyInfo(
     chromeos::cfm::mojom::PolicyInfoPtr policy_info) {
   // Only start collecting data if we have a device_id. Without a proper
   // ID, we can't upload logs to cloud logging, so the data is useless.
-  if (policy_info->device_id.has_value()) {
-    active_transport_payload_.set_permanent_id(policy_info->device_id.value());
-    VLOG(4) << "Assigning device ID " << policy_info->device_id.value();
-    InitializeLocalSources();
-    StartFetchTimer();
-  } else {
+  if (!policy_info->device_id.has_value()) {
     LOG(ERROR)
         << "Unable to determine device ID! Cloud logging will be disabled.";
+    return;
+  }
+
+  // Same with the robot email.
+  if (!policy_info->service_account_email_address.has_value()) {
+    LOG(ERROR)
+        << "Unable to determine robot email! Cloud logging will be disabled.";
+    return;
+  }
+
+  active_transport_payload_.set_permanent_id(policy_info->device_id.value());
+  active_transport_payload_.set_robot_email(
+      policy_info->service_account_email_address.value());
+  shared_labels_[kRatchetDeviceIdLabel] = policy_info->device_id.value();
+  shared_labels_[kRatchetEmailLabel] =
+      policy_info->service_account_email_address.value();
+
+  VLOG(1) << "Assigning device ID " << policy_info->device_id.value()
+          << " and email "
+          << policy_info->service_account_email_address.value();
+
+  InitializeLocalSources();
+  StartFetchTimer();
+}
+
+void DataAggregatorService::StoreSysInfo(
+    chromeos::cfm::mojom::SysInfoPtr sys_info) {
+  if (sys_info->release_track.has_value()) {
+    shared_labels_[kRatchetOsChannelLabel] = sys_info->release_track.value();
+  }
+
+  if (sys_info->release_version.has_value()) {
+    shared_labels_[kRatchetOsVersionLabel] = sys_info->release_version.value();
+  }
+
+  if (sys_info->browser_version.has_value()) {
+    shared_labels_[kRatchetChromeVersionLabel] =
+        sys_info->browser_version.value();
+  }
+}
+
+void DataAggregatorService::StoreMachineStatisticsInfo(
+    chromeos::cfm::mojom::MachineStatisticsInfoPtr stat_info) {
+  if (stat_info->hwid.has_value()) {
+    shared_labels_[kRatchetHwidLabel] = stat_info->hwid.value();
   }
 }
 
@@ -469,6 +529,9 @@ void DataAggregatorService::AppendEntriesToActivePayload(
       log_set->mutable_entries();
 
   log_set->set_log_source(source_name);
+
+  auto* labels = log_set->mutable_labels();
+  labels->insert(shared_labels_.begin(), shared_labels_.end());
 
   // Deserialize the entries back into protos and append them to the payload.
   for (const auto& entry_str : serialized_entries) {
