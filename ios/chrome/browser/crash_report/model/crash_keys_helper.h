@@ -41,19 +41,19 @@ void SetCurrentFreeMemoryInKB(int value);
 // will be incremented twice.
 void SetCurrentTabIsPDF(bool value);
 
-// Sets a key in browser_state dictionary to store the device orientation.
+// Sets a key in profile dictionary to store the device orientation.
 // Each values is 1 digit: first is the UI orientation from the Foundation
 // UIInterfaceOrientation enum (values decimal from 1 to 4) and the second is
 // the device orientation with values from the Foundation UIDeviceOrientation
 // enum (values decimal from 0 to 7).
 void SetCurrentOrientation(int statusBarOrientation, int deviceOrientation);
 
-// Sets a key in browser_state dictionary to store the device horizontal size
+// Sets a key in profile dictionary to store the device horizontal size
 // class. The values are from the UIKit UIUserInterfaceSizeClass enum (decimal
 // values from 0 to 2).
 void SetCurrentHorizontalSizeClass(int horizontalSizeClass);
 
-// Sets a key in browser_state dictionary to store the device user interface
+// Sets a key in profile dictionary to store the device user interface
 // style. The values are from the UIKit UIUserInterfaceStyle enum (decimal
 // values from 0 to 2).
 void SetCurrentUserInterfaceStyle(int userInterfaceStyle);
@@ -64,13 +64,13 @@ void SetConnectedScenesCount(int connectedScenes);
 // Sets the number of foreground scenes. Only reported if not 1.
 void SetForegroundScenesCount(int connectedScenes);
 
-// Sets a key in browser_state dictionary to store the count of regular tabs.
+// Sets a key in profile dictionary to store the count of regular tabs.
 void SetRegularTabCount(int tabCount);
 
-// Sets a key in browser_state dictionary to store the count of inactive tabs.
+// Sets a key in profile dictionary to store the count of inactive tabs.
 void SetInactiveTabCount(int tabCount);
 
-// Sets a key in browser_state dictionary to store the count of incognito tabs.
+// Sets a key in profile dictionary to store the count of incognito tabs.
 void SetIncognitoTabCount(int tabCount);
 
 // Sets a key indicating that destroying and rebuilding the incognito browser

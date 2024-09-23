@@ -50,11 +50,11 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder test_profile_builder;
+    profile_ = std::move(test_profile_builder).Build();
 
-    first_web_state_.SetBrowserState(chrome_browser_state_.get());
-    second_web_state_.SetBrowserState(chrome_browser_state_.get());
+    first_web_state_.SetBrowserState(profile_.get());
+    second_web_state_.SetBrowserState(profile_.get());
 
     // Navigation manager is needed for InfobarManager.
     first_web_state_.SetNavigationManager(
@@ -76,7 +76,7 @@ class BreadcrumbManagerTabHelperTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState first_web_state_;
   web::FakeWebState second_web_state_;
   UIScrollView* scroll_view_ = nil;

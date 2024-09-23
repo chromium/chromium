@@ -51,9 +51,9 @@ const base::circular_deque<std::string>& GetEvents() {
 class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
  protected:
   BreadcrumbManagerBrowserAgentTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    browser_state_ = std::move(test_cbs_builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    TestProfileIOS::Builder test_profile_builder;
+    profile_ = std::move(test_profile_builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     OverlayPresenter::FromBrowser(browser_.get(),
                                   OverlayModality::kWebContentArea)
@@ -64,13 +64,13 @@ class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
 
   web::WebTaskEnvironment task_env_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   FakeOverlayPresentationContext presentation_context_;
 };
 
 // Tests that an event logged by the BrowserAgent is returned with events for
-// the associated `browser_state_`.
+// the associated `profile_`.
 TEST_F(BreadcrumbManagerBrowserAgentTest, LogEvent) {
   ASSERT_EQ(0u, GetEvents().size());
 
@@ -83,7 +83,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, LogEvent) {
 
 // Tests that events logged through BrowserAgents associated with different
 // Browser instances are returned with events for the associated
-// `browser_state_` and are uniquely identifiable.
+// `profile_` and are uniquely identifiable.
 TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
   ASSERT_EQ(0u, GetEvents().size());
 
@@ -94,7 +94,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
 
   // Create and setup second Browser.
   std::unique_ptr<Browser> browser2 =
-      std::make_unique<TestBrowser>(browser_state_.get());
+      std::make_unique<TestBrowser>(profile_.get());
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser2.get());
 
   // Insert WebState into `browser2`.

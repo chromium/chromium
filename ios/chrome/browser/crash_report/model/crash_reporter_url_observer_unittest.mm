@@ -90,15 +90,15 @@ NSString* NumberToKey(NSNumber* number, bool pending) {
 class CrashReporterURLObserverTest : public PlatformTest {
  public:
   CrashReporterURLObserverTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_ = std::move(test_profile_builder).Build();
     params_ = [[DictionaryParameterSetter alloc] init];
     observer_ = std::make_unique<CrashReporterURLObserver>(params_);
   }
 
   FakeWebState* CreateWebState(WebStateList* web_state_list) {
     auto test_web_state = std::make_unique<FakeWebState>();
-    test_web_state->SetBrowserState(test_chrome_browser_state_.get());
+    test_web_state->SetBrowserState(test_profile_.get());
     test_web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     FakeWebState* test_web_state_ptr = test_web_state.get();
@@ -108,7 +108,7 @@ class CrashReporterURLObserverTest : public PlatformTest {
 
   std::unique_ptr<FakeWebState> CreatePreloadWebState() {
     auto test_web_state = std::make_unique<FakeWebState>();
-    test_web_state->SetBrowserState(test_chrome_browser_state_.get());
+    test_web_state->SetBrowserState(test_profile_.get());
     test_web_state->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     observer_->ObservePreloadWebState(test_web_state.get());
@@ -117,7 +117,7 @@ class CrashReporterURLObserverTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> test_chrome_browser_state_;
+  std::unique_ptr<ProfileIOS> test_profile_;
   FakeWebStateListDelegate web_state_list_delegate_;
   DictionaryParameterSetter* params_;
   std::unique_ptr<CrashReporterURLObserver> observer_;
