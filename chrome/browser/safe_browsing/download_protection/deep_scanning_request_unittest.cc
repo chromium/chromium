@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -241,7 +242,7 @@ class DeepScanningRequestTest : public testing::Test {
           temp_dir_.GetPath().AppendASCII(base::StrCat({file_name, ".tmp"}));
       base::File file(current_path,
                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-      UNSAFE_TODO(file.WriteAtCurrentPos(file_name, 7));
+      file.WriteAtCurrentPos(base::as_byte_span(std::string_view(file_name)));
       secondary_files_.push_back(current_path);
       secondary_files_targets_.push_back(final_path);
     }
@@ -254,8 +255,7 @@ class DeepScanningRequestTest : public testing::Test {
 
     base::File download(download_path_,
                         base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    UNSAFE_TODO(download.WriteAtCurrentPos(download_contents.c_str(),
-                                           download_contents.size()));
+    download.WriteAtCurrentPos(base::as_byte_span(download_contents));
     download.Close();
 
     EXPECT_CALL(item_, GetFullPath()).WillRepeatedly(ReturnRef(download_path_));

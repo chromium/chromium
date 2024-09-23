@@ -8,6 +8,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/json/json_writer.h"
@@ -111,6 +112,6 @@ IN_PROC_BROWSER_TEST_F(IPCInterfacesDumper, DumperTest) {
   base::File file(std::move(filepath),
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   std::optional<std::string> json_string = base::WriteJson(json);
-  CHECK(json_string);
-  file.WriteAtCurrentPos(json_string->data(), json_string->size());
+  CHECK(json_string.has_value());
+  file.WriteAtCurrentPos(base::as_byte_span(json_string.value()));
 }

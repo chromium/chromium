@@ -383,7 +383,8 @@ class MetricsServiceBrowserFilesTest : public InProcessBrowserTest {
     base::File upload_file(
         upload_dir().AppendASCII("foo.bar"),
         base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    CHECK_EQ(6, upload_file.WriteAtCurrentPos("foobar", 6));
+    CHECK(upload_file.WriteAtCurrentPosAndCheck(
+        base::byte_span_from_cstring("foobar")));
 
     return true;
   }

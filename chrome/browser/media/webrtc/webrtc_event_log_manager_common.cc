@@ -12,6 +12,7 @@
 #include <limits>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -347,17 +348,14 @@ bool BaseLogFileWriter::WriteInternal(const std::string& input, bool metadata) {
   // numeric_limits<int>::max() bytes at a time.
   DCHECK_LE(input.length(),
             static_cast<size_t>(std::numeric_limits<int>::max()));
-  const int input_len = static_cast<int>(input.length());
 
-  int written = file_.WriteAtCurrentPos(input.c_str(), input_len);
-  if (written != input_len) {
+  if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(input))) {
     LOG(WARNING) << "WebRTC event log couldn't be written to the "
                     "locally stored file in its entirety.";
     return false;
   }
 
-  budget_.Consume(static_cast<size_t>(written));
-
+  budget_.Consume(input.length());
   return true;
 }
 

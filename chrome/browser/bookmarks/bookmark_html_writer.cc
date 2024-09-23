@@ -18,6 +18,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -268,11 +269,10 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   // Writes raw text out returning true on success. This does not escape
   // the text in anyway.
   bool Write(const std::string& text) {
-    if (!text.length())
+    if (!text.length()) {
       return true;
-    size_t wrote = file_->WriteAtCurrentPos(text.c_str(), text.length());
-    bool result = (wrote == text.length());
-    if (!result) {
+    }
+    if (!file_->WriteAtCurrentPosAndCheck(base::as_byte_span(text))) {
       PLOG(ERROR) << "Could not write text to " << path_;
       return false;
     }

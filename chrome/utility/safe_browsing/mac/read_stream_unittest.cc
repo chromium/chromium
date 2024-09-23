@@ -94,7 +94,8 @@ std::unique_ptr<ReadStream> ReadStreamTest<FileReadStreamTest>::CreateStream(
 
   for (size_t i = 0; i < data_size; ++i) {
     char value = i % 255;
-    EXPECT_EQ(1, UNSAFE_TODO(test_helper_.file.WriteAtCurrentPos(&value, 1)));
+    EXPECT_TRUE(test_helper_.file.WriteAtCurrentPosAndCheck(
+        base::byte_span_from_ref(value)));
   }
 
   test_helper_.file.Close();

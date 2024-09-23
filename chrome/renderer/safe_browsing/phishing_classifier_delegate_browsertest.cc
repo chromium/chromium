@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -345,8 +346,8 @@ TEST_F(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
   base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
                                  base::File::FLAG_READ |
                                  base::File::FLAG_WRITE);
-  std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
+
+  file.WriteAtCurrentPos(base::byte_span_from_cstring("visual model file"));
 
   std::string model_str = GetFlatBufferString(0);
   base::MappedReadOnlyRegion mapped_region =

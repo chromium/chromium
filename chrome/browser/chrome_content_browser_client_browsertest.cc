@@ -1305,7 +1305,7 @@ class IsClipboardPasteAllowedTest : public InProcessBrowserTest {
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath path = temp_dir_.GetPath().Append(filename);
     base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    file.WriteAtCurrentPos(content.data(), content.size());
+    file.WriteAtCurrentPos(base::as_byte_span(content));
     return path;
   }
 

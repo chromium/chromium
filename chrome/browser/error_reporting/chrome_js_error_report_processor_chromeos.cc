@@ -13,6 +13,7 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -156,9 +157,7 @@ void ChromeJsErrorReportProcessor::SendReportViaCrashReporter(
 
   std::string string_to_write =
       ParamsToCrashReporterString(params, stack_trace);
-  if (output.WriteAtCurrentPos(string_to_write.data(),
-                               string_to_write.length()) !=
-      static_cast<int>(string_to_write.length())) {
+  if (!output.WriteAtCurrentPosAndCheck(base::as_byte_span(string_to_write))) {
     PLOG(ERROR) << "Failed to write to crash_reporter pipe";
     return;
   }

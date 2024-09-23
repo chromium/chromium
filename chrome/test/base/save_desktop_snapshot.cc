@@ -146,10 +146,7 @@ base::FilePath SaveDesktopSnapshot(const base::FilePath& output_dir) {
   }
 
   // Write it to disk.
-  const int to_write = base::checked_cast<int>(encoded.size());
-  int written =
-      file.WriteAtCurrentPos(reinterpret_cast<char*>(encoded.data()), to_write);
-  if (written != to_write) {
+  if (!file.WriteAtCurrentPosAndCheck(encoded)) {
     LOG(ERROR) << "Failed to write entire snapshot to file";
     return base::FilePath();
   }

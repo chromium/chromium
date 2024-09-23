@@ -170,7 +170,8 @@ TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidOSKeyPair) {
   // Modifying file contents
   base::File file = base::File(GetKeyFilePath(),
                                base::File::FLAG_OPEN | base::File::FLAG_APPEND);
-  EXPECT_TRUE(file.WriteAtCurrentPos(kGibberish, strlen(kGibberish)) > 0);
+  EXPECT_TRUE(
+      file.WriteAtCurrentPosAndCheck(base::byte_span_from_cstring(kGibberish)));
   std::string expected_file_contents(kValidOSKeyFileContent);
   expected_file_contents.append(kGibberish);
   EXPECT_EQ(expected_file_contents, GetFileContents());
@@ -197,7 +198,8 @@ TEST_F(LinuxKeyPersistenceDelegateTest, StoreKeyPair_ValidHWKeyPair) {
   // Modifying file contents
   base::File file = base::File(GetKeyFilePath(),
                                base::File::FLAG_OPEN | base::File::FLAG_APPEND);
-  EXPECT_TRUE(file.WriteAtCurrentPos(kGibberish, strlen(kGibberish)) > 0);
+  EXPECT_TRUE(
+      file.WriteAtCurrentPosAndCheck(base::byte_span_from_cstring(kGibberish)));
   std::string expected_file_contents(kValidHWKeyFileContent);
   expected_file_contents.append(kGibberish);
   EXPECT_EQ(expected_file_contents, GetFileContents());
