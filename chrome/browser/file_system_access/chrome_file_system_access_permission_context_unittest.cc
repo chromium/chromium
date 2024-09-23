@@ -762,10 +762,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 #if BUILDFLAG(IS_WIN)
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_UNCPath) {
-  if (!base::FeatureList::IsEnabled(
-          features::kFileSystemAccessLocalUNCPathBlock)) {
-    return;
-  }
 
   EXPECT_EQ(
       ConfirmSensitiveEntryAccessSync(

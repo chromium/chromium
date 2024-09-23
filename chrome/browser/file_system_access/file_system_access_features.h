@@ -11,10 +11,6 @@ namespace features {
 
 // Alphabetical:
 
-#if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kFileSystemAccessLocalUNCPathBlock);
-#endif
-
 BASE_DECLARE_FEATURE(kFileSystemAccessPersistentPermissions);
 
 BASE_DECLARE_FEATURE(kFileSystemAccessSymbolicLinkCheck);

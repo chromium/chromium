@@ -398,9 +398,7 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
 #if BUILDFLAG(IS_WIN)
   // On Windows, local UNC paths are rejected, as UNC path can be written in a
   // way that can bypass the blocklist.
-  if (base::FeatureList::IsEnabled(
-          features::kFileSystemAccessLocalUNCPathBlock) &&
-      MaybeIsLocalUNCPath(check_path)) {
+  if (MaybeIsLocalUNCPath(check_path)) {
     return true;
   }
 #endif
