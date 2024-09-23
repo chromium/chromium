@@ -888,7 +888,7 @@
       // Support for the anchor-scope property.
       // https://drafts.csswg.org/css-anchor-position-1/#anchor-scope
       name: "CSSAnchorScope",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Support for <string> syntax in @property
