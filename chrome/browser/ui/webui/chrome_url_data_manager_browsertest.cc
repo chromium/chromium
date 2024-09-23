@@ -394,7 +394,6 @@ static constexpr const char* const kChromeUrls[] = {
     // quickly navigating away cause DCHECK failure.
     // "chrome://sync-confirmation",
     "chrome://sync-internals",
-    "chrome://syncfs-internals",
     "chrome://system",
     "chrome://tab-search.top-chrome",
     // TODO(crbug.com/40137562): Navigating to chrome://tab-strip and quickly

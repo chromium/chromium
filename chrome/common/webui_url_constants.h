@@ -262,8 +262,6 @@ inline constexpr char kChromeUISyncConfirmationHost[] = "sync-confirmation";
 inline constexpr char kChromeUISyncConfirmationLoadingPath[] = "loading";
 inline constexpr char kChromeUISyncConfirmationURL[] =
     "chrome://sync-confirmation/";
-inline constexpr char kChromeUISyncFileSystemInternalsHost[] =
-    "syncfs-internals";
 inline constexpr char kChromeUISyncHost[] = "sync";
 inline constexpr char kChromeUISyncInternalsHost[] = "sync-internals";
 inline constexpr char kChromeUISyncInternalsUrl[] = "chrome://sync-internals";

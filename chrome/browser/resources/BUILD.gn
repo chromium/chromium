@@ -147,10 +147,7 @@ group("resources") {
   }
 
   if (enable_extensions) {
-    public_deps += [
-      "extensions:resources",
-      "sync_file_system_internals:resources",
-    ]
+    public_deps += [ "extensions:resources" ]
   }
 
   if (enable_pdf) {

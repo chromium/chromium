@@ -471,14 +471,8 @@ template("chrome_extra_paks") {
       deps += [ "//extensions:extensions_resources" ]
     }
     if (enable_extensions) {
-      sources += [
-        "$root_gen_dir/chrome/extensions_resources.pak",
-        "$root_gen_dir/chrome/sync_file_system_internals_resources.pak",
-      ]
-      deps += [
-        "//chrome/browser/resources/extensions:resources",
-        "//chrome/browser/resources/sync_file_system_internals:resources",
-      ]
+      sources += [ "$root_gen_dir/chrome/extensions_resources.pak" ]
+      deps += [ "//chrome/browser/resources/extensions:resources" ]
     }
 
     if (enable_pdf) {

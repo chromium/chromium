@@ -68,7 +68,6 @@
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
-#include "chrome/browser/ui/webui/sync_file_system_internals/sync_file_system_internals_ui.h"
 #include "chrome/browser/ui/webui/system/system_info_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
@@ -196,7 +195,6 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ReadingListUIConfig>());
   map.AddWebUIConfig(std::make_unique<ShoppingInsightsSidePanelUIConfig>());
   map.AddWebUIConfig(std::make_unique<SupportToolUIConfig>());
-  map.AddWebUIConfig(std::make_unique<SyncFileSystemInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<SystemInfoUIConfig>());
   map.AddWebUIConfig(std::make_unique<TabSearchUIConfig>());
   map.AddWebUIConfig(std::make_unique<TermsUIConfig>());
