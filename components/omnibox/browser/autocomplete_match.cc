@@ -27,6 +27,7 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
@@ -41,11 +42,13 @@
 #include "components/search_engines/search_engine_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "inline_autocompletion_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/third_party/mozilla/url_parse.h"
 
@@ -1215,13 +1218,17 @@ bool AutocompleteMatch::HasInstantKeyword(
 
 void AutocompleteMatch::GetKeywordUIState(
     TemplateURLService* template_url_service,
+    bool is_history_embeddings_enabled,
     std::u16string* keyword_out,
+    std::u16string* keyword_placeholder_out,
     bool* is_keyword_hint) const {
   *is_keyword_hint = associated_keyword != nullptr;
   keyword_out->assign(
       *is_keyword_hint
           ? associated_keyword->keyword
           : GetSubstitutingExplicitlyInvokedKeyword(template_url_service));
+  *keyword_placeholder_out = GetKeywordPlaceholder(
+      template_url_service, is_history_embeddings_enabled);
 }
 
 std::u16string AutocompleteMatch::GetSubstitutingExplicitlyInvokedKeyword(
@@ -1236,6 +1243,43 @@ std::u16string AutocompleteMatch::GetSubstitutingExplicitlyInvokedKeyword(
           t_url->SupportsReplacement(template_url_service->search_terms_data()))
              ? keyword
              : std::u16string();
+}
+
+std::u16string AutocompleteMatch::GetKeywordPlaceholder(
+    TemplateURLService* template_url_service,
+    bool is_history_embeddings_enabled) const {
+#if BUILDFLAG(IS_IOS)
+  // `kOmniboxScoped` isn't defined on iOS and all history embedding subfeatures
+  // are disabled on iOS.
+  return u"";
+#else
+  if (!history_embeddings::kOmniboxScoped.Get())
+    return u"";
+
+  const TemplateURL* t_url = GetTemplateURL(template_url_service, false);
+  if (!t_url)
+    return u"";
+  int message_id;
+  switch (t_url->starter_pack_id()) {
+    case TemplateURLStarterPackData::kBookmarks:
+      message_id = IDS_OMNIBOX_BOOKMARKS_SCOPE_PLACEHOLDER_TEXT;
+      break;
+    case TemplateURLStarterPackData::kHistory:
+      message_id = is_history_embeddings_enabled
+                       ? IDS_OMNIBOX_HISTORY_EMBEDDINGS_SCOPE_PLACEHOLDER_TEXT
+                       : IDS_OMNIBOX_HISTORY_SCOPE_PLACEHOLDER_TEXT;
+      break;
+    case TemplateURLStarterPackData::kTabs:
+      message_id = IDS_OMNIBOX_TABS_SCOPE_PLACEHOLDER_TEXT;
+      break;
+    case TemplateURLStarterPackData::kGemini:
+      message_id = IDS_OMNIBOX_GEMINI_SCOPE_PLACEHOLDER_TEXT;
+      break;
+    default:
+      return u"";
+  }
+  return l10n_util::GetStringUTF16(message_id);
+#endif
 }
 
 TemplateURL* AutocompleteMatch::GetTemplateURL(

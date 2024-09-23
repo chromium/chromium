@@ -496,19 +496,24 @@ struct AutocompleteMatch {
   bool HasInstantKeyword(TemplateURLService* template_url_service) const;
 
   // Gets data relevant to whether there should be any special keyword-related
-  // UI shown for this match.  If this match represents a selected keyword, i.e.
-  // the UI should be "in keyword mode", |keyword_out| will be set to the
-  // keyword and |is_keyword_hint| will be set to false.  If this match has a
-  // non-null |associated_keyword|, i.e. we should show a "Press [tab] to search
-  // ___" hint and allow the user to toggle into keyword mode, |keyword_out|
-  // will be set to the associated keyword and |is_keyword_hint| will be set to
-  // true.  Note that only one of these states can be in effect at once.  In all
-  // other cases, |keyword_out| will be cleared, even when our member variable
-  // |keyword| is non-empty -- such as with non-substituting keywords or matches
-  // that represent searches using the default search engine.  See also
-  // GetSubstitutingExplicitlyInvokedKeyword().
+  // UI shown for this match. If this match represents a selected keyword, i.e.
+  // the UI should be "in keyword mode", `keyword_out` will be set to the
+  // keyword and `is_keyword_hint` will be set to false. If this match has a
+  // non-null `associated_keyword`, i.e. we should show a "Press [tab] to search
+  // ___" hint and allow the user to toggle into keyword mode, `keyword_out`
+  // will be set to the associated keyword and `is_keyword_hint` will be set to
+  // true. Note that only one of these states can be in effect at once. In all
+  // other cases, `keyword_out` will be cleared, even when our member variable
+  // `keyword` is non-empty -- such as with non-substituting keywords or matches
+  // that represent searches using the default search engine. See also
+  // `GetSubstitutingExplicitlyInvokedKeyword()`. `keyword_placeholder_out` will
+  // be set to any placeholder text the keyword wants to display. Set for both
+  // hint and non-hint keyword modes. `is_history_embeddings_enabled` will
+  // affect the placeholder text for the @history keyword.
   void GetKeywordUIState(TemplateURLService* template_url_service,
+                         bool is_history_embeddings_enabled,
                          std::u16string* keyword_out,
+                         std::u16string* keyword_placeholder_out,
                          bool* is_keyword_hint) const;
 
   // Returns |keyword|, but only if it represents a substituting keyword that
@@ -519,6 +524,12 @@ struct AutocompleteMatch {
   // should show up as being "in keyword mode".
   std::u16string GetSubstitutingExplicitlyInvokedKeyword(
       TemplateURLService* template_url_service) const;
+
+  // Returns the placeholder text to display for the currently selected keyword
+  // match, returned for both hint and non-hint keyword modes.
+  std::u16string GetKeywordPlaceholder(
+      TemplateURLService* template_url_service,
+      bool is_history_embeddings_enabled) const;
 
   // Returns the TemplateURL associated with this match.  This may be NULL if
   // the match has no keyword OR if the keyword no longer corresponds to a valid
@@ -708,9 +719,9 @@ struct AutocompleteMatch {
   // no provider (or memory of the user's selection).
   raw_ptr<AutocompleteProvider> provider = nullptr;
 
-  // The relevance of this match. See table in autocomplete_provider.h for scores
-  // returned by various providers. This is used to rank matches among all
-  // responding providers, so different providers must be carefully tuned to
+  // The relevance of this match. See table in autocomplete_provider.h for
+  // scores returned by various providers. This is used to rank matches among
+  // all responding providers, so different providers must be carefully tuned to
   // supply matches with appropriate relevance.
   int relevance = 0;
 

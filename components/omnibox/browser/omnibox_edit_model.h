@@ -42,6 +42,7 @@ class OmniboxEditModel {
     State(bool user_input_in_progress,
           const std::u16string& user_text,
           const std::u16string& keyword,
+          const std::u16string& keyword_placeholder,
           bool is_keyword_hint,
           metrics::OmniboxEventProto::KeywordModeEntryMethod
               keyword_mode_entry_method,
@@ -54,6 +55,7 @@ class OmniboxEditModel {
     bool user_input_in_progress;
     const std::u16string user_text;
     const std::u16string keyword;
+    const std::u16string keyword_placeholder;
     const bool is_keyword_hint;
     metrics::OmniboxEventProto::KeywordModeEntryMethod
         keyword_mode_entry_method;
@@ -213,9 +215,12 @@ class OmniboxEditModel {
     return focus_state_ == OMNIBOX_FOCUS_VISIBLE;
   }
 
-  // Accessors for keyword-related state (see comments on keyword_ and
-  // is_keyword_hint_).
+  // Accessors for keyword-related state (see comments on `keyword_`,
+  // `keyword_placeholder_` and `is_keyword_hint_`).
   const std::u16string& keyword() const { return keyword_; }
+  const std::u16string& keyword_placeholder() const {
+    return keyword_placeholder_;
+  }
   bool is_keyword_hint() const { return is_keyword_hint_; }
   bool is_keyword_selected() const {
     return !is_keyword_hint_ && !keyword_.empty();
@@ -337,6 +342,7 @@ class OmniboxEditModel {
                                   const std::u16string& inline_autocompletion,
                                   const std::u16string& prefix_autocompletion,
                                   const std::u16string& keyword,
+                                  const std::u16string& keyword_placeholder,
                                   bool is_keyword_hint,
                                   const std::u16string& additional_text,
                                   const AutocompleteMatch& new_match);
@@ -723,6 +729,10 @@ class OmniboxEditModel {
   // can show a hint to press <tab>).  This is the keyword in either case;
   // is_keyword_hint_ (below) distinguishes the two cases.
   std::u16string keyword_;
+
+  // The placeholder text displayed for the keyword the user has selected.
+  // Usually empty. Only used when the user input is empty.
+  std::u16string keyword_placeholder_;
 
   // True if the keyword associated with this match is merely a hint, i.e. the
   // user hasn't actually selected a keyword yet.  When this is true, we can use

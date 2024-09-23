@@ -375,4 +375,21 @@
     Popular topics
   </message>
 
+  <!-- Placeholder text for the various starter pack scopes -->
+  <message name="IDS_OMNIBOX_BOOKMARKS_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @bookmarks scope." translateable="false" >
+    Enter a word or two
+  </message>
+  <message name="IDS_OMNIBOX_HISTORY_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @history scope and hasn't opted into the history AI setting." translateable="false" >
+    Enter a word or two
+  </message>
+  <message name="IDS_OMNIBOX_HISTORY_EMBEDDINGS_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @history scope and has opted into the history AI setting." translateable="false" >
+    In a few words, describe what you're searching for
+  </message>
+  <message name="IDS_OMNIBOX_TABS_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @tabs scope." translateable="false" >
+    Enter a word or two
+  </message>
+  <message name="IDS_OMNIBOX_GEMINI_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user input is empty and the user is in the @gemini scope." translateable="false" >
+    Enter your question or prompt
+  </message>
+
 </grit-part>

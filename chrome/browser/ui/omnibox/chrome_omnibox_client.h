@@ -117,6 +117,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
   void OnInputInProgress(bool in_progress) override;
   void OnPopupVisibilityChanged(bool popup_is_open) override;
   void OpenIphLink(GURL gurl) override;
+  bool IsHistoryEmbeddingsEnabled() const override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
   // Update shortcuts when a navigation succeeds.

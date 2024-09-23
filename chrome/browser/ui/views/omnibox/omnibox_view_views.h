@@ -242,6 +242,7 @@ class OmniboxViewViews
                              const AutocompleteMatch& match) override;
   void OnBeforePossibleChange() override;
   bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;
+  void OnKeywordPlaceholderTextChange() override;
   gfx::NativeView GetNativeView() const override;
   void ShowVirtualKeyboardIfEnabled() override;
   void HideImeIfNeeded() override;

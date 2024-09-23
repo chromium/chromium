@@ -309,10 +309,18 @@ void OmniboxViewViews::OnTabChanged(content::WebContents* web_contents) {
 }
 
 void OmniboxViewViews::ResetTabState(content::WebContents* web_contents) {
-    web_contents->SetUserData(OmniboxState::kKey, nullptr);
+  web_contents->SetUserData(OmniboxState::kKey, nullptr);
 }
 
 void OmniboxViewViews::InstallPlaceholderText() {
+  // If `keyword_placeholder()` is set, then the user is in a keyword mode that
+  // has placeholder text. Use that instead of the DSE placeholder text.
+  if (!model()->keyword_placeholder().empty()) {
+    SetPlaceholderText(model()->keyword_placeholder());
+    return;
+  }
+
+  // Otherwise, if a DSE is set, use the DSE placeholder text.
   const TemplateURL* const default_provider = controller()
                                                   ->client()
                                                   ->GetTemplateURLService()
@@ -622,7 +630,8 @@ void OmniboxViewViews::UpdateSchemeStyle(const gfx::Range& range) {
 void OmniboxViewViews::OnThemeChanged() {
   views::Textfield::OnThemeChanged();
 
-  set_placeholder_text_color(GetColorProvider()->GetColor(kColorOmniboxText));
+  set_placeholder_text_color(
+      GetColorProvider()->GetColor(kColorOmniboxTextDimmed));
   SetSelectionBackgroundColor(
       GetColorProvider()->GetColor(kColorOmniboxSelectionBackground));
   SetSelectionTextColor(
@@ -984,6 +993,10 @@ bool OmniboxViewViews::OnAfterPossibleChange(bool allow_keyword_ui_change) {
     EmphasizeURLComponents();
 
   return something_changed;
+}
+
+void OmniboxViewViews::OnKeywordPlaceholderTextChange() {
+  InstallPlaceholderText();
 }
 
 gfx::NativeView OmniboxViewViews::GetNativeView() const {
@@ -1429,7 +1442,6 @@ void OmniboxViewViews::OnBlur() {
 
   // |location_bar_view_| can be null in tests.
   if (location_bar_view_) {
-
     location_bar_view_->OnOmniboxBlurred();
 
     // The location bar needs to repaint without a focus ring.
@@ -1535,8 +1547,13 @@ void OmniboxViewViews::ExecuteTextEditCommand(ui::TextEditCommand command) {
 }
 
 bool OmniboxViewViews::ShouldShowPlaceholderText() const {
+  // The DSE placeholder text is visible only if the omnibox is blurred. The
+  // keyword placeholder text is visible even if the omnibox is focused, because
+  // users won't enter keyword mode, blur the omnibox, read the placeholder
+  // text, refocus the omnibox, and begin typing.
   return Textfield::ShouldShowPlaceholderText() &&
-         !model()->is_caret_visible() && !model()->is_keyword_selected();
+         (!model()->is_caret_visible() ||
+          !model()->keyword_placeholder().empty());
 }
 
 void OmniboxViewViews::UpdateAccessibleValue() {
