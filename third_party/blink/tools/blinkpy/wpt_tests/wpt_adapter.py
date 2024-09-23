@@ -13,6 +13,7 @@ import optparse
 import signal
 import subprocess
 import sys
+import textwrap
 from collections import defaultdict
 from datetime import datetime
 from typing import List, Optional
@@ -631,13 +632,23 @@ class WPTAdapter:
         with self.fs.open_text_file_for_writing(run_info_path) as file_handle:
             json.dump(run_info, file_handle)
 
-        # The `//third_party/fontconfig/` library embedded into Chromium
-        # recursively searches `$XDG_DATA_HOME/fonts` for locally vended fonts.
-        ahem_path = self.fs.join(tmp_dir, 'fonts', 'Ahem.ttf')
-        self.fs.maybe_make_directory(self.fs.dirname(ahem_path))
-        self.fs.copyfile(self.fs.join(tests_root, 'fonts', 'Ahem.ttf'),
-                         ahem_path)
-        self.host.environ['XDG_DATA_HOME'] = tmp_dir
+        # Chromium embeds the `//third_party/fontconfig/` library to load fonts.
+        # Add a config [0] to discover test fonts copied from
+        # `//third_party/test_fonts/`.
+        #
+        # [0]: https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
+        test_fonts_dir = self.port.build_path('test_fonts')
+        font_config = textwrap.dedent(f"""\
+            <?xml version="1.0"?>
+            <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+            <fontconfig>
+              <dir>{test_fonts_dir}</dir>
+            </fontconfig>
+            """)
+        font_config_path = self.fs.join(tmp_dir, 'fontconfig', 'fonts.conf')
+        self.fs.maybe_make_directory(self.fs.dirname(font_config_path))
+        self.fs.write_text_file(font_config_path, font_config)
+        self.host.environ['XDG_CONFIG_HOME'] = tmp_dir
 
     @contextlib.contextmanager
     def process_and_upload_results(self, runner_options: argparse.Namespace):

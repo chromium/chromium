@@ -103,8 +103,6 @@ class WPTAdapterTest(unittest.TestCase):
         self.fs.write_text_file(
             self.finder.path_from_web_tests('VirtualTestSuites'),
             json.dumps([]))
-        self.fs.write_binary_file(
-            self.finder.path_from_wpt_tests('fonts', 'Ahem.ttf'), b'fake-font')
 
         self._mocks = contextlib.ExitStack()
         self._mocks.enter_context(self.fs.patch_builtins())
@@ -420,6 +418,6 @@ class WPTAdapterTest(unittest.TestCase):
         adapter = WPTAdapter.from_args(
             self.host, ['--product=headless_shell', '--no-manifest-update'])
         with adapter.test_env() as options:
-            font_path = self.fs.join(self.host.environ['XDG_DATA_HOME'],
-                                     'fonts', 'Ahem.ttf')
-            self.assertEqual(self.fs.read_binary_file(font_path), b'fake-font')
+            config_path = self.fs.join(self.host.environ['XDG_CONFIG_HOME'],
+                                       'fontconfig', 'fonts.conf')
+            self.assertTrue(self.fs.exists(config_path))
