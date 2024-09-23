@@ -4,8 +4,10 @@
 
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 
+#include "base/task/current_thread.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
@@ -199,6 +201,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest, RejctedPromptStrikeCounting) {
 // Tests that the `update_suggestions_callback` is called eventually with the
 // `kFillPredictionImprovements` suggestion.
 TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   // Empty form, as seen by the user.
   autofill::test::FormDescription form_description = {
       .fields = {{.role = autofill::NAME_FIRST,
@@ -235,6 +238,9 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
                                        update_suggestions_callback.Get());
   std::move(axtree_received_callback).Run({});
   std::move(predictions_received_callback).Run(filled_form, "");
+  base::test::RunUntil([this]() {
+    return !test_api(*manager_).loading_suggestion_timer().IsRunning();
+  });
 
   EXPECT_THAT(loading_suggestion,
               ElementsAre(HasType(
@@ -315,9 +321,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
-  AutofillPredictionImprovementsManagerTestApi test_api(manager_.get());
-  test_api.SetAddressSuggestions(suggestions_to_show);
-  test_api.SetCache(form);
+  test_api(*manager_).SetAddressSuggestions(suggestions_to_show);
+  test_api(*manager_).SetCache(form);
   EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
       suggestions_to_show, form.fields().front(),
       /*should_add_trigger_suggestion=*/true));
@@ -338,8 +343,7 @@ TEST_F(
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
-  AutofillPredictionImprovementsManagerTestApi test_api(manager_.get());
-  test_api.SetCache(form);
+  test_api(*manager_).SetCache(form);
   EXPECT_TRUE(manager_->MaybeUpdateSuggestions(
       address_suggestions, form.fields().front(),
       /*should_add_trigger_suggestion=*/true));
@@ -359,8 +363,7 @@ TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
        TryToOpenFeedbackPageNeverCalledIfUserFeedbackThumbsDown) {
   using UserFeedback =
       autofill::AutofillPredictionImprovementsDelegate::UserFeedback;
-  AutofillPredictionImprovementsManagerTestApi test_api(manager_.get());
-  test_api.SetFeedbackId("randomstringrjb");
+  test_api(*manager_).SetFeedbackId("randomstringrjb");
   EXPECT_CALL(client_, TryToOpenFeedbackPage)
       .Times(GetParam() == UserFeedback::kThumbsDown);
   manager_->UserFeedbackReceived(GetParam());
@@ -369,8 +372,7 @@ TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
 // Tests that the feedback page will never be opened if no feedback id is set.
 TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
        TryToOpenFeedbackPageNeverCalledIfNoFeedbackIdPresent) {
-  AutofillPredictionImprovementsManagerTestApi test_api(manager_.get());
-  test_api.SetFeedbackId(std::nullopt);
+  test_api(*manager_).SetFeedbackId(std::nullopt);
   EXPECT_CALL(client_, TryToOpenFeedbackPage).Times(0);
   manager_->UserFeedbackReceived(GetParam());
 }
@@ -739,7 +741,6 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
 
   autofill::FormData form_data;
   autofill::FormStructure form(form_data);
-  autofill::FormStructureTestApi form_test_api(form);
 
   AutofillPredictionImprovementsManager manager{&client_, &decider_,
                                                 &strike_database_};
@@ -754,10 +755,9 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
 
   autofill::FormData form_data;
   autofill::FormStructure form(form_data);
-  autofill::FormStructureTestApi form_test_api(form);
 
   autofill::AutofillField& prediction_improvement_field =
-      form_test_api.PushField();
+      test_api(form).PushField();
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   prediction_improvement_field.set_heuristic_type(
       autofill::HeuristicSource::kPredictionImprovementRegexes,

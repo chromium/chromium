@@ -7,6 +7,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/common/aliases.h"
@@ -25,6 +27,12 @@ class FormStructure;
 }  // namespace autofill
 
 namespace autofill_prediction_improvements {
+
+// Minimum time for the loading suggestion to be visible to the user, in order
+// to avoid flickering UI scenarios.
+// TODO(crbug.com/365512352): Evaluate what constant is best for this purpose.
+inline constexpr base::TimeDelta kMinTimeToShowLoading =
+    base::Milliseconds(300);
 
 // The class for embedder-independent, tab-specific
 // autofill_prediction_improvements logic. This class is an interface.
@@ -138,6 +146,11 @@ class AutofillPredictionImprovementsManager
   base::RepeatingCallback<void(std::vector<autofill::Suggestion>,
                                autofill::AutofillSuggestionTriggerSource)>
       update_suggestions_callback_ = base::NullCallback();
+
+  // Timer to delay the replacement of the loading suggestion with the fetched
+  // suggestions. This avoids a flickering UI for cases where retrieval happens
+  // quickly.
+  base::OneShotTimer loading_suggestion_timer_;
 
   // The `decider_` is used to check if the
   // `AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST` optimization guide can be

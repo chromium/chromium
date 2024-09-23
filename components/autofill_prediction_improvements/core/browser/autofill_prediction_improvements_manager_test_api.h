@@ -29,9 +29,18 @@ class AutofillPredictionImprovementsManagerTestApi {
     manager_->feedback_id_ = feedback_id;
   }
 
+  const base::OneShotTimer& loading_suggestion_timer() {
+    return manager_->loading_suggestion_timer_;
+  }
+
  private:
   raw_ref<AutofillPredictionImprovementsManager> manager_;
 };
+
+AutofillPredictionImprovementsManagerTestApi test_api(
+    AutofillPredictionImprovementsManager& manager) {
+  return AutofillPredictionImprovementsManagerTestApi(&manager);
+}
 
 }  // namespace autofill_prediction_improvements
 

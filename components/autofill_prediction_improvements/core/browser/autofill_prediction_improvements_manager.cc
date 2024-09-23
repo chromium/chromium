@@ -5,7 +5,11 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -269,6 +273,7 @@ bool AutofillPredictionImprovementsManager::MaybeUpdateSuggestions(
     std::vector<autofill::Suggestion>& address_suggestions,
     const autofill::FormFieldData& field,
     bool should_add_trigger_suggestion) {
+  loading_suggestion_timer_.Stop();
   // Show a cached prediction improvements filling suggestion for `field` if
   // it exists.
   if (HasImprovedPredictionsForField(field)) {
@@ -316,16 +321,24 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
     const autofill::FormFieldData& trigger_field,
     base::expected<autofill::FormData, bool> prediction_improvements,
     std::optional<std::string> feedback_id) {
-  if (!prediction_improvements.has_value()) {
-    UpdateSuggestions(CreateErrorSuggestion());
-    return;
+  if (prediction_improvements.has_value()) {
+    cache_ = prediction_improvements.value();
+    feedback_id_ = feedback_id;
   }
 
-  cache_ = prediction_improvements.value();
-  feedback_id_ = feedback_id;
-
-  UpdateSuggestions(
-      CreateFillingSuggestions(trigger_field, address_suggestions_));
+  // Depending on whether predictions where retrieved or not, we need to show
+  // the corresponding suggestions. This is delayed a little bit so that we
+  // don't see a flickering UI.
+  loading_suggestion_timer_.Start(
+      FROM_HERE, kMinTimeToShowLoading,
+      prediction_improvements.has_value()
+          ? base::BindRepeating(
+                &AutofillPredictionImprovementsManager::UpdateSuggestions,
+                weak_ptr_factory_.GetWeakPtr(),
+                CreateFillingSuggestions(trigger_field, address_suggestions_))
+          : base::BindRepeating(
+                &AutofillPredictionImprovementsManager::UpdateSuggestions,
+                weak_ptr_factory_.GetWeakPtr(), CreateErrorSuggestion()));
 }
 
 void AutofillPredictionImprovementsManager::UserFeedbackReceived(
@@ -390,10 +403,12 @@ void AutofillPredictionImprovementsManager::Reset() {
   cache_ = std::nullopt;
   update_suggestions_callback_ = base::NullCallback();
   feedback_id_ = std::nullopt;
+  loading_suggestion_timer_.Stop();
 }
 
 void AutofillPredictionImprovementsManager::UpdateSuggestions(
     const std::vector<autofill::Suggestion>& suggestions) {
+  loading_suggestion_timer_.Stop();
   if (update_suggestions_callback_.is_null()) {
     return;
   }
