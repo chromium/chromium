@@ -1852,7 +1852,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, MAYBE_CantInspectNewTabPage) {
 }
 
 // TODO(crbug.com/40943634): Re-enable the test once it is fixed.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CantInspectChromeScheme DISABLED_CantInspectChromeScheme
 #else
 #define MAYBE_CantInspectChromeScheme CantInspectChromeScheme
