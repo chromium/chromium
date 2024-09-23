@@ -3,10 +3,12 @@ Verifies that a GestureTap triggers focus and selectionchange if and only if mou
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 Tap on input field but consume mousedown
+Sending MouseMove
+Received mouseover on target
+Received mousemove on target
 Sending GestureTapDown
 Sending GestureShowPress
 Sending GestureTap
-Received mouseover on target
 Received mousemove on target
 Received mousedown on target
 Received mouseup on target
@@ -16,6 +18,8 @@ PASS isFocused(target) is false
 
 
 Tap on input field without consuming mousedown
+Sending MouseMove
+Received mousemove on target
 Sending GestureTapDown
 Sending GestureShowPress
 Sending GestureTap
@@ -29,10 +33,11 @@ PASS isFocused(target) is true
 
 
 Tap elsewhere to clear focus
+Sending MouseMove
+Received mouseout on target
 Sending GestureTapDown
 Sending GestureShowPress
 Sending GestureTap
-Received mouseout on target
 PASS tapHandled is false
 Received selectionchange on #document anchor=#text[0]
 PASS isFocused(target) is false

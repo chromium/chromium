@@ -14,6 +14,7 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -3631,6 +3632,59 @@ TEST_F(EventHandlerSimTest, ValidClickPointerIdForUnseenPointerEvent) {
   GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(tap_event);
   auto pointer_id_2 = stoi(pointer_id_elem.TextContent().Utf8());
   EXPECT_GT(pointer_id_2, pointer_id_1);
+}
+
+TEST_F(EventHandlerSimTest, GestureTapHoverState) {
+  ResizeView(gfx::Size(800, 600));
+
+  // RecomputeMouseHoverState() bails early if we are not focused.
+  GetPage().SetFocused(true);
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        body { height: 1000px; margin: 0; }
+        p { height: 100px; margin: 0; background: white; }
+        p:hover { background: red; }
+      </style>
+      <body>
+        <p id=a>A</p>
+        <p id=b>B</p>
+      </body>
+      )HTML");
+
+  Compositor().BeginFrame();
+  Document& doc = GetDocument();
+  LayoutObject* a = doc.getElementById(AtomicString("a"))->GetLayoutObject();
+  LayoutObject* b = doc.getElementById(AtomicString("b"))->GetLayoutObject();
+
+  auto ColorOf = [](const LayoutObject* lo) {
+    const auto& bg_color_prop = GetCSSPropertyBackgroundColor();
+    Color color = lo->Style()->VisitedDependentColor(bg_color_prop);
+    return color.SerializeAsCSSColor();
+  };
+  String rgb_white = "rgb(255, 255, 255)";
+  String rgb_red = "rgb(255, 0, 0)";
+
+  EXPECT_EQ(rgb_white, ColorOf(a));
+  EXPECT_EQ(rgb_white, ColorOf(b));
+
+  TapEventBuilder tap(gfx::PointF(10, 10), 1);
+  doc.GetFrame()->GetEventHandler().HandleGestureEvent(tap);
+  Compositor().BeginFrame();
+
+  // #a is hovered after tap.
+  EXPECT_EQ(rgb_red, ColorOf(a));
+  EXPECT_EQ(rgb_white, ColorOf(b));
+
+  doc.scrollingElement()->scrollBy(0, 100);
+  Compositor().BeginFrame();
+
+  // #a is still hovered after scrolling away (crbug.com/366020097).
+  EXPECT_EQ(rgb_red, ColorOf(a));
+  EXPECT_EQ(rgb_white, ColorOf(b));
 }
 
 }  // namespace blink

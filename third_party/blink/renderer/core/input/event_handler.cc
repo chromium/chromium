@@ -1283,7 +1283,7 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
 
   if (frame_set_being_resized_) {
     WebInputEventResult result =
-        mouse_event_manager_->SetMousePositionAndDispatchMouseEvent(
+        mouse_event_manager_->SetElementUnderMouseAndDispatchMouseEvent(
             EffectiveMouseEventTargetElement(frame_set_being_resized_.Get()),
             event_type_names::kMouseup, mouse_event);
     // crbug.com/1053385 release mouse capture only if there are no more mouse
