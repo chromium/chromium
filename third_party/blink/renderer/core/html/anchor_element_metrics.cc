@@ -71,8 +71,8 @@ bool IsSameHost(const HTMLAnchorElement& anchor_element,
   if (!top_document) {
     return false;
   }
-  StringView source_host = top_document->Url().HostView();
-  StringView target_host = anchor_href.HostView();
+  StringView source_host = top_document->Url().Host();
+  StringView target_host = anchor_href.Host();
   return source_host == target_host;
 }
 

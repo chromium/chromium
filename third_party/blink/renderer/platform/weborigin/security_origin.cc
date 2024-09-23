@@ -152,7 +152,8 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateInternal(const KURL& url) {
                       ? url.Port()
                       : DefaultPortForProtocol(url.Protocol());
   return base::AdoptRef(new SecurityOrigin(EnsureNonNull(url.Protocol()),
-                                           EnsureNonNull(url.Host()), port));
+                                           EnsureNonNull(url.Host().ToString()),
+                                           port));
 }
 
 SecurityOrigin::SecurityOrigin(const String& protocol,

@@ -305,7 +305,8 @@ void NetworkInformation::Trace(Visitor* visitor) const {
 }
 
 const String NetworkInformation::Host() const {
-  return GetExecutionContext() ? GetExecutionContext()->Url().Host() : String();
+  return GetExecutionContext() ? GetExecutionContext()->Url().Host().ToString()
+                               : String();
 }
 
 void NetworkInformation::MaybeShowWebHoldbackConsoleMsg() {

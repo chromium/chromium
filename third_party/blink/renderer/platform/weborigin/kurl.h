@@ -169,8 +169,7 @@ class PLATFORM_EXPORT KURL {
   String ElidedString() const;
 
   String Protocol() const;
-  String Host() const;
-  StringView HostView() const LIFETIME_BOUND;
+  StringView Host() const LIFETIME_BOUND;
 
   // Returns 0 when there is no port or the default port was specified, or the
   // URL is invalid.

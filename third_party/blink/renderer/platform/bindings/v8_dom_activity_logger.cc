@@ -86,7 +86,7 @@ V8DOMActivityLogger* V8DOMActivityLogger::ActivityLogger(int world_id,
   if (!CommonSchemeRegistry::IsExtensionScheme(url.Protocol().Ascii()))
     return nullptr;
 
-  return ActivityLogger(world_id, url.Host());
+  return ActivityLogger(world_id, url.Host().ToString());
 }
 
 V8DOMActivityLogger* V8DOMActivityLogger::CurrentActivityLogger(

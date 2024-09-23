@@ -113,9 +113,10 @@ TEST_F(ContentSecurityPolicyTest, ParseInsecureRequestPolicy) {
         (test.expected_policy &
          mojom::blink::InsecureRequestPolicy::kUpgradeInsecureRequests) !=
         mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone;
-    EXPECT_EQ(expect_upgrade,
-              security_context.InsecureNavigationsToUpgrade().Contains(
-                  dummy->GetDocument().Url().Host().Impl()->GetHash()));
+    EXPECT_EQ(
+        expect_upgrade,
+        security_context.InsecureNavigationsToUpgrade().Contains(
+            dummy->GetDocument().Url().Host().ToString().Impl()->GetHash()));
   }
 
   // Report-Only

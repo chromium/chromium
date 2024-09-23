@@ -167,8 +167,9 @@ void ApplyInit(const URLPatternInit* init,
                : base_url.Pass() ? EscapeBaseURLString(base_url.Pass(), type)
                                  : g_empty_string;
     hostname = (init->hasProtocol() || init->hasHostname()) ? String()
-               : base_url.Host() ? EscapeBaseURLString(base_url.Host(), type)
-                                 : g_empty_string;
+               : !base_url.Host().empty()
+                   ? EscapeBaseURLString(base_url.Host(), type)
+                   : g_empty_string;
     port = (init->hasProtocol() || init->hasHostname() || init->hasPort())
                ? String()
            : base_url.Port() > 0 ? String::Number(base_url.Port())
@@ -920,10 +921,12 @@ bool URLPattern::Match(ScriptState* script_state,
         username = url.User();
       if (url.Pass())
         password = url.Pass();
-      if (url.Host())
-        hostname = url.Host();
-      if (url.Port() > 0)
+      if (!url.Host().empty()) {
+        hostname = url.Host().ToString();
+      }
+      if (url.Port() > 0) {
         port = String::Number(url.Port());
+      }
       if (!url.GetPath().empty()) {
         pathname = url.GetPath().ToString();
       }

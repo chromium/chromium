@@ -110,7 +110,7 @@ void ExecutionContextCSPDelegate::AddInsecureRequestPolicy(
     // This should be safe, because the insecure navigations set is not used
     // in non-Document contexts.
     if (window && !Url().Host().empty()) {
-      uint32_t hash = Url().Host().Impl()->GetHash();
+      uint32_t hash = Url().Host().ToString().Impl()->GetHash();
       security_context.AddInsecureNavigationUpgrade(hash);
       if (auto* frame = window->GetFrame()) {
         frame->GetLocalFrameHostRemote().EnforceInsecureNavigationsSet(

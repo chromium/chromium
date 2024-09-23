@@ -57,7 +57,7 @@ class CORE_EXPORT DOMURLUtilsReadOnly {
   static String host(const KURL&);
   String host() { return host(Url()); }
 
-  static String hostname(const KURL& url) { return url.Host(); }
+  static String hostname(const KURL& url) { return url.Host().ToString(); }
   String hostname() { return hostname(Url()); }
 
   static String port(const KURL&);

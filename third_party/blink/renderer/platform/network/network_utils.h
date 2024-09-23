@@ -28,9 +28,9 @@ enum PrivateRegistryFilter {
   kExcludePrivateRegistries,
 };
 
-PLATFORM_EXPORT bool IsReservedIPAddress(const WTF::String& host);
+PLATFORM_EXPORT bool IsReservedIPAddress(const WTF::StringView& host);
 
-PLATFORM_EXPORT WTF::String GetDomainAndRegistry(const WTF::String& host,
+PLATFORM_EXPORT WTF::String GetDomainAndRegistry(const WTF::StringView& host,
                                                  PrivateRegistryFilter);
 
 // Returns the decoded data url as ResourceResponse and SharedBuffer if parsing

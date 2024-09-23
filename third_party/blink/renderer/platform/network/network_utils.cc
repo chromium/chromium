@@ -48,7 +48,7 @@ namespace blink {
 
 namespace network_utils {
 
-bool IsReservedIPAddress(const String& host) {
+bool IsReservedIPAddress(const StringView& host) {
   net::IPAddress address;
   StringUTF8Adaptor utf8(host);
   if (!net::ParseURLHostnameToAddress(utf8.AsStringView(), &address)) {
@@ -57,7 +57,8 @@ bool IsReservedIPAddress(const String& host) {
   return !address.IsPubliclyRoutable();
 }
 
-String GetDomainAndRegistry(const String& host, PrivateRegistryFilter filter) {
+String GetDomainAndRegistry(const StringView& host,
+                            PrivateRegistryFilter filter) {
   StringUTF8Adaptor host_utf8(host);
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
       host_utf8.AsStringView(), getNetPrivateRegistryFilter(filter));

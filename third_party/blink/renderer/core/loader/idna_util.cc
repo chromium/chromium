@@ -19,7 +19,7 @@ constexpr int32_t kMaximumDomainNameLengthForIDNADecoding = 255;
 // Unsafely decodes a punycode hostname to unicode (e.g. xn--fa-hia.de to
 // faß.de). Only used for logging. Doesn't do any spoof checks on the output,
 // so the output MUST NOT be used for anything else.
-String UnsafeASCIIToIDNA(String hostname_ascii) {
+String UnsafeASCIIToIDNA(const StringView& hostname_ascii) {
   static UIDNA* uidna = [] {
     UErrorCode err = U_ZERO_ERROR;
     UIDNA* value =

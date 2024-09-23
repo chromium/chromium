@@ -2394,7 +2394,7 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
     // Only fall back to baseURL hostname if init does not contain protocol.
     String default_hostname;
     if (!init.protocol.has_value()) {
-      default_hostname = base_url.Host();
+      default_hostname = base_url.Host().ToString();
     }
     std::optional<std::vector<liburlpattern::Part>> part_list =
         ParsePatternInitField(init.hostname, default_hostname);

@@ -46,10 +46,10 @@ String DOMURLUtilsReadOnly::origin(const KURL& kurl) {
 
 String DOMURLUtilsReadOnly::host(const KURL& kurl) {
   if (kurl.HostEnd() == kurl.PathStart())
-    return kurl.Host();
+    return kurl.Host().ToString();
   if (IsDefaultPortForProtocol(kurl.Port(), kurl.Protocol()))
-    return kurl.Host();
-  return kurl.Host() + ":" + String::Number(kurl.Port());
+    return kurl.Host().ToString();
+  return String(kurl.Host() + ":" + String::Number(kurl.Port()));
 }
 
 String DOMURLUtilsReadOnly::port(const KURL& kurl) {

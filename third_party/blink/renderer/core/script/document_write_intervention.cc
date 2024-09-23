@@ -134,12 +134,11 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
   // Avoid blocking same origin scripts, as they may be used to render main
   // page content, whereas cross-origin scripts inserted via document.write
   // are likely to be third party content.
-  String request_host = params.Url().Host();
+  StringView request_host = params.Url().Host();
   String document_host = document.domWindow()->GetSecurityOrigin()->Domain();
-
-  bool same_site = false;
-  if (request_host == document_host)
-    same_site = true;
+  if (request_host == document_host) {
+    return false;
+  }
 
   // If the hosts didn't match, then see if the domains match. For example, if
   // a script is served from static.example.com for a document served from
@@ -152,10 +151,7 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
   // already top-level, such as localhost. Thus we only compare domains if we
   // get non-empty results back from getDomainAndRegistry.
   if (!request_domain.empty() && !document_domain.empty() &&
-      request_domain == document_domain)
-    same_site = true;
-
-  if (same_site) {
+      request_domain == document_domain) {
     return false;
   }
 

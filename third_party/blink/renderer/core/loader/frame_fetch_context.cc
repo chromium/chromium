@@ -573,8 +573,8 @@ void FrameFetchContext::AddClientHintsIfNecessary(
       http_rtt = GetNetworkStateNotifier().HttpRtt();
     }
 
-    uint32_t rtt =
-        GetNetworkStateNotifier().RoundRtt(request.Url().Host(), http_rtt);
+    uint32_t rtt = GetNetworkStateNotifier().RoundRtt(
+        request.Url().Host().ToString(), http_rtt);
     request.SetHttpHeaderField(http_names::kRtt_DEPRECATED,
                                AtomicString(String::Number(rtt)));
   }
@@ -588,8 +588,8 @@ void FrameFetchContext::AddClientHintsIfNecessary(
       throughput_mbps = GetNetworkStateNotifier().DownlinkThroughputMbps();
     }
 
-    double mbps = GetNetworkStateNotifier().RoundMbps(request.Url().Host(),
-                                                      throughput_mbps);
+    double mbps = GetNetworkStateNotifier().RoundMbps(
+        request.Url().Host().ToString(), throughput_mbps);
     request.SetHttpHeaderField(http_names::kDownlink_DEPRECATED,
                                AtomicString(String::Number(mbps)));
   }

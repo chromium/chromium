@@ -386,11 +386,7 @@ String KURL::Protocol() const {
   return protocol_;
 }
 
-String KURL::Host() const {
-  return ComponentString(parsed_.host);
-}
-
-StringView KURL::HostView() const {
+StringView KURL::Host() const {
   return ComponentStringView(parsed_.host);
 }
 
