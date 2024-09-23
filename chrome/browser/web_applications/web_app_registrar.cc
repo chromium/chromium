@@ -1049,7 +1049,7 @@ WebAppRegistrar::GetIsolatedWebAppStoragePartitionConfigs(
 
   // Get all on-disk Controlled Frame partitions.
   for (const std::string& partition :
-       isolated_web_app->isolation_data()->controlled_frame_partitions) {
+       isolated_web_app->isolation_data()->controlled_frame_partitions()) {
     partitions.push_back(url_info->GetStoragePartitionConfigForControlledFrame(
         profile_, partition, /*in_memory=*/false));
   }

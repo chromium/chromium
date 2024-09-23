@@ -958,9 +958,11 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
   const webapps::AppId app_id = isolated_web_app->app_id();
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-      base::Version("1.0.0")));
+  isolated_web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
   RegisterAppUnsafe(std::move(isolated_web_app));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs =
@@ -986,9 +988,11 @@ TEST_F(
   const webapps::AppId app_id = isolated_web_app->app_id();
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-      base::Version("1.0.0")));
+  isolated_web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
   isolated_web_app->SetInstallState(
       proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
   RegisterAppUnsafe(std::move(isolated_web_app));
@@ -1015,9 +1019,11 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
   ASSERT_TRUE(url_info.has_value());
 
   isolated_web_app->SetScope(isolated_web_app->start_url());
-  isolated_web_app->SetIsolationData(WebApp::IsolationData(
-      IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-      base::Version("1.0.0")));
+  isolated_web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
+          base::Version("1.0.0"))
+          .Build());
   RegisterAppUnsafe(std::move(isolated_web_app));
 
   auto output_config =
@@ -1114,9 +1120,11 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetDisplayMode(DisplayMode::kStandalone);
   web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);
   web_app->SetInstallState(proto::INSTALLED_WITH_OS_INTEGRATION);
-  web_app->SetIsolationData(WebApp::IsolationData(
-      IwaStorageProxy{url::Origin::Create(GURL("http://127.0.0.1:8080"))},
-      base::Version("1.0.0")));
+  web_app->SetIsolationData(
+      IsolationData::Builder(
+          IwaStorageProxy{url::Origin::Create(GURL("http://127.0.0.1:8080"))},
+          base::Version("1.0.0"))
+          .Build());
 
   RegisterAppUnsafe(std::move(web_app));
 

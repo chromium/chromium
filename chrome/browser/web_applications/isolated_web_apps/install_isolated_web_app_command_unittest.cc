@@ -355,11 +355,11 @@ TEST_F(InstallIsolatedWebAppCommandTest, PendingUpdateInfoIsEmpty) {
   SetUpPageAndIconStates(url_info);
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
-  EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
-              Pointee(Property(
-                  &WebApp::isolation_data,
-                  Optional(Property(&WebApp::IsolationData::pending_update_info,
-                                    Eq(std::nullopt))))));
+  EXPECT_THAT(
+      web_app_registrar().GetAppById(url_info.app_id()),
+      Pointee(Property(&WebApp::isolation_data,
+                       Optional(Property(&IsolationData::pending_update_info,
+                                         Eq(std::nullopt))))));
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -425,8 +425,8 @@ TEST_F(InstallIsolatedWebAppCommandTest, LocationSentToFinalizer) {
       web_app_registrar().GetAppById(url_info.app_id()),
       Pointee(AllOf(Property(
           "isolation_data", &WebApp::isolation_data,
-          Optional(Field(
-              "location", &WebApp::IsolationData::location,
+          Optional(Property(
+              "location", &IsolationData::location,
               Property("variant", &IsolatedWebAppStorageLocation::variant,
                        VariantWith<IwaStorageProxy>(Property(
                            "proxy_url", &IwaStorageProxy::proxy_url,

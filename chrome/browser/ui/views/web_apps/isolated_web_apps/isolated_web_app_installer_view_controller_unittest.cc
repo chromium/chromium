@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -356,9 +357,10 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   AddDummyIsolatedAppToRegistry(
       profile(), url_info.origin().GetURL(), "app",
-      WebApp::IsolationData(
+      IsolationData::Builder(
           IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
-          base::Version("2.0")));
+          base::Version("2.0"))
+          .Build());
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   model.SetStep(Step::kGetMetadata);
@@ -393,9 +395,10 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   AddDummyIsolatedAppToRegistry(
       profile(), url_info.origin().GetURL(), "app",
-      WebApp::IsolationData(
+      IsolationData::Builder(
           IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
-          base::Version("1.0")));
+          base::Version("1.0"))
+          .Build());
 
   IsolatedWebAppInstallerModel model{IwaSourceBundleProdMode(bundle_path)};
   model.SetStep(Step::kGetMetadata);

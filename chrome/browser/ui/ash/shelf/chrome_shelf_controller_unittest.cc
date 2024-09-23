@@ -1260,8 +1260,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   web_app::IsolatedWebAppUrlInfo AddIsolatedWebApp(const GURL& url) {
     web_app::AddDummyIsolatedAppToRegistry(
         profile(), url, "IWA",
-        web_app::WebApp::IsolationData(
-            web_app::IwaStorageOwnedBundle{"", false}, base::Version("1.0.0")),
+        web_app::IsolationData::Builder(
+            web_app::IwaStorageOwnedBundle{"", false}, base::Version("1.0.0"))
+            .Build(),
         webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
     base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
         web_app::IsolatedWebAppUrlInfo::Create(url);

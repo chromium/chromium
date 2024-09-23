@@ -50,7 +50,7 @@ std::ostream& operator<<(std::ostream& os,
 
 // This command applies a pending update of an Isolated Web App. Information
 // about the pending update is read from
-// `WebApp::IsolationData::pending_update_info`. Both on success, and on
+// `IsolationData::pending_update_info`. Both on success, and on
 // failure, the pending update info is removed from the Web App database.
 class IsolatedWebAppApplyUpdateCommand
     : public WebAppCommand<
@@ -150,7 +150,7 @@ class IsolatedWebAppApplyUpdateCommand
   const std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   const std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
 
-  std::optional<WebApp::IsolationData::PendingUpdateInfo> pending_update_info_;
+  std::optional<IsolationData::PendingUpdateInfo> pending_update_info_;
 
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
 

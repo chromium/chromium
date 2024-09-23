@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppUninstallBrowserTest, Succeeds) {
                          EXPECT_EQ(location.path(), src_bundle_path_);
                        },
                        [&](const IwaStorageProxy& location) { FAIL(); }},
-      web_app_before->isolation_data()->location.variant());
+      web_app_before->isolation_data()->location().variant());
 
   // Uninstall the app and check that the copied to profile directory
   // file has been removed.

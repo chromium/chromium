@@ -207,7 +207,7 @@ void IsolatedWebAppReaderRegistry::OnComponentUpdateSuccess(
     }
 
     auto iwa_source = IwaSourceWithMode::FromStorageLocation(
-        profile_->GetPath(), isolation_data.location);
+        profile_->GetPath(), isolation_data.location());
     WebAppUiManager& ui_manager = provider->ui_manager();
     absl::visit(base::Overloaded{
                     [&](const IwaSourceBundle& bundle) {

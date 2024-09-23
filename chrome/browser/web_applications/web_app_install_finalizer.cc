@@ -459,11 +459,11 @@ void WebAppInstallFinalizer::FinalizeUpdate(
 
   auto web_app = std::make_unique<WebApp>(*existing_web_app);
   if (web_app->isolation_data().has_value()) {
-    const std::optional<WebApp::IsolationData::PendingUpdateInfo>&
-        pending_update_info = web_app->isolation_data()->pending_update_info();
+    const std::optional<IsolationData::PendingUpdateInfo>& pending_update_info =
+        web_app->isolation_data()->pending_update_info();
     CHECK(pending_update_info.has_value())
         << "Isolated Web Apps can only be updated if "
-           "`WebApp::IsolationData::PendingUpdateInfo` is set.";
+           "`IsolationData::PendingUpdateInfo` is set.";
     CHECK_EQ(web_app_info.isolated_web_app_version,
              pending_update_info->version);
     UpdateIsolationDataAndResetPendingUpdateInfo(
@@ -506,18 +506,18 @@ void WebAppInstallFinalizer::UpdateIsolationDataAndResetPendingUpdateInfo(
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data) {
   CHECK(version.IsValid());
 
-  // If previous `controlled_frame_partitions` exist, keep them the same. This
-  // can only happen during an update, and never during an install.
-  std::set<std::string> controlled_frame_partitions;
+  IsolationData::Builder builder(location, version);
   if (web_app->isolation_data().has_value()) {
-    controlled_frame_partitions =
-        web_app->isolation_data()->controlled_frame_partitions;
+    // If previous `controlled_frame_partitions` exist, keep them the same. This
+    // can only happen during an update, and never during an install.
+    builder.SetControlledFramePartitions(
+        web_app->isolation_data()->controlled_frame_partitions());
   }
-  web_app->SetIsolationData(WebApp::IsolationData(
-      location, version, controlled_frame_partitions,
-      // Always reset `pending_update_info`, because reaching this point means
-      // that an install or update just succeeded.
-      /*pending_update_info=*/std::nullopt, std::move(integrity_block_data)));
+  if (integrity_block_data) {
+    builder.SetIntegrityBlockData(std::move(*integrity_block_data));
+  }
+
+  web_app->SetIsolationData(std::move(builder).Build());
 }
 
 void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(

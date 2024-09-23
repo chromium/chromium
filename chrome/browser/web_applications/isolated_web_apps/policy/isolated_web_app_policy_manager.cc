@@ -648,7 +648,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
 
       case WebAppManagement::kIwaUserInstalled:
         if (!installed_app.isolation_data().has_value() ||
-            installed_app.isolation_data()->location.dev_mode()) {
+            installed_app.isolation_data()->location().dev_mode()) {
           // Always fully uninstall and then reinstall dev mode apps.
           app_actions.emplace(install_options.web_bundle_id(),
                               AppActionRemoveInstallSource(

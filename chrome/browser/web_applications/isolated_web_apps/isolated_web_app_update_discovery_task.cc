@@ -213,7 +213,7 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
       const WebApp& iwa, GetIsolatedWebAppById(*registrar_, url_info_.app_id()),
       [&](const std::string&) { FailWith(Error::kIwaNotInstalled); });
   const auto& isolation_data = *iwa.isolation_data();
-  base::Version currently_installed_version = isolation_data.version;
+  base::Version currently_installed_version = isolation_data.version();
   debug_log_.Set("currently_installed_version",
                  currently_installed_version.GetString());
 

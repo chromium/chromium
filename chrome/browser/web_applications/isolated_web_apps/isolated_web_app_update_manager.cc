@@ -80,7 +80,7 @@ class IsolatedWebAppUpdateManager::LocalDevModeUpdateDiscoverer {
     const WebApp* installed_app =
         provider_->registrar_unsafe().GetAppById(url_info.app_id());
     if (!installed_app || !installed_app->isolation_data().has_value() ||
-        !installed_app->isolation_data()->location.dev_mode()) {
+        !installed_app->isolation_data()->location().dev_mode()) {
       std::move(callback).Run(
           base::unexpected("Discovering a local update is only supported for "
                            "dev mode-installed apps."));
@@ -458,12 +458,11 @@ bool IsolatedWebAppUpdateManager::MaybeQueueUpdateDiscoveryTask(
     return false;
   }
 
-  const std::optional<WebApp::IsolationData>& isolation_data =
-      web_app.isolation_data();
+  const std::optional<IsolationData>& isolation_data = web_app.isolation_data();
   if (!isolation_data) {
     return false;
   }
-  if (isolation_data->location.dev_mode()) {
+  if (isolation_data->location().dev_mode()) {
     // Never automatically update IWAs installed in dev mode. Updates for dev
     // mode apps can be triggered manually from the browser's dev mode UI.
     return false;

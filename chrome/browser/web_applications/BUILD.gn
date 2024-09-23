@@ -153,6 +153,8 @@ source_set("web_applications") {
     "isolated_web_apps/isolated_web_app_validator.h",
     "isolated_web_apps/isolated_web_app_version.cc",
     "isolated_web_apps/isolated_web_app_version.h",
+    "isolated_web_apps/isolation_data.cc",
+    "isolated_web_apps/isolation_data.h",
     "isolated_web_apps/iwa_identity_validator.cc",
     "isolated_web_apps/iwa_identity_validator.h",
     "isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.cc",

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -1037,13 +1038,15 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
         random.next_uint(),
     });
 
-    WebApp::IsolationData isolation_data(get_location_type(), version);
-
+    auto idb = IsolationData::Builder(get_location_type(), version);
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data =
         CreateIntegrityBlockData(random);
-    isolation_data.integrity_block_data = integrity_block_data;
+    if (integrity_block_data) {
+      idb.SetIntegrityBlockData(std::move(*integrity_block_data));
+    }
+
     if (random.next_bool()) {
-      isolation_data.controlled_frame_partitions.insert("partition_name");
+      idb.SetControlledFramePartitions({"partition_name"});
     }
     if (random.next_bool()) {
       base::Version pending_version = base::Version({
@@ -1051,11 +1054,11 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
           random.next_uint(),
           random.next_uint(),
       });
-      WebApp::IsolationData::PendingUpdateInfo pending_update_info(
+      IsolationData::PendingUpdateInfo pending_update_info(
           get_location_type(), pending_version, integrity_block_data);
-      isolation_data.SetPendingUpdateInfo(pending_update_info);
+      idb.SetPendingUpdateInfo(std::move(pending_update_info));
     }
-    app->SetIsolationData(isolation_data);
+    app->SetIsolationData(std::move(idb).Build());
   }
 
   app->SetLinkCapturingUserPreference(NEXT_PROTO_ENUM(

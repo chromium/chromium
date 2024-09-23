@@ -552,9 +552,9 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
                                      std::move(loader_client));
                    });
   auto location = IwaSourceWithMode::FromStorageLocation(
-      profile_->GetPath(), iwa.isolation_data()->location);
+      profile_->GetPath(), iwa.isolation_data()->location());
 
-  if (iwa.isolation_data()->location.dev_mode() &&
+  if (iwa.isolation_data()->location().dev_mode() &&
       !IsIwaDevModeEnabled(&*profile_)) {
     LogErrorAndFail(base::StrCat({"Unable to load Isolated Web App that was "
                                   "installed in Developer Mode: ",

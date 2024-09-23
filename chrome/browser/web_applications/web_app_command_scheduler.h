@@ -58,6 +58,7 @@ namespace web_app {
 
 class IsolatedWebAppInstallSource;
 class IsolatedWebAppUrlInfo;
+class IsolationData;
 class SignedWebBundleMetadata;
 class WebApp;
 class WebAppProvider;
@@ -66,7 +67,6 @@ enum class FallbackBehavior;
 enum class IsolatedInstallabilityCheckResult;
 struct ComputedAppSize;
 struct IsolatedWebAppApplyUpdateCommandError;
-struct IsolationData;
 struct SynchronizeOsOptions;
 struct WebAppInstallInfo;
 struct WebAppIconDiagnosticResult;

@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -867,15 +868,15 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     const auto& isolation_data = *web_app.isolation_data();
     auto* mutable_data = local_data->mutable_isolation_data();
 
-    IsolationDataLocationToProto(isolation_data.location, mutable_data);
-    mutable_data->set_version(isolation_data.version.GetString());
+    IsolationDataLocationToProto(isolation_data.location(), mutable_data);
+    mutable_data->set_version(isolation_data.version().GetString());
     for (const std::string& partition :
-         isolation_data.controlled_frame_partitions) {
+         isolation_data.controlled_frame_partitions()) {
       mutable_data->add_controlled_frame_partitions(partition);
     }
 
     if (isolation_data.pending_update_info().has_value()) {
-      const WebApp::IsolationData::PendingUpdateInfo& pending_update_info =
+      const IsolationData::PendingUpdateInfo& pending_update_info =
           *isolation_data.pending_update_info();
       auto* mutable_pending_update_info =
           mutable_data->mutable_pending_update_info();
@@ -890,9 +891,9 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       }
     }
 
-    if (isolation_data.integrity_block_data) {
+    if (isolation_data.integrity_block_data()) {
       *mutable_data->mutable_integrity_block_data() =
-          isolation_data.integrity_block_data->ToProto();
+          isolation_data.integrity_block_data()->ToProto();
     }
   }
 
@@ -1628,20 +1629,13 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   if (local_data.has_isolation_data()) {
-    const google::protobuf::RepeatedPtrField<std::string>& partitions =
-        local_data.isolation_data().controlled_frame_partitions();
-    std::set<std::string> controlled_frame_partitions(partitions.begin(),
-                                                      partitions.end());
-    auto version_components =
-        ParseIwaVersionIntoComponents(local_data.isolation_data().version());
-    if (!version_components.has_value()) {
+    auto version = ParseIwaVersion(local_data.isolation_data().version());
+    if (!version.has_value()) {
       DLOG(ERROR) << "WebApp proto isolation_data.version parse error: cannot "
                      "deserialize version: "
-                  << IwaVersionParseErrorToString(version_components.error());
+                  << IwaVersionParseErrorToString(version.error());
       return nullptr;
     }
-    base::Version version(
-        std::vector(version_components->begin(), version_components->end()));
 
     base::expected<IsolatedWebAppStorageLocation, std::string> location =
         ProtoToIsolationDataLocation(local_data.isolation_data());
@@ -1650,7 +1644,14 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       return nullptr;
     }
 
-    std::optional<WebApp::IsolationData::PendingUpdateInfo> pending_update_info;
+    auto isolation_data_builder =
+        IsolationData::Builder(std::move(*location), std::move(*version));
+
+    const google::protobuf::RepeatedPtrField<std::string>& partitions =
+        local_data.isolation_data().controlled_frame_partitions();
+    isolation_data_builder.SetControlledFramePartitions(
+        {partitions.begin(), partitions.end()});
+
     if (local_data.isolation_data().has_pending_update_info()) {
       const auto& pending_update_info_proto =
           local_data.isolation_data().pending_update_info();
@@ -1673,18 +1674,15 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
         return nullptr;
       }
 
-      auto pending_version_components =
-          ParseIwaVersionIntoComponents(pending_update_info_proto.version());
-      if (!pending_version_components.has_value()) {
+      auto pending_version =
+          ParseIwaVersion(pending_update_info_proto.version());
+      if (!pending_version.has_value()) {
         DLOG(ERROR)
             << "WebApp proto isolation_data.pending_update_info.version parse "
                "error: cannot deserialize version: "
-            << IwaVersionParseErrorToString(pending_version_components.error());
+            << IwaVersionParseErrorToString(pending_version.error());
         return nullptr;
       }
-      base::Version pending_version(
-          std::vector(pending_version_components->begin(),
-                      pending_version_components->end()));
 
       std::optional<IsolatedWebAppIntegrityBlockData>
           pending_integrity_block_data;
@@ -1701,12 +1699,12 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
         pending_integrity_block_data = std::move(result.value());
       }
 
-      pending_update_info = WebApp::IsolationData::PendingUpdateInfo(
-          *pending_location, pending_version,
-          std::move(pending_integrity_block_data));
+      isolation_data_builder.SetPendingUpdateInfo(
+          IsolationData::PendingUpdateInfo(
+              std::move(*pending_location), std::move(*pending_version),
+              std::move(pending_integrity_block_data)));
     }
 
-    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data;
     if (local_data.isolation_data().has_integrity_block_data()) {
       auto result = IsolatedWebAppIntegrityBlockData::FromProto(
           local_data.isolation_data().integrity_block_data());
@@ -1716,12 +1714,10 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
             << result.error();
         return nullptr;
       }
-      integrity_block_data = std::move(result.value());
+      isolation_data_builder.SetIntegrityBlockData(std::move(*result));
     }
 
-    web_app->SetIsolationData(WebApp::IsolationData(
-        *location, version, controlled_frame_partitions, pending_update_info,
-        std::move(integrity_block_data)));
+    web_app->SetIsolationData(std::move(isolation_data_builder).Build());
   }
 
   if (local_data.has_user_link_capturing_preference()) {

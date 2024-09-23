@@ -116,7 +116,7 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
     profile_->GetPrefs()->SetBoolean(
         prefs::kShouldGarbageCollectStoragePartitions, true);
 
-    location_ = app->isolation_data()->location;
+    location_ = app->isolation_data()->location();
 
     url::Origin iwa_origin = url::Origin::Create(app->scope());
     web_app::RemoveIsolatedWebAppBrowsingData(

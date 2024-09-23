@@ -813,7 +813,7 @@ void WebAppInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
 
     base::expected<web_app::IwaSourceDevMode, absl::monostate> source =
         web_app::IwaSourceDevMode::FromStorageLocation(
-            profile_->GetPath(), app.isolation_data()->location);
+            profile_->GetPath(), app.isolation_data()->location());
     if (!source.has_value()) {
       continue;
     }
@@ -823,13 +823,13 @@ void WebAppInternalsHandler::GetIsolatedWebAppDevModeAppInfo(
               dev_mode_apps.emplace_back(mojom::IwaDevModeAppInfo::New(
                   app.app_id(), app.untranslated_name(),
                   mojom::IwaDevModeLocation::NewBundlePath(source.path()),
-                  app.isolation_data()->version.GetString()));
+                  app.isolation_data()->version().GetString()));
             },
             [&](const web_app::IwaSourceProxy& source) {
               dev_mode_apps.emplace_back(mojom::IwaDevModeAppInfo::New(
                   app.app_id(), app.untranslated_name(),
                   mojom::IwaDevModeLocation::NewProxyOrigin(source.proxy_url()),
-                  app.isolation_data()->version.GetString()));
+                  app.isolation_data()->version().GetString()));
             },
         },
         source->variant());
@@ -869,7 +869,7 @@ void WebAppInternalsHandler::ApplyDevModeUpdate(
   }
   ASSIGN_OR_RETURN(web_app::IwaSourceDevMode source,
                    web_app::IwaSourceDevMode::FromStorageLocation(
-                       profile_->GetPath(), app->isolation_data()->location),
+                       profile_->GetPath(), app->isolation_data()->location()),
                    [&](auto error) {
                      std::move(callback).Run("can only update dev-mode apps");
                    });

@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        AppliesUpdateOnStartupIfAppWindowNeverCloses) {
   // Wait for the update to be applied if it hasn't already.
   const auto* web_app = GetIsolatedWebApp(GetAppId());
-  if (web_app->isolation_data()->version != base::Version("7.0.6")) {
+  if (web_app->isolation_data()->version() != base::Version("7.0.6")) {
     WebAppTestManifestUpdatedObserver manifest_updated_observer(
         &provider().install_manager());
     manifest_updated_observer.BeginListening({GetAppId()});
@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   const auto& isolation_data = GetIsolatedWebApp(GetAppId())->isolation_data();
   const auto& app_location =
       base::FilePath(absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
-                         &isolation_data->location.variant())
+                         &isolation_data->location().variant())
                          ->dir_name_ascii());
   const auto& app_update_location = base::FilePath(
       absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(

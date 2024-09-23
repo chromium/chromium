@@ -104,7 +104,7 @@ struct KeyRotationData {
 // `LookupRotatedKey()` has yielded `kKeyFound` (will CHECK otherwise).
 KeyRotationData GetKeyRotationData(
     const web_package::SignedWebBundleId& web_bundle_id,
-    const WebApp::IsolationData& isolation_data);
+    const IsolationData& isolation_data);
 
 // This is a helper class that contains methods which are shared between both
 // install and update commands.

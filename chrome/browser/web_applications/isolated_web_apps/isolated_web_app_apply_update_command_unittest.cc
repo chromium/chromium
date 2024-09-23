@@ -109,15 +109,20 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
     ASSERT_THAT(base::WriteFile(bundle_path, bundle.data), IsTrue());
   }
 
-  void InstallIwa(std::optional<WebApp::IsolationData::PendingUpdateInfo>
-                      pending_update_info) {
+  void InstallIwa(
+      std::optional<IsolationData::PendingUpdateInfo> pending_update_info) {
     std::unique_ptr<WebApp> isolated_web_app =
         test::CreateWebApp(url_info_.origin().GetURL());
     isolated_web_app->SetName("installed app");
     isolated_web_app->SetScope(isolated_web_app->start_url());
-    isolated_web_app->SetIsolationData(WebApp::IsolationData(
-        installed_location_, installed_version_, {"some-partition"},
-        std::move(pending_update_info), /*integrity_block_data=*/std::nullopt));
+
+    auto builder =
+        IsolationData::Builder(installed_location_, installed_version_)
+            .SetControlledFramePartitions({"some-partition"});
+    if (pending_update_info) {
+      builder.SetPendingUpdateInfo(std::move(*pending_update_info));
+    }
+    isolated_web_app->SetIsolationData(std::move(builder).Build());
 
     {
       ScopedRegistryUpdate update =
@@ -168,8 +173,8 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
     return page_state;
   }
 
-  WebApp::IsolationData::PendingUpdateInfo update_info() {
-    return WebApp::IsolationData::PendingUpdateInfo(
+  IsolationData::PendingUpdateInfo update_info() {
+    return IsolationData::PendingUpdateInfo(
         update_bundle_location_, update_version_,
         /*integrity_block_data=*/std::nullopt);
   }
@@ -179,15 +184,14 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
         fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
     EXPECT_THAT(
         web_app,
-        test::IwaIs(Eq("installed app"),
-                    WebApp::IsolationData(
-                        installed_location_, installed_version_,
-                        /*controlled_frame_partitions=*/{"some-partition"},
-                        /*pending_update_info=*/std::nullopt,
-                        /*integrity_block_data=*/std::nullopt)));
+        test::IwaIs(
+            Eq("installed app"),
+            IsolationData::Builder(installed_location_, installed_version_)
+                .SetControlledFramePartitions({"some-partition"})
+                .Build()));
 
     const IsolatedWebAppStorageLocation installed_app_location =
-        web_app->isolation_data()->location;
+        web_app->isolation_data()->location();
     const base::FilePath iwa_base_dir =
         profile()->GetPath().Append(kIwaDirName);
     absl::visit(
@@ -235,14 +239,12 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, Succeeds) {
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(
-      web_app,
-      test::IwaIs(Eq("updated app"),
-                  WebApp::IsolationData(
-                      update_bundle_location_, update_version_,
-                      /*controlled_frame_partitions=*/{"some-partition"},
-                      /*pending_update_info=*/std::nullopt,
-                      /*integrity_block_data=*/std::nullopt)));
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("updated app"),
+                          IsolationData::Builder(update_bundle_location_,
+                                                 update_version_)
+                              .SetControlledFramePartitions({"some-partition"})
+                              .Build()));
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest,

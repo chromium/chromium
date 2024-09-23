@@ -718,7 +718,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
       provider_->registrar_unsafe().GetAppDescription(web_app->app_id());
   if (web_app->isolation_data().has_value()) {
     // Show the version of Isolated Web App in ChromeOS Settings
-    app->version = web_app->isolation_data()->version.GetString();
+    app->version = web_app->isolation_data()->version().GetString();
   }
 
   app->additional_search_terms = web_app->additional_search_terms();

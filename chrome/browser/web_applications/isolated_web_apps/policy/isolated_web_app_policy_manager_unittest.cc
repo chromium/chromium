@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
@@ -598,9 +599,10 @@ TEST_F(IsolatedWebAppPolicyManagerTest,
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(get_app1_id());
   AddDummyIsolatedAppToRegistry(
       profile(), url_info.origin().GetURL(), "iwa",
-      WebApp::IsolationData(
+      IsolationData::Builder(
           IwaStorageOwnedBundle("some_folder", /*dev_mode=*/false),
-          base::Version("1.0.0")),
+          base::Version("1.0.0"))
+          .Build(),
       webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER);
   {
     const WebApp* web_app =
@@ -649,9 +651,10 @@ TEST_F(IsolatedWebAppPolicyManagerTest,
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(get_app1_id());
   AddDummyIsolatedAppToRegistry(
       profile(), url_info.origin().GetURL(), "iwa",
-      WebApp::IsolationData(
+      IsolationData::Builder(
           IwaStorageOwnedBundle("some_folder", /*dev_mode=*/true),
-          base::Version("1.0.0")),
+          base::Version("1.0.0"))
+          .Build(),
       webapps::WebappInstallSource::IWA_DEV_UI);
 
   WebAppTestUninstallObserver uninstall_observer(profile());
@@ -1001,9 +1004,10 @@ TEST_F(IsolatedWebAppPolicyManagerUninstallTest,
   {
     AddDummyIsolatedAppToRegistry(
         profile(), url_info.origin().GetURL(), "iwa",
-        WebApp::IsolationData(
+        IsolationData::Builder(
             IwaStorageOwnedBundle("some_folder", /*dev_mode=*/false),
-            base::Version("1.0.0")),
+            base::Version("1.0.0"))
+            .Build(),
         webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER);
 
     const WebApp* web_app =

@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -127,7 +128,7 @@ void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(
       const WebApp& iwa,
       GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
       [&](const std::string& error) { ReportFailure(error); });
-  const WebApp::IsolationData& isolation_data = *iwa.isolation_data();
+  const IsolationData& isolation_data = *iwa.isolation_data();
 
   if (!isolation_data.pending_update_info().has_value()) {
     ReportFailure("Installed app does not have a pending update.");
@@ -163,22 +164,22 @@ void IsolatedWebAppApplyUpdateCommand::CheckIfUpdateIsStillPending(
     } break;
   }
 
-  if (isolation_data.version > pending_update_info_->version ||
-      (isolation_data.version == pending_update_info_->version &&
+  if (isolation_data.version() > pending_update_info_->version ||
+      (isolation_data.version() == pending_update_info_->version &&
        !same_version_update_allowed_by_key_rotation)) {
     ReportFailure(base::StrCat({"Installed app is already on version ",
-                                isolation_data.version.GetString(),
+                                isolation_data.version().GetString(),
                                 ". Cannot update to version ",
                                 pending_update_info_->version.GetString()}));
     return;
   }
 
-  if (isolation_data.location.dev_mode() !=
+  if (isolation_data.location().dev_mode() !=
       pending_update_info_->location.dev_mode()) {
     std::stringstream s;
     s << "Unable to update between dev-mode and non-dev-mode storage location "
          "types ("
-      << isolation_data.location << " to " << pending_update_info_->location
+      << isolation_data.location() << " to " << pending_update_info_->location
       << ").";
     ReportFailure(s.str());
     return;
@@ -319,17 +320,17 @@ void IsolatedWebAppApplyUpdateCommand::CleanupOnFailure(
   WebApp* web_app = update->UpdateApp(url_info_.app_id());
 
   // This command might fail because the app is no longer installed, or
-  // because it does not have `WebApp::IsolationData` or
-  // `WebApp::IsolationData::PendingUpdateInfo`, in which case there is no
+  // because it does not have `IsolationData` or
+  // `IsolationData::PendingUpdateInfo`, in which case there is no
   // pending update info for us to delete.
   if (!web_app || !web_app->isolation_data().has_value() ||
       !web_app->isolation_data()->pending_update_info().has_value()) {
     return;
   }
 
-  WebApp::IsolationData updated_isolation_data = *web_app->isolation_data();
-  updated_isolation_data.SetPendingUpdateInfo(std::nullopt);
-  web_app->SetIsolationData(std::move(updated_isolation_data));
+  web_app->SetIsolationData(IsolationData::Builder(*web_app->isolation_data())
+                                .ClearPendingUpdateInfo()
+                                .Build());
 }
 
 void IsolatedWebAppApplyUpdateCommand::ReportSuccess() {

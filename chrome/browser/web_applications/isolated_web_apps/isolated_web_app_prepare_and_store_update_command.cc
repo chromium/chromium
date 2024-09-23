@@ -29,6 +29,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -168,7 +169,7 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
       GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
       [&](const std::string& error) { ReportFailure(error); });
   const auto& isolation_data = *iwa.isolation_data();
-  installed_version_ = isolation_data.version;
+  installed_version_ = isolation_data.version();
   GetMutableDebugValue().Set("installed_version",
                              installed_version_->GetString());
 
@@ -200,11 +201,11 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::CheckIfUpdateIsStillApplicable(
     return;
   }
 
-  if (isolation_data.location.dev_mode() != update_source_->dev_mode()) {
+  if (isolation_data.location().dev_mode() != update_source_->dev_mode()) {
     std::stringstream s;
     s << "Unable to update between dev-mode and non-dev-mode storage location "
          "types ("
-      << isolation_data.location << " to " << *update_source_ << ").";
+      << isolation_data.location() << " to " << *update_source_ << ").";
     ReportFailure(s.str());
     return;
   }
@@ -355,13 +356,12 @@ void IsolatedWebAppUpdatePrepareAndStoreCommand::Finalize(
   WebApp* app_to_update = update->UpdateApp(url_info_.app_id());
   CHECK(app_to_update);
 
-  WebApp::IsolationData updated_isolation_data =
-      *app_to_update->isolation_data();
-  updated_isolation_data.SetPendingUpdateInfo(
-      WebApp::IsolationData::PendingUpdateInfo(
-          *destination_storage_location_, info.isolated_web_app_version,
-          std::move(integrity_block_data_)));
-  app_to_update->SetIsolationData(std::move(updated_isolation_data));
+  app_to_update->SetIsolationData(
+      IsolationData::Builder(*app_to_update->isolation_data())
+          .SetPendingUpdateInfo(IsolationData::PendingUpdateInfo(
+              *destination_storage_location_, info.isolated_web_app_version,
+              std::move(integrity_block_data_)))
+          .Build());
 }
 
 void IsolatedWebAppUpdatePrepareAndStoreCommand::OnFinalized(

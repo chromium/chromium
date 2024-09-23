@@ -99,7 +99,8 @@ std::optional<std::string> GetIsolatedWebAppNameAndVersion(
   if (web_app && registrar.IsIsolated(*app_id)) {
     // Version is a key part of IWA so should be displayed in inspect tool
     return base::StrCat({registrar.GetAppShortName(*app_id), " (",
-                         web_app->isolation_data()->version.GetString(), ")"});
+                         web_app->isolation_data()->version().GetString(),
+                         ")"});
   }
 
   return std::nullopt;

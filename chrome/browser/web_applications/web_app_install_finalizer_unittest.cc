@@ -17,6 +17,7 @@
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -49,6 +50,8 @@
 namespace web_app {
 
 namespace {
+
+using testing::_;
 
 struct FinalizeInstallResult {
   webapps::AppId installed_app_id;
@@ -490,10 +493,12 @@ TEST_F(WebAppInstallFinalizerUnitTest, IsolationDataSetInWebAppDB) {
             GenerateAppId(/*manifest_id=*/std::nullopt, info->start_url()));
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
-  EXPECT_EQ(location, installed_app->isolation_data()->location);
-  EXPECT_EQ(version, installed_app->isolation_data()->version);
-  EXPECT_EQ(integrity_block_data,
-            installed_app->isolation_data()->integrity_block_data);
+  EXPECT_THAT(
+      installed_app,
+      test::IwaIs(_, test::IsolationDataIs(location, version,
+                                           /*controlled_frame_partiions=*/_,
+                                           /*pending_update_info=*/std::nullopt,
+                                           integrity_block_data)));
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {

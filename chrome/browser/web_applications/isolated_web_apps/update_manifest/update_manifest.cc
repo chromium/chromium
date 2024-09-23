@@ -279,15 +279,9 @@ UpdateManifest::VersionEntry::ParseAndValidateVersion(
     return base::unexpected(absl::monostate());
   }
 
-  base::expected<std::vector<uint32_t>, IwaVersionParseError>
-      version_components =
-          ParseIwaVersionIntoComponents(version_value->GetString());
-  if (!version_components.has_value()) {
-    return base::unexpected(absl::monostate());
-  }
-  base::Version version(std::move(*version_components));
-  CHECK(version.IsValid());
-  return version;
+  return ParseIwaVersion(version_value->GetString()).transform_error([](auto) {
+    return absl::monostate();
+  });
 }
 
 // static
