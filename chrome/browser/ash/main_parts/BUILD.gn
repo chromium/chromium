@@ -71,6 +71,7 @@ static_library("main_parts") {
     "//chrome/browser/ash/note_taking",
     "//chrome/browser/ash/notifications",
     "//chrome/browser/ash/ownership",
+    "//chrome/browser/ash/performance",
     "//chrome/browser/ash/platform_keys/key_permissions",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/handlers",
