@@ -202,19 +202,19 @@ format.
 ### Owners-Override
 
 Setting the `Owners-Override +1` label will bypass OWNERS enforcement. Active
-[sheriffs](sheriffs.md), Release Program Managers,
+[gardeners](gardener.md), Release Program Managers,
 [Large Scale Changes](#large-scale-changes),
 [Global Approvers](#global-approvals) reviewers,
 [Chrome ATLs](../ATL_OWNERS)
 have this capability. The power to use Owners-Override should be restricted
 as follows:
 
-  * Active sheriffs and Release Program Managers can set Owners-Override only on
-    CLs needed for sheriffing and releasing (e.g., revert, reland, test fix,
+  * Active gardeners and Release Program Managers can set Owners-Override only
+    on CLs needed for gardening and releasing (e.g., revert, reland, test fix,
     cherry-pick).
-  * Large Scale Change reviewers can set Owners-Override only on sheriffing CLs
+  * Large Scale Change reviewers can set Owners-Override only on gardening CLs
     and CLs about the approved Large Scale Change.
-  * Global approvers can set Owners-Override only on sheriffing CLs and
+  * Global approvers can set Owners-Override only on gardening CLs and
     mechanical CLs associated with their API changes. For example,
     //base/OWNERS can set Owners-Override on mechanical CLs associated with
     //base/ API changes.
@@ -223,12 +223,12 @@ as follows:
     heavyweight. However, please use one of the above groups before asking
     Chrome ATLs.
 
-When you need Owners-Override on sheriffing CLs, please reach out to the
+When you need Owners-Override on gardening CLs, please reach out to the
 Active Sheriffs and Release Program Managers first. If none of them is
 available, please send an email to lsc-owners-override@chromium.org for help.
 
 Note that Owners-Override by itself is not enough on your own CLs. Where this
-matters is when you are sheriffing. For example, if you want to revert or
+matters is when you are gardening. For example, if you want to revert or
 disable a test, your Owners-Override on the CL is not enough. You also need
 either another committer to LGTM the CL or, for clean reverts, a `Bot-Commit:
 +1` from the [rubber-stamper bot](#automated-code_review).
@@ -265,11 +265,11 @@ activate this automation. It will scan the CL after about 1 minute and reply
 with its verdict. `Bot-Commit` votes are not sticky between patchsets and so
 only add the bot once the CL is finalized.
 
-When combined with the [`Owners-Override`](#owners_override) power, sheriffs can
-effectively revert and reland on their own.
+When combined with the [`Owners-Override`](#owners_override) power, gardeners
+can effectively revert and reland on their own.
 
 Rubber Stamper never provides OWNERS approval, by design. It's intended to be
-used by those who have owners in the directory modified or who are sheriffs. If
+used by those who have owners in the directory modified or who are gardeners. If
 it provided both code review and OWNERS approval, that would be an abuse vector:
 that would allow anyone who can create a revert or cherry-pick to land it
 without any other person being involved (e.g. the silent revert of security
