@@ -78,6 +78,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   // PermissionChipView::Observer
@@ -117,6 +118,9 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   views::Widget* GetBubbleWidget();
 
   PermissionPromptBubbleBaseView* GetPromptBubbleView();
+
+  void ClosePermissionPrompt();
+  void PromptDecided(permissions::PermissionAction action);
 
   PermissionPromptChipModel* permission_prompt_model() {
     return permission_prompt_model_.get();
@@ -260,6 +264,9 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   bool is_bubble_suppressed_ = false;
 
   bool do_no_collapse_for_testing_ = false;
+
+  // Keep prompt's decision until the prompt's widget is removed.
+  std::optional<permissions::PermissionAction> prompt_decision_;
 
   base::ScopedClosureRunner disallowed_custom_cursors_scope_;
 
