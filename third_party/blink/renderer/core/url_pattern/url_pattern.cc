@@ -158,14 +158,16 @@ void ApplyInit(const URLPatternInit* init,
                 (init->hasProtocol() || init->hasHostname() ||
                  init->hasPort() || init->hasUsername()))
                    ? String()
-               : base_url.User() ? EscapeBaseURLString(base_url.User(), type)
-                                 : g_empty_string;
+               : !base_url.User().empty()
+                   ? EscapeBaseURLString(base_url.User(), type)
+                   : g_empty_string;
     password = (type == ValueType::kPattern ||
                 (init->hasProtocol() || init->hasHostname() ||
                  init->hasPort() || init->hasUsername() || init->hasPassword()))
                    ? String()
-               : base_url.Pass() ? EscapeBaseURLString(base_url.Pass(), type)
-                                 : g_empty_string;
+               : !base_url.Pass().empty()
+                   ? EscapeBaseURLString(base_url.Pass(), type)
+                   : g_empty_string;
     hostname = (init->hasProtocol() || init->hasHostname()) ? String()
                : !base_url.Host().empty()
                    ? EscapeBaseURLString(base_url.Host(), type)
@@ -917,10 +919,12 @@ bool URLPattern::Match(ScriptState* script_state,
       // Apply the parsed URL components on top of our defaults.
       if (url.Protocol())
         protocol = url.Protocol();
-      if (url.User())
-        username = url.User();
-      if (url.Pass())
-        password = url.Pass();
+      if (!url.User().empty()) {
+        username = url.User().ToString();
+      }
+      if (!url.Pass().empty()) {
+        password = url.Pass().ToString();
+      }
       if (!url.Host().empty()) {
         hostname = url.Host().ToString();
       }

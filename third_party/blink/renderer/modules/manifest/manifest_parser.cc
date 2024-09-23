@@ -2357,7 +2357,7 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
     // protocol, hostname, or port.
     String default_username;
     if (!init.IsAbsolute()) {
-      default_username = base_url.User();
+      default_username = base_url.User().ToString();
     }
     std::optional<std::vector<liburlpattern::Part>> part_list =
         ParsePatternInitField(init.username, default_username);
@@ -2376,7 +2376,7 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
     // protocol, hostname, port, or username.
     String default_password;
     if (!init.IsAbsolute() && !init.username.has_value()) {
-      default_password = base_url.Pass();
+      default_password = base_url.Pass().ToString();
     }
     std::optional<std::vector<liburlpattern::Part>> part_list =
         ParsePatternInitField(init.password, default_password);

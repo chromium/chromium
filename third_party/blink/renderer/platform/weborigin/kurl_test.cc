@@ -70,31 +70,32 @@ TEST(KURLTest, Getters) {
     bool has_fragment_identifier;
   } cases[] = {
       {"http://www.google.com/foo/blah?bar=baz#ref", "http", "www.google.com",
-       0, "", nullptr, "/foo/blah", "blah", "bar=baz", "ref", true},
+       0, nullptr, nullptr, "/foo/blah", "blah", "bar=baz", "ref", true},
       {// Non-ASCII code points in the fragment part. fragmentIdentifier()
        // should return it in percent-encoded form.
        "http://www.google.com/foo/blah?bar=baz#\xce\xb1\xce\xb2", "http",
-       "www.google.com", 0, "", nullptr, "/foo/blah", "blah", "bar=baz",
+       "www.google.com", 0, nullptr, nullptr, "/foo/blah", "blah", "bar=baz",
        "%CE%B1%CE%B2", true},
-      {"http://foo.com:1234/foo/bar/", "http", "foo.com", 1234, "", nullptr,
-       "/foo/bar/", "bar", nullptr, nullptr, false},
-      {"http://www.google.com?#", "http", "www.google.com", 0, "", nullptr, "/",
-       nullptr, "", "", true},
+      {"http://foo.com:1234/foo/bar/", "http", "foo.com", 1234, nullptr,
+       nullptr, "/foo/bar/", "bar", nullptr, nullptr, false},
+      {"http://www.google.com?#", "http", "www.google.com", 0, nullptr, nullptr,
+       "/", nullptr, "", "", true},
       {"https://me:pass@google.com:23#foo", "https", "google.com", 23, "me",
        "pass", "/", nullptr, nullptr, "foo", true},
-      {"javascript:hello!//world", "javascript", "", 0, "", nullptr,
+      {"javascript:hello!//world", "javascript", "", 0, nullptr, nullptr,
        "hello!//world", "world", nullptr, nullptr, false},
       {// Recognize a query and a fragment in the path portion of a path
        // URL.
-       "javascript:hello!?#/\\world", "javascript", "", 0, "", nullptr,
+       "javascript:hello!?#/\\world", "javascript", "", 0, nullptr, nullptr,
        "hello!", "hello!", "", "/\\world", true},
       {// lastPathComponent() method handles "parameters" in a path. path()
        // method doesn't.
-       "http://a.com/hello;world", "http", "a.com", 0, "", nullptr,
+       "http://a.com/hello;world", "http", "a.com", 0, nullptr, nullptr,
        "/hello;world", "hello", nullptr, nullptr, false},
       {// IDNA
        "http://\xe4\xbd\xa0\xe5\xa5\xbd\xe4\xbd\xa0\xe5\xa5\xbd/", "http",
-       "xn--6qqa088eba", 0, "", nullptr, "/", nullptr, nullptr, nullptr, false},
+       "xn--6qqa088eba", 0, nullptr, nullptr, "/", nullptr, nullptr, nullptr,
+       false},
   };
 
   for (size_t i = 0; i < std::size(cases); i++) {
@@ -1054,7 +1055,7 @@ TEST(KURLTest, SetFileProtocolFromNonSpecial) {
   // The URL is now invalid, so the protocol is empty. This is different from
   // what happens in the case with special schemes.
   EXPECT_EQ(url.Protocol(), "");
-  EXPECT_EQ(url.User(), "");
+  EXPECT_TRUE(url.User().IsNull());
   EXPECT_TRUE(url.Pass().IsNull());
   EXPECT_EQ(url.Host(), "");
   EXPECT_EQ(url.Port(), 0);

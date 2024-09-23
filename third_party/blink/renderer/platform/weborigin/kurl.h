@@ -178,8 +178,8 @@ class PLATFORM_EXPORT KURL {
   // will be rejected by the canonicalizer.
   uint16_t Port() const;
   bool HasPort() const;
-  String User() const;
-  String Pass() const;
+  StringView User() const LIFETIME_BOUND;
+  StringView Pass() const LIFETIME_BOUND;
   StringView GetPath() const LIFETIME_BOUND;
   // This method handles "parameters" separated by a semicolon.
   String LastPathComponent() const;

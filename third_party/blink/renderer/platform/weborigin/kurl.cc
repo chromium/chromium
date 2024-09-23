@@ -403,19 +403,19 @@ uint16_t KURL::Port() const {
   return static_cast<uint16_t>(port);
 }
 
-// TODO(csharrison): Migrate pass() and user() to return a StringView. Most
-// consumers just need to know if the string is empty.
+StringView KURL::Pass() const {
+  if (!parsed_.password.is_valid()) {
+    return StringView();
+  }
 
-String KURL::Pass() const {
-  // Bug: https://bugs.webkit.org/show_bug.cgi?id=21015 this function returns
-  // a null string when the password is empty, which we duplicate here.
-  if (parsed_.password.is_empty())
-    return String();
-  return ComponentString(parsed_.password);
+  return ComponentStringView(parsed_.password);
 }
 
-String KURL::User() const {
-  return ComponentString(parsed_.username);
+StringView KURL::User() const {
+  if (!parsed_.username.is_valid()) {
+    return StringView();
+  }
+  return ComponentStringView(parsed_.username);
 }
 
 String KURL::FragmentIdentifier() const {
