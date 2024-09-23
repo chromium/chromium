@@ -194,6 +194,7 @@ if (android_64bit_target_cpu) {
 base_webview_instrumentation_apk("webview_instrumentation_apk") {
   deps = [
     "//android_webview:platform_service_bridge_upstream_implementation_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
   apk_name = "WebViewInstrumentation"
 }
