@@ -69,13 +69,11 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameNewWindowBrowserTest, AttachSucceeds) {
     }
 
     async function getCurrentLocationOfControlledFrame(frame) {
-      return await new Promise(
-          (resolve) => {
-              frame.executeScript({code: 'window.location.href;'}, (result) => {
-                resolve(
-                    result ? result[0] :
-                             'FAIL: executeScript() returned no result');
-              })});
+      const result = await frame.executeScript({code: 'window.location.href;'});
+      if (!result) {
+        return 'FAIL: executeScript() returned no result';
+      }
+      return result[0];
     };
 
     return [
@@ -145,17 +143,14 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameNewWindowBrowserTest,
   auto test_script = content::JsReplace(
       R"(
 async function executeScriptOnFrame(frame, script) {
-  return await new Promise((resolve) => {
-    frame.executeScript({code: script}, (result) => {
-      if (!result) {
-        throw new Error('executeScript returned no result');
-      }
-      if (result[0] !== 'SUCCESS') {
-        throw new Error('expected SUCCESS but got ' + result[0]);
-      }
-      resolve('SUCCESS');
-    });
-  });
+  const result = await frame.executeScript({code: script});
+  if (!result) {
+    throw new Error('executeScript returned no result');
+  }
+  if (result[0] !== 'SUCCESS') {
+    throw new Error('expected SUCCESS but got ' + result[0]);
+  }
+  return 'SUCCESS';
 };
 
 (async function() {

@@ -80,11 +80,8 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
             controlledframe.addEventListener('loadabort', reject);
             document.body.appendChild(controlledframe);
           });
-          await new Promise((resolve) => {
-            controlledframe.executeScript({
-              code: 'localStorage.setItem("test", "!".repeat($3))'
-            }, resolve);
-          });
+          return await controlledframe.executeScript(
+              {code: 'localStorage.setItem("test", "!".repeat($3))'});
         })();
       )",
                                                      url, partition, bytes)));

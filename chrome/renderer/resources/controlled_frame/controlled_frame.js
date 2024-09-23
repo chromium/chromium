@@ -6,6 +6,7 @@
 
 var ControlledFrameImpl = require('controlledFrameImpl').ControlledFrameImpl;
 var forwardApiMethods = require('guestViewContainerElement').forwardApiMethods;
+var promiseWrap = require('guestViewContainerElement').promiseWrap;
 var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
 var CONTROLLED_FRAME_API_METHODS =
     require('controlledFrameApiMethods').CONTROLLED_FRAME_API_METHODS;
@@ -36,6 +37,16 @@ forwardApiMethods(
     ControlledFrameElement, ControlledFrameImpl, WebViewInternal,
     CONTROLLED_FRAME_API_METHODS, CONTROLLED_FRAME_PROMISE_API_METHODS);
 
+// Since |back| and |forward| are implemented in terms of |go|, we need to
+// keep a reference to the real |go| function, since user code may override
+// ControlledFrameElement.prototype.go|.
+var originalGo = ControlledFrameElement.prototype.go;
+
+// Wrap callback methods in promise handlers. Note: This disables the callback
+// forms.
+promiseWrap(ControlledFrameElement, ControlledFrameImpl, WebViewInternal,
+            CONTROLLED_FRAME_PROMISE_API_METHODS);
+
 // Delete GuestView methods that should not be part of the Controlled Frame API.
 (function() {
   for (const methodName of CONTROLLED_FRAME_DELETED_API_METHODS) {
@@ -46,10 +57,5 @@ forwardApiMethods(
     }
   }
 })();
-
-// Since |back| and |forward| are implemented in terms of |go|, we need to
-// keep a reference to the real |go| function, since user code may override
-// ControlledFrameElement.prototype.go|.
-var originalGo = ControlledFrameElement.prototype.go;
 
 registerElement('ControlledFrame', ControlledFrameElement);

@@ -67,20 +67,6 @@ async function testBack(controlledFrame) {
     return `ERROR: navigateFrame() failed to navigate to ${TEST_PAGE_1_URL}`;
   }
 
-  let result;
-  const callBack = async function() {
-    await new Promise((resolve) => {
-      result = controlledFrame.back(resolve);
-    });
-  };
-  await runCallbackAndWaitForLoadStop(controlledFrame, callBack);
-
-  if (result instanceof Promise) {
-    return 'ERROR: back(callback) should not return a Promise';
-  }
-  if (controlledFrame.src !== ORIGINAL_URL) {
-    return `ERROR: back(callback) failed to return page to ${ORIGINAL_URL}`;
-  }
   return 'SUCCESS';
 }
 
@@ -117,21 +103,6 @@ async function testForward(controlledFrame) {
     return `ERROR: back(callback) failed to return page to ${ORIGINAL_URL}`;
   }
 
-  let result;
-  const callForward = async function() {
-    await new Promise((resolve) => {
-      result = controlledFrame.forward(resolve);
-    });
-  };
-  await runCallbackAndWaitForLoadStop(controlledFrame, callForward);
-
-  if (result instanceof Promise) {
-    return 'ERROR: forward(callback) should not return a Promise';
-  }
-  if (controlledFrame.src !== TEST_PAGE_1_URL) {
-    return `ERROR: forward(callback) failed to return to page \
-        ${TEST_PAGE_1_PATH}`;
-  }
   return 'SUCCESS';
 }
 
@@ -165,33 +136,6 @@ async function testGo(controlledFrame) {
       controlledFrame, goPromiseCallback.bind(this, 2));
   if (controlledFrame.src !== TEST_PAGE_2_URL) {
     return `ERROR: go() failed to navigate forward to ${TEST_PAGE_2_URL}`;
-  }
-
-  // Test the non-promise version of the API.
-  let result;
-  const goCallback = async function(index) {
-    await new Promise((resolve) => {
-      result = controlledFrame.go(index, resolve);
-    });
-  };
-
-  await runCallbackAndWaitForLoadStop(
-      controlledFrame, goCallback.bind(this, -2));
-  if (result instanceof Promise) {
-    return 'ERROR: go(callback) should not return a Promise';
-  }
-  if (controlledFrame.src !== ORIGINAL_URL) {
-    return `ERROR: go(callback) failed to navigate back to ${ORIGINAL_URL}`;
-  }
-
-  await runCallbackAndWaitForLoadStop(
-      controlledFrame, goCallback.bind(this, 2));
-  if (result instanceof Promise) {
-    return 'ERROR: go(callback) should not return a Promise';
-  }
-  if (controlledFrame.src !== TEST_PAGE_2_URL) {
-    return `ERROR: go(callback) failed to navigate forward to \
-        ${TEST_PAGE_2_URL}`;
   }
 
   return 'SUCCESS';
