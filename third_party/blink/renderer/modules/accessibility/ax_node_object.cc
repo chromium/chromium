@@ -801,16 +801,27 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
   if (alt_text && !alt_text->empty())
     return kIncludeObject;
 
-  // Don't ignored legends, because JAWS uses them to determine redundant text.
-  if (IsA<HTMLLegendElement>(node))
-    return kIncludeObject;
-
   // Anything that is an editable root should not be ignored. However, one
   // cannot just call `AXObject::IsEditable()` since that will include the
   // contents of an editable region too. Only the editable root should always be
   // exposed.
   if (IsEditableRoot())
     return kIncludeObject;
+
+  // Don't ignored legends, because JAWS uses them to determine redundant text.
+  if (IsA<HTMLLegendElement>(node)) {
+    if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
+      // When a <legend> is used inside an <optgroup>, it is used to set the
+      // name of the <optgroup> and shouldn't be redundantly repeated.
+      for (auto* ancestor = node->parentNode(); ancestor;
+           ancestor = ancestor->parentNode()) {
+        if (IsA<HTMLOptGroupElement>(ancestor)) {
+          return kIgnoreObject;
+        }
+      }
+    }
+    return kIncludeObject;
+  }
 
   static constexpr auto always_included_computed_roles =
       base::MakeFixedFlatSet<ax::mojom::blink::Role>({

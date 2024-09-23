@@ -7,7 +7,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++++++++++View text:"Optimus Prime" clickable focusable notVisibleToUser actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]
 ++++++++++View text:"Bumblebee" clickable focusable notVisibleToUser actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]
 ++++++++++View text:"Jazz" clickable focusable notVisibleToUser actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]
-++++++++View text:"group 2" notVisibleToUser actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group", clickableScore="100"]
+++++++++View notVisibleToUser actions:[AX_FOCUS] bundle:[chromeRole="group", clickableScore="100"]
 ++++++++++View text:"Megatron" clickable focusable notVisibleToUser actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]
 ++++++++++View text:"Starscream" clickable focusable notVisibleToUser actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]
 ++++++++++View text:"Brawl" clickable focusable notVisibleToUser actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]

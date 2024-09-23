@@ -8,6 +8,8 @@ android.webkit.WebView focusable
 ++++++++++android.view.View clickable focusable name='Bumblebee' item_index=2 row_index=2
 ++++++++++android.view.View clickable focusable name='Jazz' item_index=3 row_index=3
 ++++++++android.view.View name='group 2'
+++++++++++android.widget.TextView name='group '
+++++++++++android.view.View role_description='highlight' name='2'
 ++++++++++android.view.View clickable focusable name='Megatron' item_index=4 row_index=4
 ++++++++++android.view.View clickable focusable name='Starscream' item_index=5 row_index=5
 ++++++++++android.view.View clickable focusable name='Brawl' item_index=6 row_index=6

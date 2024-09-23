@@ -168,3 +168,9 @@ select:not(:-internal-list-box) optgroup {
 select:not(:-internal-list-box) optgroup option {
   padding-inline-start: 20px;
 }
+
+/* These styles are copied from optgroup's label attribute inline style properties */
+select:not(:-internal-list-box) optgroup legend {
+  padding: 0 2px 1px 2px;
+  min-height: 1.2em;
+}
