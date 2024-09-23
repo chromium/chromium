@@ -85,9 +85,15 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 }
 
 - (void)resetAnimated:(BOOL)animated {
+  // Icon states are not modified when the Keyboard Accessory Upgrade feature is
+  // enabled, so no need to reset anyhting.
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    return;
+  }
+  __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:animated ? MFAnimationDuration : 0
                    animations:^{
-                     [self resetIcons];
+                     [weakSelf resetIcons];
                    }];
   if (!self.keyboardButton.hidden) {
     [self setKeyboardButtonHidden:YES animated:animated];
@@ -262,8 +268,9 @@ static NSTimeInterval MFAnimationDuration = 0.2;
   ]];
 }
 
-// Resets the icon's color and userInteractionEnabled.
+// Resets the icon's color and `userInteractionEnabled` state.
 - (void)resetIcons {
+  CHECK(!IsKeyboardAccessoryUpgradeEnabled());
   self.accountButton.userInteractionEnabled = YES;
   self.cardsButton.userInteractionEnabled = YES;
   self.passwordButton.userInteractionEnabled = YES;
@@ -274,6 +281,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 }
 
 - (void)setKeyboardButtonHidden:(BOOL)hidden animated:(BOOL)animated {
+  CHECK(!IsKeyboardAccessoryUpgradeEnabled());
   [UIView animateWithDuration:animated ? MFAnimationDuration : 0
                    animations:^{
                      // Workaround setting more than once the `hidden` property
@@ -291,6 +299,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 }
 
 - (void)keyboardButtonPressed:(UIButton*)keyboardButton {
+  CHECK(!IsKeyboardAccessoryUpgradeEnabled());
   base::RecordAction(base::UserMetricsAction("ManualFallback_Close"));
   [self resetAnimated:YES];
   [self.delegate manualFillAccessoryViewController:self
@@ -298,6 +307,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 }
 
 - (void)passwordButtonPressed:(UIButton*)passwordButton {
+  CHECK(!IsKeyboardAccessoryUpgradeEnabled());
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenPassword"));
   [self setKeyboardButtonHidden:NO animated:YES];
   [self resetIcons];
@@ -308,6 +318,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 }
 
 - (void)cardButtonPressed:(UIButton*)creditCardButton {
+  CHECK(!IsKeyboardAccessoryUpgradeEnabled());
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenCreditCard"));
   [self setKeyboardButtonHidden:NO animated:YES];
   [self resetIcons];
@@ -318,6 +329,7 @@ static NSTimeInterval MFAnimationDuration = 0.2;
 }
 
 - (void)accountButtonPressed:(UIButton*)accountButton {
+  CHECK(!IsKeyboardAccessoryUpgradeEnabled());
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenProfile"));
   [self setKeyboardButtonHidden:NO animated:YES];
   [self resetIcons];
