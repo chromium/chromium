@@ -160,8 +160,8 @@ void LogHistogramForEligibilityType(ContentNotificationEligibilityType type) {
 
 }  // namespace
 
-bool IsContentNotificationEnabled(ChromeBrowserState* browser_state) {
-  if (!browser_state) {
+bool IsContentNotificationEnabled(ProfileIOS* profile) {
+  if (!profile) {
     return false;
   }
 
@@ -170,17 +170,17 @@ bool IsContentNotificationEnabled(ChromeBrowserState* browser_state) {
   }
 
   AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+      AuthenticationServiceFactory::GetForProfile(profile);
   BOOL user_signed_in = auth_service && auth_service->HasPrimaryIdentity(
                                             signin::ConsentLevel::kSignin);
 
   const TemplateURL* default_search_url_template =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state)
+      ios::TemplateURLServiceFactory::GetForProfile(profile)
           ->GetDefaultSearchProvider();
   bool default_search_engine = default_search_url_template &&
                                default_search_url_template->prepopulate_id() ==
                                    TemplateURLPrepopulateData::google.id;
-  PrefService* pref_service = browser_state->GetPrefs();
+  PrefService* pref_service = profile->GetPrefs();
 
   return IsContentNotificationPromoEnabled(
              user_signed_in, default_search_engine, pref_service) ||
@@ -190,8 +190,8 @@ bool IsContentNotificationEnabled(ChromeBrowserState* browser_state) {
              user_signed_in, default_search_engine, pref_service);
 }
 
-bool IsContentNotificationRegistered(ChromeBrowserState* browser_state) {
-  if (!browser_state) {
+bool IsContentNotificationRegistered(ProfileIOS* profile) {
+  if (!profile) {
     return false;
   }
 
@@ -200,17 +200,17 @@ bool IsContentNotificationRegistered(ChromeBrowserState* browser_state) {
   }
 
   AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+      AuthenticationServiceFactory::GetForProfile(profile);
   BOOL user_signed_in = auth_service && auth_service->HasPrimaryIdentity(
                                             signin::ConsentLevel::kSignin);
 
   const TemplateURL* default_search_url_template =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state)
+      ios::TemplateURLServiceFactory::GetForProfile(profile)
           ->GetDefaultSearchProvider();
   bool default_search_engine = default_search_url_template &&
                                default_search_url_template->prepopulate_id() ==
                                    TemplateURLPrepopulateData::google.id;
-  PrefService* pref_service = browser_state->GetPrefs();
+  PrefService* pref_service = profile->GetPrefs();
 
   return IsContentNotificationPromoRegistered(
              user_signed_in, default_search_engine, pref_service) ||

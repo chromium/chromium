@@ -12,14 +12,14 @@
 class PrefService;
 
 // True if any type of content notification is enabled with user visible UI.
-// This method is a util function for classes which own a browser state object
+// This method is a util function for classes which own a profile object
 // checking if content notifications are enabled.
-// `browser_state` is the browser state.
-bool IsContentNotificationEnabled(ChromeBrowserState* browser_state);
+// `profile` is the profile.
+bool IsContentNotificationEnabled(ProfileIOS* profile);
 
 // True if any type of content notification is registered without user visible
-// UI. `browser_state` is the browser state.
-bool IsContentNotificationRegistered(ChromeBrowserState* browser_state);
+// UI. `profile` is the profile.
+bool IsContentNotificationRegistered(ProfileIOS* profile);
 
 // True if content notification promo is enabled with user visible UI.
 // `user_signed_in` is true if the user has signed in. `default_search_engine`

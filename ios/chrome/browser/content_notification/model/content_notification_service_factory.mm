@@ -48,8 +48,8 @@ ContentNotificationServiceFactory::BuildServiceInstanceFor(
   ContentNotificationConfiguration* config =
       [[ContentNotificationConfiguration alloc] init];
 
-  config.authService = AuthenticationServiceFactory::GetForBrowserState(
-      ChromeBrowserState::FromBrowserState(context));
+  config.authService = AuthenticationServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(context));
 
   config.ssoService = GetApplicationContext()->GetSingleSignOnService();
 

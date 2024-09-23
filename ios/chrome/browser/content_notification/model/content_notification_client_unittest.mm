@@ -36,13 +36,13 @@
 class ContentNotificationClientTest : public PlatformTest {
  protected:
   ContentNotificationClientTest() {
-    ChromeBrowserState* browser_state = profile_manager_.AddProfileWithBuilder(
-        TestChromeBrowserState::Builder());
-    BrowserList* list = BrowserListFactory::GetForBrowserState(browser_state);
+    ProfileIOS* profile =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+    BrowserList* list = BrowserListFactory::GetForProfile(profile);
     mock_scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([mock_scene_state_ activationLevel])
         .andReturn(SceneActivationLevelForegroundActive);
-    browser_ = std::make_unique<TestBrowser>(browser_state, mock_scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile, mock_scene_state_);
     list->AddBrowser(browser_.get());
     client_ = std::make_unique<ContentNotificationClient>();
     ScopedDictPrefUpdate update(GetApplicationContext()->GetLocalState(),
