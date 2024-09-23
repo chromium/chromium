@@ -65,6 +65,7 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   }
 
   protected onAutoTabGroupsClick_(): void {
+    this.apiProxy_.requestTabOrganization();
     this.selectedState_ = TabOrganizationFeature.kAutoTabGroups;
     this.apiProxy_.setOrganizationFeature(this.selectedState_);
     const autoTabGroupsPage =
