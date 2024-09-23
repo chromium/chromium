@@ -6,18 +6,32 @@
     This script needs to be executed from the build output folder, e.g.
     out/fuchsia/."""
 
+import json
+import logging
 import os
 import subprocess
 import sys
-import time
 
 TEST_SCRIPTS_ROOT = os.path.join(os.path.dirname(__file__), '..', '..',
                                  'build', 'fuchsia', 'test')
 sys.path.append(TEST_SCRIPTS_ROOT)
 
 from browser_runner import BrowserRunner
+from chrome_driver_wrapper import ChromeDriverWrapper
+from common import get_ffx_isolate_dir
 from compatible_utils import running_unattended
-from run_webpage_test import WebpageTestRunner, capture_devtools_port
+from isolate_daemon import IsolateDaemon
+from run_webpage_test import WebpageTestRunner, capture_devtools_addr
+
+
+def run_test(proc: subprocess.Popen) -> None:
+    host, port = capture_devtools_addr(proc, '/tmp')
+    logging.warning('DevTools is now running on %s:%s', host, port)
+    with ChromeDriverWrapper((host, port)) as driver:
+        driver.get('http://www.google.com')
+        if not running_unattended():
+            input('Enter any message to stop:')
+
 
 # TODO(crbug.com/40935291): Implement the tests.
 def main() -> int:
@@ -29,14 +43,12 @@ def main() -> int:
                             env={
                                 **os.environ, 'CHROME_HEADLESS': '1'
                             })
-    port = capture_devtools_port(proc, '/tmp')
-    print('DevTools is now running on ' + str(port))
-    if not running_unattended():
-        print('Sleep 60 seconds before shutting it down')
-        time.sleep(60)
-    proc.terminate()
-    proc.wait()
-    return 0
+    try:
+        run_test(proc)
+        return 0
+    finally:
+        proc.terminate()
+        proc.wait()
 
 
 if __name__ == '__main__':
@@ -44,4 +56,8 @@ if __name__ == '__main__':
     # managed docker image, the FUCHSIA_NODENAME environment is not set.
     if 'FUCHSIA_NODENAME' not in os.environ:
         os.environ['FUCHSIA_NODENAME'] = 'fuchsia-ac67-8475-ee82'
-    sys.exit(main())
+    # Setting a temporary isolate daemon dir and share it with the webpage
+    # runner.
+    with IsolateDaemon.IsolateDir():
+        logging.warning('ffx daemon is running in %s', get_ffx_isolate_dir())
+        sys.exit(main())

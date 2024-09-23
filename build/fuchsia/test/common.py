@@ -3,11 +3,13 @@
 # found in the LICENSE file.
 """Common methods and variables used by Cr-Fuchsia testing infrastructure."""
 
+import ipaddress
 import json
 import logging
 import os
 import signal
 import shutil
+import socket
 import subprocess
 import sys
 import time
@@ -375,8 +377,25 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
         _retry_command(resolve_cmd, target_id=target_id)
 
 
+def get_ip_address(target_id: Optional[str], ipv4_only: bool = False):
+    """Determines address of the given target; returns the value from
+    ipaddress.ip_address."""
+    cmd = ['target', 'list']
+    if ipv4_only:
+        cmd.append('--no-ipv6')
+    if target_id:
+        # target list does not respect -t / --target flag.
+        cmd.append(target_id)
+    target = json.loads(
+        run_ffx_command(cmd=cmd, json_out=True,
+                        capture_output=True).stdout.strip())
+    return ipaddress.ip_address(target[0]['addresses'][0])
+
+
 def get_ssh_address(target_id: Optional[str]) -> str:
     """Determines SSH address for given target."""
+    # TODO(crbug.com/40935291): May move the implementation to the ffx target
+    # list implementation as get_ip_address when ffx populates the ssh port.
     return run_ffx_command(cmd=('target', 'get-ssh-address'),
                            target_id=target_id,
                            capture_output=True).stdout.strip()
@@ -494,3 +513,21 @@ def get_system_info(target: Optional[str] = None) -> Tuple[str, str]:
         return ('', '')
 
     return (build_info.product or '', build_info.version or '')
+
+
+def get_free_local_port() -> int:
+    """Returns an ipv4 port available locally. It does not reserve the port and
+    may cause race condition. Copied from catapult
+    https://crsrc.org/c/third_party/catapult/telemetry/telemetry/core/util.py;drc=e3f9ae73db5135ad998108113af7ef82a47efc51;l=61"""
+    # AF_INET restricts port to IPv4 addresses.
+    # SOCK_STREAM means that it is a TCP socket.
+    tmp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Setting SOL_SOCKET + SO_REUSEADDR to 1 allows the reuse of local
+    # addresses, this is so sockets do not fail to bind for being in the
+    # CLOSE_WAIT state.
+    tmp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    tmp.bind(('', 0))
+    port = tmp.getsockname()[1]
+    tmp.close()
+
+    return port

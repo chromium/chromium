@@ -9,7 +9,12 @@ python_library("av_sync_tests") {
   pydeps_file = "av_sync_tests.pydeps"
   data_deps = [
     "//build/config/fuchsia:deployment_resources",
+    "//build/fuchsia/cipd:strip_chromedriver_binary",
     "//content/test:fuchsia_telemetry_test_data",
     "//fuchsia_web/shell",
+  ]
+  data = [
+    "//.vpython3",
+    "//third_party/webdriver/pylib/",
   ]
 }
