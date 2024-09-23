@@ -18703,6 +18703,7 @@ from previous Chrome versions.
   <int value="-643702496"
       label="AccessibilityUnserializeOptimizations:enabled"/>
   <int value="-643217597" label="EduCoexistenceConsentLog:enabled"/>
+  <int value="-643105409" label="PickerGifs:enabled"/>
   <int value="-642346675" label="DesktopPWAsAttentionBadgingCrOS:enabled"/>
   <int value="-641846393" label="WebViewLegacyTlsSupport:enabled"/>
   <int value="-641820371" label="EnableCustomMacPaperSizes:enabled"/>
@@ -20216,6 +20217,7 @@ from previous Chrome versions.
   <int value="-18464041" label="AutofillPrefilledFields:disabled"/>
   <int value="-18380160" label="AutofillEnableVirtualCardMetadata:enabled"/>
   <int value="-17698200" label="DoubleTapToZoomInTabletMode:disabled"/>
+  <int value="-17602098" label="PickerGifs:disabled"/>
   <int value="-17373827" label="SharingDeviceExpiration:enabled"/>
   <int value="-16824589" label="ash-shelf-color"/>
   <int value="-16732224"

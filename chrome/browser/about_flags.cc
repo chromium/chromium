@@ -11150,6 +11150,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshPickerFeatureKeyDescription, kOsCrOS,
      STRING_VALUE_TYPE(ash::switches::kPickerFeatureKey, "")},
 
+    {"ash-picker-gifs", flag_descriptions::kAshPickerGifsName,
+     flag_descriptions::kAshPickerGifsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPickerGifs)},
+
     {"ash-picker-grid", flag_descriptions::kAshPickerGridName,
      flag_descriptions::kAshPickerGridDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPickerGrid)},

@@ -2533,6 +2533,9 @@ BASE_FEATURE(kPickerFilterLinks,
              "PickerFilterLinks",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables GIF search in Picker.
+BASE_FEATURE(kPickerGifs, "PickerGifs", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Uses grid view for recent local files.
 BASE_FEATURE(kPickerGrid, "PickerGrid", base::FEATURE_ENABLED_BY_DEFAULT);
 

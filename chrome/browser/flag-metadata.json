@@ -499,6 +499,11 @@
     "expiry_milestone": 131
   },
   {
+    "name": "ash-picker-gifs",
+    "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "ash-picker-grid",
     "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
     "expiry_milestone": 131

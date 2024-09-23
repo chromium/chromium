@@ -6143,6 +6143,9 @@ const char kAshPickerFeatureKeyName[] = "Feature key for Picker feature";
 const char kAshPickerFeatureKeyDescription[] =
     "Feature key to use the new Picker feature on ChromeOS.";
 
+const char kAshPickerGifsName[] = "Picker GIFs search";
+const char kAshPickerGifsDescription[] = "Enable GIf search for Picker.";
+
 const char kAshPickerGridName[] = "Picker grid UI";
 const char kAshPickerGridDescription[] = "Eanble the grid UI for Picker.";
 

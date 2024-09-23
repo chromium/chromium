@@ -3545,6 +3545,9 @@ extern const char kAshPickerCloudDescription[];
 extern const char kAshPickerFeatureKeyName[];
 extern const char kAshPickerFeatureKeyDescription[];
 
+extern const char kAshPickerGifsName[];
+extern const char kAshPickerGifsDescription[];
+
 extern const char kAshPickerGridName[];
 extern const char kAshPickerGridDescription[];
 
