@@ -29,7 +29,7 @@
 namespace {
 
 const char kPredictionImprovementsSettingsURL[] =
-    "chrome://settings/autofill_prediction_improvements";
+    "chrome://settings/autofillPredictionImprovements";
 
 }  // namespace
 
