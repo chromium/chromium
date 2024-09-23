@@ -42,14 +42,20 @@ bool ScannerController::IsEnabled() {
   return is_enabled;
 }
 
-std::unique_ptr<ScannerSession> ScannerController::StartNewSession() {
+ScannerSession* ScannerController::StartNewSession() {
   ScannerProfileScopedDelegate* profile_scoped_delegate =
       delegate_->GetProfileScopedDelegate();
-  return profile_scoped_delegate &&
-                 profile_scoped_delegate->GetSystemState().status ==
-                     ScannerStatus::kEnabled
-             ? std::make_unique<ScannerSession>(profile_scoped_delegate)
-             : nullptr;
+  scanner_session_ =
+      profile_scoped_delegate &&
+              profile_scoped_delegate->GetSystemState().status ==
+                  ScannerStatus::kEnabled
+          ? std::make_unique<ScannerSession>(profile_scoped_delegate)
+          : nullptr;
+  return scanner_session_.get();
+}
+
+void ScannerController::OnSessionUIClosed() {
+  scanner_session_ = nullptr;
 }
 
 }  // namespace ash

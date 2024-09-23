@@ -4009,6 +4009,7 @@ test("ash_unittests") {
     "rounded_display/rounded_display_provider_unittest.cc",
     "scalable_iph/scalable_iph_ash_notification_view_unittest.cc",
     "scalable_iph/wallpaper_ash_notification_view_unittest.cc",
+    "scanner/scanner_session_unittest.cc",
     "screen_util_unittest.cc",
     "sensor_info/sensor_provider_unittest.cc",
     "session/fullscreen_controller_unittest.cc",

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
 #include "base/functional/callback.h"
+#include "base/observer_list.h"
 #include "base/types/expected.h"
 
 namespace ash {
@@ -18,7 +19,19 @@ namespace ash {
 ScannerSession::ScannerSession(ScannerProfileScopedDelegate* delegate)
     : delegate_(delegate) {}
 
-ScannerSession::~ScannerSession() = default;
+ScannerSession::~ScannerSession() {
+  for (auto& observer : observers_) {
+    observer.OnScannerSessionDestroying();
+  }
+}
+
+void ScannerSession::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ScannerSession::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 void ScannerSession::FetchActions(FetchActionsCallback callback) {
   delegate_->FetchActions(base::BindOnce(&ScannerSession::OnActionsReturned,

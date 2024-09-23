@@ -26,15 +26,23 @@ class ASH_EXPORT ScannerController {
 
   static bool IsEnabled();
 
-  // As the name suggests this function creates a new ScannerSession. A
-  // ScannerSession will exist for the entire time a user is interacting with
-  // the feature. Triggering features should use this method to initiate a new
-  // ScannerSession. If nullptr is returned then Scanner cannot be initialized
-  // due to system level constraints (i.e. pref disabled, feature not allowed).
-  std::unique_ptr<ScannerSession> StartNewSession();
+  // Creates a new ScannerSession and returns a pointer to the created session.
+  // Note that the created session is owned by the ScannerController. If the
+  // Scanner cannot be initialized due to system level constraints (e.g. pref
+  // disabled, feature not allowed), then no session is created and `nullptr` is
+  // returned instead.
+  ScannerSession* StartNewSession();
+
+  // Should be called when the user has finished interacting with a Scanner
+  // session. This will trigger relevant cleanup and eventually destroy the
+  // scanner session.
+  void OnSessionUIClosed();
 
  private:
   std::unique_ptr<ScannerDelegate> delegate_;
+
+  // May hold an active Scanner session, to allow access to the Scanner feature.
+  std::unique_ptr<ScannerSession> scanner_session_;
 };
 
 }  // namespace ash
