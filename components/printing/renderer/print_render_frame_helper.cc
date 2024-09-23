@@ -2582,8 +2582,22 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
       // Since currently we can not block the `window.print()` call and load
       // the print only resources at the same time, no need to call
       // `WillPrintSoon()`.
+      //
       // This is a conscious tradeoff between rendering correctness and
       // expected blocking behavior.
+      //
+      // The main Bugs that led us to taking this tradeoff are:
+      // crbug.com/357784797
+      // crbug.com/361375802
+      //
+      // Potential solutions to these bugs and the current chosen tradeoff
+      // were discussed on:
+      // https://groups.google.com/u/0/a/chromium.org/g/platform-architecture-dev/c/O45yJShVmZg
+      //
+      // Bug tracking further investigation into a solution that satisfies
+      // both the blocking of the `window.print()` call and loading of
+      // print only resources:
+      // crbug.com/369111067
 
       is_loading_ = print_preview_context_.source_frame()->WillPrintSoon();
       if (is_loading_) {
