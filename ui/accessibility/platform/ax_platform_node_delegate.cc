@@ -499,11 +499,11 @@ AXPlatformNode* AXPlatformNodeDelegate::GetTargetNodeForRelation(
     ax::mojom::IntAttribute attr) {
   DCHECK(IsNodeIdIntAttribute(attr));
 
-  int target_id;
-  if (!GetIntAttribute(attr, &target_id))
+  if (!HasIntAttribute(attr)) {
     return nullptr;
+  }
 
-  AXPlatformNode* node = GetFromNodeID(target_id);
+  AXPlatformNode* node = GetFromNodeID(GetIntAttribute(attr));
   if (!IsValidRelationTarget(node)) {
     return nullptr;
   }
@@ -689,9 +689,8 @@ int AXPlatformNodeDelegate::GetIntAttribute(
 
 bool AXPlatformNodeDelegate::GetIntAttribute(ax::mojom::IntAttribute attribute,
                                              int* value) const {
-  if (node_)
-    return node_->GetIntAttribute(attribute, value);
-  return GetData().GetIntAttribute(attribute, value);
+  *value = GetIntAttribute(attribute);
+  return HasIntAttribute(attribute);
 }
 
 const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
@@ -1000,25 +999,23 @@ std::optional<int> AXPlatformNodeDelegate::GetTableCellCount() const {
 }
 
 std::optional<int> AXPlatformNodeDelegate::GetTableAriaColCount() const {
-  int aria_column_count;
-  if (node_)
+  if (node_) {
     return node_->GetTableAriaColCount();
-  if (!GetIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount,
-                       &aria_column_count)) {
+  }
+  if (!HasIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount)) {
     return std::nullopt;
   }
-  return aria_column_count;
+  return GetIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount);
 }
 
 std::optional<int> AXPlatformNodeDelegate::GetTableAriaRowCount() const {
-  if (node_)
+  if (node_) {
     return node_->GetTableAriaRowCount();
-  int aria_row_count;
-  if (!GetIntAttribute(ax::mojom::IntAttribute::kAriaRowCount,
-                       &aria_row_count)) {
+  }
+  if (!HasIntAttribute(ax::mojom::IntAttribute::kAriaRowCount)) {
     return std::nullopt;
   }
-  return aria_row_count;
+  return GetIntAttribute(ax::mojom::IntAttribute::kAriaRowCount);
 }
 
 std::vector<int32_t> AXPlatformNodeDelegate::GetColHeaderNodeIds() const {

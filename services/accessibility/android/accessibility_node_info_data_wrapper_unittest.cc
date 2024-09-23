@@ -833,9 +833,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, ListWithoutCount) {
 
   ui::AXNodeData data = CallSerialize(list_wrapper);
   ASSERT_EQ(ax::mojom::Role::kList, data.role);
-  int setSize;
-  ASSERT_FALSE(
-      data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize, &setSize));
+  ASSERT_FALSE(data.HasIntAttribute(ax::mojom::IntAttribute::kSetSize));
 
   // Verify that the items has role kListItem without index
   for (int i = 0; i < 4; i++) {
@@ -843,9 +841,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, ListWithoutCount) {
     AccessibilityNodeInfoDataWrapper item_wrapper(tree_source(), &item);
     ui::AXNodeData item_data = CallSerialize(item_wrapper);
     ASSERT_EQ(ax::mojom::Role::kListItem, item_data.role);
-    int pos;
-    ASSERT_FALSE(
-        data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet, &pos));
+    ASSERT_FALSE(data.HasIntAttribute(ax::mojom::IntAttribute::kPosInSet));
   }
 }
 

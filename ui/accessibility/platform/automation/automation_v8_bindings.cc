@@ -975,8 +975,10 @@ void AutomationV8Bindings::AddV8Routes() {
         } else if (attribute == ax::mojom::IntAttribute::kSetSize &&
                    node->GetSetSize()) {
           attr_value = *node->GetSetSize();
-        } else if (!node->GetIntAttribute(attribute, &attr_value)) {
+        } else if (!node->HasIntAttribute(attribute)) {
           return;
+        } else {
+          attr_value = node->GetIntAttribute(attribute);
         }
 
         result.Set(v8::Integer::New(isolate, attr_value));
@@ -1215,10 +1217,10 @@ void AutomationV8Bindings::AddV8Routes() {
         // directly
         //     on the AXNode.
         // The doDefault action is implied by having a default action verb.
-        int default_action_verb =
-            static_cast<int>(ax::mojom::DefaultActionVerb::kNone);
-        if (node->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
-                                  &default_action_verb) &&
+        int default_action_verb = static_cast<int>(
+            node->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb));
+        if (node->HasIntAttribute(
+                ax::mojom::IntAttribute::kDefaultActionVerb) &&
             default_action_verb !=
                 static_cast<int>(ax::mojom::DefaultActionVerb::kNone)) {
           standard_actions.push_back(ToString(

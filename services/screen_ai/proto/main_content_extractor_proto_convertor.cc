@@ -89,24 +89,28 @@ screenai::UiElement CreateUiElementProto(const ui::AXTree& tree,
   // Screen2x expects these properties to be in the string format, so we
   // convert them into string.
   int32_t int_attribute_value;
-  if (node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextAlign,
-                                &int_attribute_value)) {
+  if (node_data.HasIntAttribute(ax::mojom::IntAttribute::kTextAlign)) {
+    int_attribute_value =
+        node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextAlign);
     AddAttribute("/extras/styles/text-align",
                  ui::ToString((ax::mojom::TextAlign)int_attribute_value), uie);
   }
-  if (node_data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel,
-                                &int_attribute_value)) {
+  if (node_data.HasIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel)) {
+    int_attribute_value =
+        node_data.GetIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel);
     AddAttribute("hierarchical_level", int_attribute_value, uie);
   }
   // Get float attributes and store them as string attributes in the screenai
   // proto for the main content extractor (screen2x).
   float float_attribute_value;
-  if (node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize,
-                                  &float_attribute_value)) {
+  if (node_data.HasFloatAttribute(ax::mojom::FloatAttribute::kFontSize)) {
+    float_attribute_value =
+        node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize);
     AddAttribute("/extras/styles/font-size", float_attribute_value, uie);
   }
-  if (node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontWeight,
-                                  &float_attribute_value)) {
+  if (node_data.HasFloatAttribute(ax::mojom::FloatAttribute::kFontWeight)) {
+    float_attribute_value =
+        node_data.GetFloatAttribute(ax::mojom::FloatAttribute::kFontWeight);
     AddAttribute("/extras/styles/font-weight", float_attribute_value, uie);
   }
 

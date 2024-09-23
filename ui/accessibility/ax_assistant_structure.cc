@@ -370,9 +370,8 @@ std::unique_ptr<AssistantTree> CreateAssistantTree(const AXTreeUpdate& update) {
       false,         // should_select_leaf
   };
 
-  int root_scroll_y = 0;
-  tree->root()->GetIntAttribute(ax::mojom::IntAttribute::kScrollY,
-                                &root_scroll_y);
+  int root_scroll_y =
+      tree->root()->GetIntAttribute(ax::mojom::IntAttribute::kScrollY);
 
   WalkAXTreeDepthFirst(tree->root(), gfx::Rect(), gfx::Rect(), root_scroll_y,
                        update, tree.get(), &config, assistant_tree.get(), root);

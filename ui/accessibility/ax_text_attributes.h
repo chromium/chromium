@@ -13,6 +13,8 @@
 
 namespace ui {
 
+struct AXNodeData;
+
 // A compact representation of text attributes, such as spelling markers and
 // style information, on an `AXNode`. This data represents a snapshot at a given
 // time and is not intended to be held for periods of time. For this reason, it
@@ -24,6 +26,8 @@ struct AX_BASE_EXPORT AXTextAttributes final {
 
   AXTextAttributes();
   ~AXTextAttributes();
+
+  explicit AXTextAttributes(const AXNodeData& node_data);
 
   AXTextAttributes(const AXTextAttributes& other) = delete;
   AXTextAttributes& operator=(const AXTextAttributes&) = delete;

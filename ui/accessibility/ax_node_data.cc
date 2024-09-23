@@ -337,21 +337,11 @@ bool AXNodeData::HasIntAttribute(ax::mojom::IntAttribute attribute) const {
 }
 
 int AXNodeData::GetIntAttribute(ax::mojom::IntAttribute attribute) const {
-  int result;
-  if (GetIntAttribute(attribute, &result))
-    return result;
-  return 0;
-}
-
-bool AXNodeData::GetIntAttribute(ax::mojom::IntAttribute attribute,
-                                 int* value) const {
   auto iter = FindInVectorOfPairs(attribute, int_attributes);
   if (iter != int_attributes.end()) {
-    *value = int{iter->second};
-    return true;
+    return int{iter->second};
   }
-
-  return false;
+  return 0;
 }
 
 bool AXNodeData::HasStringAttribute(
@@ -564,40 +554,7 @@ void AXNodeData::RemoveStringListAttribute(
 }
 
 AXTextAttributes AXNodeData::GetTextAttributes() const {
-  AXTextAttributes text_attributes;
-
-  // This overload of `GetIntAttribute` does not set the return value to 0 if
-  // the attribute is not present, hence maintaining the corresponding member in
-  // `AXTextAttributes` as `AXTextAttributes::kUnsetValue`.
-  GetIntAttribute(ax::mojom::IntAttribute::kBackgroundColor,
-                  &text_attributes.background_color);
-  GetIntAttribute(ax::mojom::IntAttribute::kColor, &text_attributes.color);
-  GetIntAttribute(ax::mojom::IntAttribute::kInvalidState,
-                  &text_attributes.invalid_state);
-  GetIntAttribute(ax::mojom::IntAttribute::kTextOverlineStyle,
-                  &text_attributes.overline_style);
-  GetIntAttribute(ax::mojom::IntAttribute::kTextDirection,
-                  &text_attributes.text_direction);
-  GetIntAttribute(ax::mojom::IntAttribute::kTextPosition,
-                  &text_attributes.text_position);
-  GetIntAttribute(ax::mojom::IntAttribute::kTextStrikethroughStyle,
-                  &text_attributes.strikethrough_style);
-  GetIntAttribute(ax::mojom::IntAttribute::kTextStyle,
-                  &text_attributes.text_style);
-  GetIntAttribute(ax::mojom::IntAttribute::kTextUnderlineStyle,
-                  &text_attributes.underline_style);
-  GetFloatAttribute(ax::mojom::FloatAttribute::kFontSize,
-                    &text_attributes.font_size);
-  GetFloatAttribute(ax::mojom::FloatAttribute::kFontWeight,
-                    &text_attributes.font_weight);
-  text_attributes.font_family =
-      GetStringAttribute(ax::mojom::StringAttribute::kFontFamily);
-  text_attributes.marker_types =
-      GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
-  text_attributes.highlight_types =
-      GetIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes);
-
-  return text_attributes;
+  return AXTextAttributes(*this);
 }
 
 int AXNodeData::GetDOMNodeId() const {

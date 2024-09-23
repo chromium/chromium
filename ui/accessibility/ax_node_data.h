@@ -77,7 +77,6 @@ struct AX_BASE_EXPORT AXNodeData {
 
   bool HasIntAttribute(ax::mojom::IntAttribute attribute) const;
   int GetIntAttribute(ax::mojom::IntAttribute attribute) const;
-  bool GetIntAttribute(ax::mojom::IntAttribute attribute, int* value) const;
 
   bool HasStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetStringAttribute(

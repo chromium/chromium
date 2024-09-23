@@ -274,6 +274,10 @@ class AXPosition {
     DCHECK_NE(anchor.id(), kInvalidAXNodeID);
 
     AXPositionInstance new_position(new AXPositionType());
+    // LOG(ERROR) << "CreateTreePosition: "
+    //            << "\ntree id = " << anchor.tree()->GetAXTreeID()
+    //            << "\nanchor id = " << anchor.id()
+    //            << "\nchild index = " << child_index;
     new_position->Initialize(AXPositionKind::TREE_POSITION,
                              anchor.tree()->GetAXTreeID(), anchor.id(),
                              child_index, INVALID_OFFSET,
@@ -4923,14 +4927,15 @@ class AXPosition {
   }
 
   AXNodeID GetNextOnLineID() const {
+    LOG(ERROR) << "GetNextOnLineID";
+
     if (IsNullPosition())
       return kInvalidAXNodeID;
     DCHECK(GetAnchor());
 
-    int next_on_line_id;
-    if (GetAnchor()->GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
-                                     &next_on_line_id)) {
-      return static_cast<AXNodeID>(next_on_line_id);
+    if (GetAnchor()->HasIntAttribute(ax::mojom::IntAttribute::kNextOnLineId)) {
+      return static_cast<AXNodeID>(
+          GetAnchor()->GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId));
     }
     AXNode* parent = GetAnchor()->GetUnignoredParent();
 
@@ -4954,13 +4959,13 @@ class AXPosition {
     }
 
     while (parent &&
-           !parent->GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
-                                    &next_on_line_id)) {
+           !parent->HasIntAttribute(ax::mojom::IntAttribute::kNextOnLineId)) {
       parent = parent->GetUnignoredParent();
     }
 
     if (parent) {
-      return static_cast<AXNodeID>(next_on_line_id);
+      return static_cast<AXNodeID>(
+          parent->GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId));
     }
     return kInvalidAXNodeID;
   }
@@ -4970,10 +4975,10 @@ class AXPosition {
       return kInvalidAXNodeID;
     DCHECK(GetAnchor());
 
-    int previous_on_line_id;
-    if (GetAnchor()->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
-                                     &previous_on_line_id)) {
-      return static_cast<AXNodeID>(previous_on_line_id);
+    if (GetAnchor()->HasIntAttribute(
+            ax::mojom::IntAttribute::kPreviousOnLineId)) {
+      return static_cast<AXNodeID>(GetAnchor()->GetIntAttribute(
+          ax::mojom::IntAttribute::kPreviousOnLineId));
     }
     AXNode* parent = GetAnchor()->GetUnignoredParent();
 
@@ -4994,22 +4999,20 @@ class AXPosition {
     // This is because if we have a structure where there are multiple
     // InlineTextBox children that are in different lines, and the parent's
     // PreviousOnLine only applies to the first child.
-    parent->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
-                            &previous_on_line_id);
     if (GetAnchor()->GetRole() != ax::mojom::Role::kInlineTextBox ||
         parent->GetRole() == ax::mojom::Role::kLineBreak ||
         parent->GetFirstUnignoredChild() != GetAnchor()) {
       return kInvalidAXNodeID;
     }
 
-    while (parent &&
-           !parent->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
-                                    &previous_on_line_id)) {
+    while (parent && !parent->HasIntAttribute(
+                         ax::mojom::IntAttribute::kPreviousOnLineId)) {
       parent = parent->GetUnignoredParent();
     }
 
     if (parent) {
-      return static_cast<AXNodeID>(previous_on_line_id);
+      return static_cast<AXNodeID>(
+          parent->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId));
     }
     return kInvalidAXNodeID;
   }

@@ -533,8 +533,8 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        attr_index <= static_cast<int32_t>(ax::mojom::IntAttribute::kMaxValue);
        ++attr_index) {
     auto attr = static_cast<ax::mojom::IntAttribute>(attr_index);
-    int32_t value;
-    if (node.GetIntAttribute(attr, &value)) {
+    if (node.HasIntAttribute(attr)) {
+      int32_t value = node.GetIntAttribute(attr);
       dict->SetByDottedPath(ui::ToString(attr),
                             IntAttrToString(node, attr, value));
     }

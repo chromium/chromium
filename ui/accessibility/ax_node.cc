@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_computed_node_data.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -914,27 +915,57 @@ bool AXNode::HasIntAttribute(ax::mojom::IntAttribute attribute) const {
   if (data().HasIntAttribute(attribute)) {
     return true;
   }
-  return AXComputedNodeData::CanComputeAttribute(attribute, this);
+  return CanComputeIntAttribute(attribute);
+}
+
+bool AXNode::CanComputeIntAttribute(ax::mojom::IntAttribute attribute) const {
+  // NOTE: This method must be kept strictly in sync with parent deferral logic
+  // in AXInlineTextBox::(next|previous)OnLine.
+  if (attribute != ax::mojom::IntAttribute::kNextOnLineId &&
+      attribute != ax::mojom::IntAttribute::kPreviousOnLineId) {
+    return false;
+  }
+
+  if (!::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()) {
+    return false;
+  }
+
+  // Inline text boxes share the same next- or previous-on-line ID with the
+  // parent when traversing across the parent's boundary. Determination of the
+  // next- or previous-on-line IDs for this type of connectivity is expensive
+  // during the serialization process. Unnecessary to duplicate the effort.
+  if (data().role != ax::mojom::Role::kInlineTextBox) {
+    return false;
+  }
+
+  if (!GetParent()) {
+    return false;
+  }
+
+  if (this == GetParent()->GetFirstChild() &&
+      attribute == ax::mojom::IntAttribute::kPreviousOnLineId) {
+    return GetParent()->data().HasIntAttribute(attribute);
+  }
+
+  if (this == GetParent()->GetLastChild() &&
+      attribute == ax::mojom::IntAttribute::kNextOnLineId) {
+    return GetParent()->data().HasIntAttribute(attribute);
+  }
+
+  return false;
 }
 
 int AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute) const {
-  int value;
-  if (GetIntAttribute(attribute, &value)) {
+  // Default value must be in sync with AXNodeData::GetIntAttribute.
+  static const int kDefaultValue = 0;
+  int value = data().GetIntAttribute(attribute);
+  if (value != kDefaultValue || data().HasIntAttribute(attribute)) {
     return value;
   }
-  // If missing, return the default value for AXNodeData::GetIntAttribute
-  return 0;
-}
-
-bool AXNode::GetIntAttribute(ax::mojom::IntAttribute attribute,
-                             int* value) const {
-  if (data().GetIntAttribute(attribute, value)) {
-    return true;
+  if (CanComputeIntAttribute(attribute)) {
+    return GetParent()->data().GetIntAttribute(attribute);
   }
-  if (AXComputedNodeData::CanComputeAttribute(attribute, this)) {
-    return GetComputedNodeData().ComputeAttribute(attribute, value);
-  }
-  return false;
+  return kDefaultValue;
 }
 
 bool AXNode::HasStringAttribute(ax::mojom::StringAttribute attribute) const {
@@ -1584,9 +1615,11 @@ std::optional<int> AXNode::GetTableCellColSpan() const {
 
   // Otherwise, try to return a colspan, with 1 as the default if it's not
   // specified.
-  int col_span;
-  if (GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan, &col_span))
+  int col_span = GetIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan);
+  if (col_span ||
+      HasIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan)) {
     return col_span;
+  }
   return 1;
 }
 
@@ -1597,9 +1630,10 @@ std::optional<int> AXNode::GetTableCellRowSpan() const {
 
   // Otherwise, try to return a row span, with 1 as the default if it's not
   // specified.
-  int row_span;
-  if (GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan, &row_span))
+  int row_span = GetIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan);
+  if (row_span || HasIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan)) {
     return row_span;
+  }
   return 1;
 }
 

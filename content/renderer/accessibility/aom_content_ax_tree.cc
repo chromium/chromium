@@ -174,7 +174,8 @@ bool AomContentAxTree::GetIntAttributeForAXNode(int32_t ax_id,
   if (!node)
     return false;
   ax::mojom::IntAttribute ax_attr = GetCorrespondingAXAttribute(attr);
-  return node->GetIntAttribute(ax_attr, out_param);
+  *out_param = node->GetIntAttribute(ax_attr);
+  return node->HasIntAttribute(ax_attr);
 }
 
 bool AomContentAxTree::GetRestrictionAttributeForAXNode(
