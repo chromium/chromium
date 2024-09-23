@@ -119,26 +119,15 @@ bool ReadbackTexturePlaneToMemorySyncOOP(const VideoFrame& src_frame,
   auto info = SkImageInfo::Make(src_rect.width(), src_rect.height(),
                                 sk_color_type, sk_alpha_type);
 
-  bool result = false;
-  // Perform readback for a mailbox per plane for legacy shared image format
-  // types where planes and mailboxes are 1:1. With multiplanar shared images,
-  // there's one shared image mailbox for multiplanar formats so perform
+  // With multiplanar shared images, there's one shared image mailbox so perform
   // readback passing the appropriate `src_plane` for the single mailbox.
-  if (src_frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
-    const gpu::MailboxHolder& holder = src_frame.mailbox_holder(src_plane);
-    DCHECK(!holder.mailbox.IsZero());
-    ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
-    result =
-        ri->ReadbackImagePixels(holder.mailbox, info, dest_stride, src_rect.x(),
-                                src_rect.y(), /*plane_index=*/0, dest_pixels);
-  } else {
-    const gpu::MailboxHolder& holder = src_frame.mailbox_holder(0);
-    DCHECK(!holder.mailbox.IsZero());
-    ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
-    result =
-        ri->ReadbackImagePixels(holder.mailbox, info, dest_stride, src_rect.x(),
-                                src_rect.y(), src_plane, dest_pixels);
-  }
+  const gpu::MailboxHolder& holder = src_frame.mailbox_holder(0);
+  DCHECK(!holder.mailbox.IsZero());
+  ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
+  bool result =
+      ri->ReadbackImagePixels(holder.mailbox, info, dest_stride, src_rect.x(),
+                              src_rect.y(), src_plane, dest_pixels);
+
   return result && ri->GetGraphicsResetStatusKHR() == GL_NO_ERROR &&
          ri->GetError() == GL_NO_ERROR;
 }
