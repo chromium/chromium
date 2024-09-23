@@ -14,7 +14,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -455,8 +455,7 @@ bool NetworkFetcher::WriteDataToFileBlocking() {
     }
   }
 
-  if (UNSAFE_TODO(file_.WriteAtCurrentPos(&read_buffer_.front(),
-                                          read_buffer_.size())) == -1) {
+  if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(read_buffer_))) {
     net_error_ = HRESULTFromLastError();
     file_.Close();
     base::DeleteFile(file_path_);

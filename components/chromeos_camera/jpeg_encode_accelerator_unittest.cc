@@ -1,15 +1,19 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "components/chromeos_camera/jpeg_encode_accelerator.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
-
 #include <sys/mman.h>
+
 #include <memory>
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -27,7 +31,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/chromeos_camera/gpu_jpeg_encode_accelerator_factory.h"
-#include "components/chromeos_camera/jpeg_encode_accelerator.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/buildflags.h"
@@ -219,7 +222,7 @@ void JpegEncodeAcceleratorTestEnvironment::LogToFile(const std::string& key,
   std::string s = base::StringPrintf("%s: %s\n", key.c_str(), value.c_str());
   LOG(INFO) << s;
   if (log_file_) {
-    log_file_->WriteAtCurrentPos(s.data(), static_cast<int>(s.length()));
+    log_file_->WriteAtCurrentPos(base::as_byte_span(s));
   }
 }
 
