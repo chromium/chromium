@@ -1515,8 +1515,6 @@ TEST_F(ThemeSyncableServiceWithMigrationFlagEnabledTest,
 
   profile()->GetPrefs()->Set(prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
                              base::Value(new_value.Clone()));
-  // Needed for now since there's no listener to background pref.
-  theme_sync_service()->OnThemeChanged();
 
   const syncer::SyncChangeList& changes = fake_change_processor()->changes();
   ASSERT_GE(changes.size(), 0u);

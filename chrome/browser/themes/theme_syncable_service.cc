@@ -245,6 +245,14 @@ ThemeSyncableService::ThemeSyncableService(Profile* profile,
   sync_preferences::PrefServiceSyncable* prefs =
       static_cast<sync_preferences::PrefServiceSyncable*>(profile_->GetPrefs());
   if (base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)) {
+    // Listen to NtpCustomBackgroundDict pref changes. This is done because
+    // ThemeService doesn't convey ntp background change notifications.
+    pref_change_registrar_.Init(prefs);
+    pref_change_registrar_.Add(
+        prefs::kNonSyncingNtpCustomBackgroundDictDoNotUse,
+        base::BindRepeating(&ThemeSyncableService::OnThemeChanged,
+                            base::Unretained(this)));
+
     if (prefs->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs)) {
       // ThemeSyncableService instance is destroyed upon ThemeService::Shutdown.
       // So `prefs` outlives this.
@@ -256,7 +264,6 @@ ThemeSyncableService::ThemeSyncableService(Profile* profile,
     // kMoveThemePrefsToSpecifics feature is re-enabled.
     prefs->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, true);
   }
-  // TODO(crbug.com/356148174): Listen to NtpCustomBackgroundDict pref changes.
 }
 
 ThemeSyncableService::~ThemeSyncableService() {
