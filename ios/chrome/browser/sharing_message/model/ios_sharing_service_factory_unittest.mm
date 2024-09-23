@@ -24,20 +24,20 @@ class IOSSharingServiceFactoryTest : public PlatformTest {
     scoped_feature_list_.InitAndEnableFeature(
         send_tab_to_self::kSendTabToSelfIOSPushNotifications);
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_state_->GetSyncablePrefs()->SetDict(prefs::kSharingFCMRegistration,
-                                                base::Value::Dict());
+    profile_ = TestProfileIOS::Builder().Build();
+    profile_->GetSyncablePrefs()->SetDict(prefs::kSharingFCMRegistration,
+                                          base::Value::Dict());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests that IOSSharingServiceFactory creates
 // SharingService.
 TEST_F(IOSSharingServiceFactoryTest, CreateService) {
   SharingService* service =
-      IOSSharingServiceFactory::GetForBrowserState(browser_state_.get());
+      IOSSharingServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service);
 }

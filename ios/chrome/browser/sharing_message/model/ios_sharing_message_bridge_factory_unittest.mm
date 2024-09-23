@@ -17,19 +17,19 @@ class IOSSharingMessageBridgeFactoryTest : public PlatformTest {
   IOSSharingMessageBridgeFactoryTest() {
     scoped_feature_list_.InitAndEnableFeature(
         send_tab_to_self::kSendTabToSelfIOSPushNotifications);
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
   }
 
-  // ChromeBrowserState needs thread.
+  // ProfileIOS needs thread.
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests that IOSSharingMessageBridgeFactory creates
 // SharingMessageBridge.
 TEST_F(IOSSharingMessageBridgeFactoryTest, CreateService) {
   SharingMessageBridge* service =
-      IOSSharingMessageBridgeFactory::GetForBrowserState(browser_state_.get());
+      IOSSharingMessageBridgeFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service);
 }

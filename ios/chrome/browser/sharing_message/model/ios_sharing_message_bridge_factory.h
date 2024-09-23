@@ -15,12 +15,8 @@ class SharingMessageBridge;
 // Profile.
 class IOSSharingMessageBridgeFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static SharingMessageBridge* GetForBrowserState(ProfileIOS* profile);
-
   static SharingMessageBridge* GetForProfile(ProfileIOS* profile);
-  static SharingMessageBridge* GetForProfileIfExists(
-      ChromeBrowserState* browser_state);
+  static SharingMessageBridge* GetForProfileIfExists(ProfileIOS* profile);
   static IOSSharingMessageBridgeFactory* GetInstance();
 
   IOSSharingMessageBridgeFactory(const IOSSharingMessageBridgeFactory&) =

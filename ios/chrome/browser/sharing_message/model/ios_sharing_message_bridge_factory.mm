@@ -14,12 +14,6 @@
 #import "ios/chrome/common/channel_info.h"
 
 // static
-SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<SharingMessageBridge*>(
@@ -28,9 +22,9 @@ SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForProfile(
 
 // static
 SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForProfileIfExists(
-    ChromeBrowserState* browser_state) {
+    ProfileIOS* profile) {
   return static_cast<SharingMessageBridge*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+      GetInstance()->GetServiceForBrowserState(profile, false));
 }
 
 // static

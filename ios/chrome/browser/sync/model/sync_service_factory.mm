@@ -149,7 +149,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
   builder.SetSharingMessageBridge(
       base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfIOSPushNotifications)
-          ? IOSSharingMessageBridgeFactory::GetForBrowserState(browser_state)
+          ? IOSSharingMessageBridgeFactory::GetForProfile(browser_state)
           : nullptr);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   builder.SetSupervisedUserSettingsService(
