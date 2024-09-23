@@ -9,14 +9,16 @@ per-machine install into `%ProgramFiles%`. Per-user installs are blocked if a
 per-machine install is already present.
 
 If installation is failing for some reason, you can see why in
-`%TMP%\chromium_installer.log`. Include `--verbose-logging` on the command line
-to make the log very verbose (and possibly informative).
+`%TMP%\chromium_installer.log`(for a per-machine install,
+`%systemroot%\SystemTemp\chromium_installer.log`). Include `--verbose-logging`
+on the command line to make the log very verbose (and possibly informative).
 
 ## Google Chrome
 
 If you're building Google Chrome, all of the above apply, except that the
 default installation location is `%LOCALAPPDATA%\Google\Chrome\Application`, and
-the default log file location is `%TMP%\chrome_installer.log`.
+the default log file location is `%TMP%\chrome_installer.log`(for a per-machine
+install, `%systemroot%\SystemTemp\chrome_installer.log`).
 
 In addition, you can use one of the following options to install Google Chrome
 for different channels:
