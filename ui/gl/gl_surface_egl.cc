@@ -391,6 +391,11 @@ bool NativeViewGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
     return false;
   }
 
+  if (!GetConfig()) {
+    LOG(ERROR) << "No suitable EGL configs found for initialization.";
+    return false;
+  }
+
   std::vector<EGLint> egl_window_attributes;
 
   if (display_->ext->b_EGL_ANGLE_window_fixed_size &&
@@ -1006,6 +1011,11 @@ bool PbufferGLSurfaceEGL::Initialize(GLSurfaceFormat format) {
   if (display_->GetDisplay() == EGL_NO_DISPLAY) {
     LOG(ERROR) << "Trying to create PbufferGLSurfaceEGL with invalid "
                << "display.";
+    return false;
+  }
+
+  if (!GetConfig()) {
+    LOG(ERROR) << "No suitable EGL configs found for initialization.";
     return false;
   }
 
