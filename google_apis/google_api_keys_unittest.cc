@@ -22,6 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "google_apis/api_key_cache.h"
@@ -29,8 +30,6 @@
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
-#include "google_apis/google_api_keys_utils.h"
-#include "base/version_info/channel.h"
 
 GoogleAPIKeysTest::GoogleAPIKeysTest() : env_(base::Environment::Create()) {
   static_assert(9 == 3 + 2 * google_apis::CLIENT_NUM_ITEMS,

@@ -22,7 +22,6 @@
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
 #include "google_apis/google_api_keys_unittest.h"
-#include "google_apis/google_api_keys_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 

@@ -165,8 +165,6 @@ component("google_apis") {
     "gaia/oauth_request_signer.h",
     "google_api_keys.cc",
     "google_api_keys.h",
-    "google_api_keys_utils.cc",
-    "google_api_keys_utils.h",
   ]
 
   configs += [

@@ -25,7 +25,6 @@
 #include "google_apis/default_api_keys.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_switches.h"
-#include "google_apis/google_api_keys_utils.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "google_apis/google_api_keys_mac.h"
@@ -34,6 +33,20 @@
 namespace google_apis {
 
 namespace {
+
+const base::FeatureParam<std::string> kOverrideAPIKeyFeatureParam{
+    &kOverrideAPIKeyFeature, /*name=*/"api_key", /*default_value=*/""};
+
+std::string GetAPIKeyOverrideViaFeature() {
+  if (base::FeatureList::IsEnabled(kOverrideAPIKeyFeature)) {
+    std::string override_api_key = kOverrideAPIKeyFeatureParam.Get();
+    if (!override_api_key.empty()) {
+      return override_api_key;
+    }
+  }
+  return std::string();
+}
+
 // Gets a value for a key.  In priority order, this will be the value
 // provided via:
 // 1. Command-line switch
@@ -59,7 +72,7 @@ static std::string CalculateKeyValue(const char* baked_in_value,
 #if BUILDFLAG(IS_APPLE)
   // macOS and iOS can also override the API key with a value from the
   // Info.plist.
-  temp = ::google_apis::GetAPIKeyFromInfoPlist(environment_variable_name);
+  temp = GetAPIKeyFromInfoPlist(environment_variable_name);
   if (!temp.empty()) {
     key_value = temp;
     VLOG(1) << "Overriding API key " << environment_variable_name
@@ -116,21 +129,24 @@ static std::string CalculateKeyValue(const char* baked_in_value,
 }
 }  // namespace
 
-ApiKeyCache::ApiKeyCache(
-    const ::google_apis::DefaultApiKeys& default_api_keys) {
+BASE_FEATURE(kOverrideAPIKeyFeature,
+             "OverrideAPIKey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+ApiKeyCache::ApiKeyCache(const DefaultApiKeys& default_api_keys) {
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   GaiaConfig* gaia_config = GaiaConfig::GetInstance();
 
-  std::string api_key_from_feature =
-      ::google_apis::GetAPIKeyOverrideViaFeature();
+  std::string api_key_from_feature = GetAPIKeyOverrideViaFeature();
   api_key_ = CalculateKeyValue(default_api_keys.google_api_key,
                                STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY),
                                api_key_from_feature, nullptr, std::string(),
                                environment.get(), command_line, gaia_config,
                                default_api_keys.allow_override_via_environment,
                                default_api_keys.allow_unset_values);
-  ::google_apis::LogAPIKeysMatchHistogram(api_key_from_feature == api_key_);
+  base::UmaHistogramBoolean("Signin.APIKeyMatchesFeatureOnStartup",
+                            api_key_from_feature == api_key_);
 
 // A special non-stable key is at the moment defined only for Android Chrome.
 #if BUILDFLAG(IS_ANDROID)
