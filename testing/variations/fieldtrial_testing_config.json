@@ -22833,6 +22833,29 @@
             ]
         }
     ],
+    "SubframeProcessReuseThresholds": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "SubframeProcessReuseMemoryThreshold": "2147483648"
+                    },
+                    "enable_features": [
+                        "SubframeProcessReuseThresholds"
+                    ]
+                }
+            ]
+        }
+    ],
     "SuppressToolbarCapturesAtGestureEndStudy": [
         {
             "platforms": [
