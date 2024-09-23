@@ -567,8 +567,7 @@ chromium-metrics-reviews@google.com.
     Records whether a site attempted to observe a symlink or a junction using
     the File System Observer API. Recorded on every observe() call after
     validating the handle and ensuring that read permissions on the handle are
-    granted. This is always reported as false on Android, Fuchsia, and iOS.
-    Symlinks for File System Observer are not supported on these platforms.
+    granted. Only recorded when observing a handle in the LocalFileSystem.
   </summary>
 </histogram>
 

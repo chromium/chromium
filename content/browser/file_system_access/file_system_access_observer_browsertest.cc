@@ -629,8 +629,10 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
-  histogram_tester.ExpectUniqueSample(kAttemptToObserveSymlinkHistogram,
-                                      /*sample=*/false, 1);
+  if (GetTestFileSystemType() == TestFileSystemType::kLocal) {
+    histogram_tester.ExpectUniqueSample(kAttemptToObserveSymlinkHistogram,
+                                        /*sample=*/false, 1);
+  }
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
