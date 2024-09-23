@@ -56,7 +56,7 @@ EnclaveIdentity GetEnclaveIdentity() {
   if (command_line->HasSwitch(kEnclaveUrlSwitch)) {
     GURL enclave_url(command_line->GetSwitchValueASCII(kEnclaveUrlSwitch));
     CHECK(enclave_url.is_valid());
-    ret.url = enclave_url;
+    ret.url = std::move(enclave_url);
     ret.public_key = kLocalPublicKey;
   } else {
     ret.url = GURL(kEnclaveUrl);
