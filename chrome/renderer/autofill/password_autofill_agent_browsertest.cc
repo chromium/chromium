@@ -3576,6 +3576,8 @@ TEST_F(PasswordAutofillAgentTest,
       u"");
 }
 
+// TODO(crbug.com/40100455): Figure out whether this test is simulating a
+// realistic sequence of events.
 TEST_F(PasswordAutofillAgentTest,
        ResetPasswordGenerationWhenFieldIsAutofilled) {
   // A user generates password.
@@ -3617,6 +3619,7 @@ TEST_F(PasswordAutofillAgentTest,
   EXPECT_FALSE(password_element.ShouldRevealPassword());
   EXPECT_TRUE(password_element.IsAutofilled());
 
+  test_api(*autofill_agent_).OnFormNoLongerSubmittable();
   SaveAndSubmitForm();
 
   ExpectFormSubmittedWithUsernameAndPasswords(
