@@ -103,6 +103,7 @@ std::vector<autofill::Suggestion> CreateErrorSuggestion() {
       autofill::Suggestion::Text::IsPrimary(true),
       autofill::Suggestion::Text::ShouldTruncate(true));
   error_suggestion.highlight_on_select = false;
+  error_suggestion.is_acceptable = false;
   return {error_suggestion, CreateFeedbackSuggestion()};
 }
 
