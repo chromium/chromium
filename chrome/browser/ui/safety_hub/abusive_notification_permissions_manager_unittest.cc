@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/safety_hub/mock_safe_browsing_database_manager.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -134,6 +136,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
        AddAllowedAbusiveNotificationSitesToRevokedOriginSet) {
   AddAbusiveNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
+  base::HistogramTester histogram_tester;
 
   auto manager =
       AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
@@ -154,12 +157,18 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
 
   VerifyTimeoutCallbackNotCalled();
+
+  // Assert blocklist check count is recorded in UMA metrics.
+  histogram_tester.ExpectUniqueSample(
+      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
+      /* expected_count */ 1);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
        DoesNotAddSafeAbusiveNotificationSitesToRevokedOriginSet) {
   AddSafeNotification(url1, ContentSetting::CONTENT_SETTING_ALLOW);
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ALLOW);
+  base::HistogramTester histogram_tester;
 
   auto manager =
       AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
@@ -182,6 +191,11 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   EXPECT_TRUE(IsRevokedSettingValueRevoked(&manager, url2));
 
   VerifyTimeoutCallbackNotCalled();
+
+  // Assert blocklist check count is recorded in UMA metrics.
+  histogram_tester.ExpectUniqueSample(
+      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 2,
+      /* expected_count */ 1);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
@@ -190,6 +204,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
   AddAbusiveNotification(url2, ContentSetting::CONTENT_SETTING_ASK);
   AddRevokedAbusiveNotification(url3, ContentSetting::CONTENT_SETTING_ASK,
                                 /*is_ignored=*/true);
+  base::HistogramTester histogram_tester;
 
   auto manager =
       AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
@@ -216,6 +231,11 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       hcsm(), GURL(url3)));
 
   VerifyTimeoutCallbackNotCalled();
+
+  // Assert blocklist check count is recorded in UMA metrics.
+  histogram_tester.ExpectUniqueSample(
+      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 1,
+      /* expected_count */ 1);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,
@@ -226,6 +246,7 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
                                 /*is_ignored=*/true);
   AddRevokedAbusiveNotification(url3, ContentSetting::CONTENT_SETTING_ALLOW,
                                 /*is_ignored=*/true);
+  base::HistogramTester histogram_tester;
 
   auto manager =
       AbusiveNotificationPermissionsManager(mock_database_manager(), hcsm());
@@ -247,6 +268,11 @@ TEST_F(AbusiveNotificationPermissionsManagerTest,
       hcsm(), GURL(url3)));
 
   VerifyTimeoutCallbackNotCalled();
+
+  // Assert blocklist check count is recorded in UMA metrics.
+  histogram_tester.ExpectUniqueSample(
+      safety_hub::kBlocklistCheckCountHistogramName, /* sample */ 0,
+      /* expected_count */ 1);
 }
 
 TEST_F(AbusiveNotificationPermissionsManagerTest,

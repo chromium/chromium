@@ -671,6 +671,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Settings.SafetyHub.AbusiveNotificationPermissionRevocation.BlocklistCheckCount"
+    units="checks" expires_after="2025-09-13">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The number of times the blocklist was checked when running the abusive
+    notification revocation feature in the revoked permissions module of the
+    Safety Hub. Recorded during the auto-revocation run.
+  </summary>
+</histogram>
+
+<histogram
     name="Settings.SafetyHub.AbusiveNotificationPermissionRevocation.Interactions"
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
     expires_after="2025-06-05">
