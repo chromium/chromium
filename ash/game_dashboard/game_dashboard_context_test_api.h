@@ -61,6 +61,7 @@ class GameDashboardContextTestApi {
   // Returns the Game Dashboard button widget, button, and title view.
   views::Widget* GetGameDashboardButtonWidget() const;
   GameDashboardButton* GetGameDashboardButton() const;
+  float GetGameDashboardButtonCornerRadius() const;
   views::Label* GetGameDashboardButtonTitle() const;
   GameDashboardButtonRevealController* GetGameDashboardButtonRevealController()
       const;

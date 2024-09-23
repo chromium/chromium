@@ -422,6 +422,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     frame_header_height_ =
         game_dashboard_utils::GetFrameHeaderHeight(game_window_.get());
     DCHECK_GT(frame_header_height_, 0);
+    EXPECT_NEAR(test_api_->GetGameDashboardButtonCornerRadius(),
+                frame_header_height_ / 2, /*abs_error=*/0.000001f);
 
     if (is_arc_window && set_arc_game_controls_flags_prop) {
       // Initially, Game Controls is not available.

@@ -47,7 +47,7 @@ class GameDashboardButton : public views::Button {
   METADATA_HEADER(GameDashboardButton, views::Button)
 
  public:
-  explicit GameDashboardButton(PressedCallback callback);
+  GameDashboardButton(PressedCallback callback, float corner_radius);
   GameDashboardButton(const GameDashboardButton&) = delete;
   GameDashboardButton& operator=(const GameDashboardButton&) = delete;
   ~GameDashboardButton() override;
@@ -104,6 +104,8 @@ class GameDashboardButton : public views::Button {
   raw_ptr<views::ImageView> arrow_icon_view_;
   // Ensures the ink drop is painted above the button's background.
   raw_ptr<views::InkDropContainerView> ink_drop_container_ = nullptr;
+
+  const float container_corner_radius_;
 
   // If true, the game window is being recorded, otherwise false.
   bool is_recording_ = false;

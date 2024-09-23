@@ -601,7 +601,8 @@ void GameDashboardContext::RemoveCursorHandler() {
 void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
   auto game_dashboard_button = std::make_unique<GameDashboardButton>(
       base::BindRepeating(&GameDashboardContext::OnGameDashboardButtonPressed,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr()),
+      game_dashboard_utils::GetFrameHeaderHeight(game_window_) / 2.0f);
   DCHECK(!game_dashboard_button_);
   game_dashboard_button_ = game_dashboard_button.get();
   // Allow the Game Dashboard button to be activatable so that it can be

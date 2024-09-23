@@ -64,6 +64,12 @@ GameDashboardButton* GameDashboardContextTestApi::GetGameDashboardButton()
   return context_->game_dashboard_button_;
 }
 
+float GameDashboardContextTestApi::GetGameDashboardButtonCornerRadius() const {
+  auto* game_dashboard_button = GetGameDashboardButton();
+  CHECK(game_dashboard_button);
+  return game_dashboard_button->container_corner_radius_;
+}
+
 views::Label* GameDashboardContextTestApi::GetGameDashboardButtonTitle() const {
   auto* game_dashboard_button = GetGameDashboardButton();
   CHECK(game_dashboard_button);
