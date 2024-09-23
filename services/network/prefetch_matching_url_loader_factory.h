@@ -74,6 +74,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrefetchMatchingURLLoaderFactory final
       const ResourceRequest& request,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) final;
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      ResourceRequest& request,
+      mojo::PendingRemote<mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) final;
 
   void Clone(mojo::PendingReceiver<URLLoaderFactory> receiver) final;
 

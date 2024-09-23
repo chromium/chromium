@@ -335,6 +335,17 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     const ResourceRequest& resource_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  NOTREACHED() << "Non-const ref version of this method should be used as a "
+                  "performance optimization.";
+}
+
+void CorsURLLoaderFactory::CreateLoaderAndStart(
+    mojo::PendingReceiver<mojom::URLLoader> receiver,
+    int32_t request_id,
+    uint32_t options,
+    ResourceRequest& resource_request,
+    mojo::PendingRemote<mojom::URLLoaderClient> client,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   TRACE_EVENT("loading", "CorsURLLoaderFactory::CreateLoaderAndStart",
               perfetto::Flow::FromPointer(this));
 
@@ -431,13 +442,11 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     std::unique_ptr<CorsURLLoader> loader;
     if (base::FeatureList::IsEnabled(
             network::features::kAvoidResourceRequestCopies)) {
-      // TODO(crbug.com/332697604): Pass by non-const ref once mojo supports it.
       loader = std::make_unique<CorsURLLoader>(
           std::move(receiver), process_id_, request_id, options,
           base::BindOnce(&CorsURLLoaderFactory::DestroyCorsURLLoader,
                          base::Unretained(this)),
-          std::move(const_cast<network::ResourceRequest&>(resource_request)),
-          ignore_isolated_world_origin_,
+          std::move(resource_request), ignore_isolated_world_origin_,
           factory_override_ &&
               factory_override_->ShouldSkipCorsEnabledSchemeCheck(),
           std::move(client), traffic_annotation, inner_url_loader_factory,
@@ -822,16 +831,14 @@ bool CorsURLLoaderFactory::GetAllowAnyCorsExemptHeaderForBrowser() const {
 
 mojo::PendingRemote<mojom::DevToolsObserver>
 CorsURLLoaderFactory::GetDevToolsObserver(
-    const ResourceRequest& resource_request) const {
+    ResourceRequest& resource_request) const {
   TRACE_EVENT("loading", "CorsURLLoaderFactory::GetDevToolsObserver");
   mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
   if (resource_request.trusted_params &&
       resource_request.trusted_params->devtools_observer) {
     if (base::FeatureList::IsEnabled(features::kAvoidResourceRequestCopies)) {
-      // TODO(crbug.com/332697604): Pass by non-const ref once mojo supports it.
       auto& original_observer =
-          const_cast<mojo::PendingRemote<mojom::DevToolsObserver>&>(
-              resource_request.trusted_params->devtools_observer);
+          resource_request.trusted_params->devtools_observer;
       mojo::Remote<mojom::DevToolsObserver> remote(
           std::move(original_observer));
       remote->Clone(devtools_observer.InitWithNewPipeAndPassReceiver());

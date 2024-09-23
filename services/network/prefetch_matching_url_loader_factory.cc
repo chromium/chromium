@@ -46,6 +46,17 @@ void PrefetchMatchingURLLoaderFactory::CreateLoaderAndStart(
     const ResourceRequest& request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  NOTREACHED() << "Non-const ref version of this method should be used as a "
+                  "performance optimization.";
+}
+
+void PrefetchMatchingURLLoaderFactory::CreateLoaderAndStart(
+    mojo::PendingReceiver<mojom::URLLoader> loader,
+    int32_t request_id,
+    uint32_t options,
+    ResourceRequest& request,
+    mojo::PendingRemote<mojom::URLLoaderClient> client,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   // TODO(ricea): Actually match prefetches here.
 
   next_->CreateLoaderAndStart(std::move(loader), request_id, options, request,

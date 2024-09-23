@@ -449,7 +449,7 @@ const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTopLevelTrial{
 // Avoids copying ResourceRequest when possible.
 BASE_FEATURE(kAvoidResourceRequestCopies,
              "AvoidResourceRequestCopies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Document-Isolation-Policy (DIP).
 // https://github.com/explainers-by-googlers/document-isolation-policy

@@ -217,9 +217,10 @@ void CorsURLLoaderTestBase::CreateLoaderAndStart(
     const ResourceRequest& request) {
   test_cors_loader_client_ = std::make_unique<TestURLLoaderClient>();
   url_loader_.reset();
+  ResourceRequest request_copy(request);
   cors_url_loader_factory_->CreateLoaderAndStart(
       url_loader_.BindNewPipeAndPassReceiver(), /*request_id=*/0,
-      mojom::kURLLoadOptionNone, request,
+      mojom::kURLLoadOptionNone, request_copy,
       test_cors_loader_client_->CreateRemote(),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
 }

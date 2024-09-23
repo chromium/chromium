@@ -83,6 +83,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
                             mojo::PendingRemote<mojom::URLLoaderClient> client,
                             const net::MutableNetworkTrafficAnnotationTag&
                                 traffic_annotation) override;
+  void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
+                            int32_t request_id,
+                            uint32_t options,
+                            ResourceRequest& resource_request,
+                            mojo::PendingRemote<mojom::URLLoaderClient> client,
+                            const net::MutableNetworkTrafficAnnotationTag&
+                                traffic_annotation) override;
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
   // Methods for use by network::URLLoaderFactory.
@@ -140,7 +147,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   bool GetAllowAnyCorsExemptHeaderForBrowser() const;
 
   mojo::PendingRemote<mojom::DevToolsObserver> GetDevToolsObserver(
-      const ResourceRequest& resource_request) const;
+      ResourceRequest& resource_request) const;
 
   template <class T>
   void OnLoaderCreated(

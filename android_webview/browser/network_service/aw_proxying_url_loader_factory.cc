@@ -1116,6 +1116,17 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  NOTREACHED() << "Non-const ref version of this method should be used as a "
+                  "performance optimization.";
+}
+
+void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
+    mojo::PendingReceiver<network::mojom::URLLoader> loader,
+    int32_t request_id,
+    uint32_t options,
+    network::ResourceRequest& request,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   TRACE_EVENT0("android_webview",
                "AwProxyingURLLoaderFactory::CreateLoaderAndStart");
   // TODO(timvolodine): handle interception, modification (headers for
@@ -1187,8 +1198,7 @@ void AwProxyingURLLoaderFactory::CreateLoaderAndStart(
     // TODO(crbug.com/332697604): Pass by non-const ref once mojo supports it.
     req = new InterceptedRequest(
         std::move(get_cookie_header), std::move(set_cookie_header),
-        frame_tree_node_id_, request_id, options,
-        std::move(const_cast<network::ResourceRequest&>(request)),
+        frame_tree_node_id_, request_id, options, std::move(request),
         traffic_annotation, std::move(loader), std::move(client),
         std::move(target_factory_clone), intercept_only_, security_options_,
         xrw_allowlist_matcher_, browser_context_handle_);

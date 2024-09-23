@@ -580,6 +580,11 @@ mojom("url_loader_base") {
           mojom = "network.mojom.URLRequest"
           cpp = "::network::ResourceRequest"
           forward_declaration = "namespace network { struct ResourceRequest; }"
+
+          # ResourceRequest is expensive to copy since it contains multiple mojo
+          # pipes that need to be cloned. Using a non-const ref allows moving
+          # instead of copying as an optimization.
+          non_const_ref = true
         },
         {
           mojom = "network.mojom.URLRequestBody"
