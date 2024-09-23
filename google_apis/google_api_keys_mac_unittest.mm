@@ -17,8 +17,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "google_apis/api_key_cache.h"
 #include "google_apis/default_api_keys.h"
 #include "google_apis/gaia/gaia_switches.h"
+#include "google_apis/google_api_keys.h"
 #include "google_apis/google_api_keys_unittest.h"
 #include "google_apis/google_api_keys_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +83,7 @@ namespace override_some_keys_info_plist {
 #undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
 #include "google_apis/google_api_keys-inc.cc"
 
-}  // namespace override_all_keys_env
+}  // namespace override_some_keys_info_plist
 
 TEST_F(GoogleAPIKeysTest, OverrideSomeKeysUsingInfoPlist) {
   namespace testcase = override_some_keys_info_plist::google_apis;
@@ -101,17 +103,17 @@ TEST_F(GoogleAPIKeysTest, OverrideSomeKeysUsingInfoPlist) {
   base::apple::SetOverrideFrameworkBundle(nil);
 
   std::string api_key = testcase::GetAPIKey();
-  std::string id_main = testcase::GetOAuth2ClientID(testcase::CLIENT_MAIN);
+  std::string id_main = testcase::GetOAuth2ClientID(google_apis::CLIENT_MAIN);
   std::string secret_main =
-      testcase::GetOAuth2ClientSecret(testcase::CLIENT_MAIN);
+      testcase::GetOAuth2ClientSecret(google_apis::CLIENT_MAIN);
   std::string id_remoting =
-      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING);
+      testcase::GetOAuth2ClientID(google_apis::CLIENT_REMOTING);
   std::string secret_remoting =
-      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING);
+      testcase::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING);
   std::string id_remoting_host =
-      testcase::GetOAuth2ClientID(testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST);
   std::string secret_remoting_host =
-      testcase::GetOAuth2ClientSecret(testcase::CLIENT_REMOTING_HOST);
+      testcase::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST);
 
   EXPECT_EQ("plist-API_KEY", api_key);
   EXPECT_EQ("plist-ID_MAIN", id_main);

@@ -113,6 +113,8 @@ config("key_defines") {
 
 component("google_apis") {
   sources = [
+    "api_key_cache.cc",
+    "api_key_cache.h",
     "credentials_mode.cc",
     "credentials_mode.h",
     "default_api_keys-inc.cc",
