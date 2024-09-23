@@ -197,8 +197,12 @@ class IntegrationTestCommands
   virtual void DMPushEnrollmentToken(const std::string& enrollment_token) = 0;
   virtual void DMDeregisterDevice() = 0;
   virtual void DMCleanup() = 0;
-  virtual void InstallEnterpriseCompanionApp(
+  virtual void InstallEnterpriseCompanionApp() = 0;
+  virtual void InstallBrokenEnterpriseCompanionApp() = 0;
+  virtual void UninstallBrokenEnterpriseCompanionApp() = 0;
+  virtual void InstallEnterpriseCompanionAppOverrides(
       const base::Value::Dict& external_overrides) = 0;
+  virtual void ExpectEnterpriseCompanionAppNotInstalled() = 0;
   virtual void UninstallEnterpriseCompanionApp() = 0;
 
  protected:

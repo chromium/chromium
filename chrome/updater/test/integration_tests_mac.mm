@@ -151,6 +151,10 @@ void Clean(UpdaterScope scope) {
       ASSERT_TRUE(base::GetAppOutput(launchctl_rm, &out_rm));
     }
   }
+
+  if (IsSystemInstall(scope)) {
+    ASSERT_NO_FATAL_FAILURE(UninstallEnterpriseCompanionApp());
+  }
 }
 
 void DeleteLegacyUpdater(UpdaterScope scope) {
@@ -202,6 +206,7 @@ void ExpectClean(UpdaterScope scope) {
     EXPECT_FALSE(
         base::PathExists(keystone_path->AppendASCII(KEYSTONE_NAME ".bundle")));
   }
+  ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
 }
 
 void ExpectInstalled(UpdaterScope scope) {

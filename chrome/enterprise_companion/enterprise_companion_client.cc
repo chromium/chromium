@@ -31,6 +31,7 @@
 namespace enterprise_companion {
 
 const char kEnableUsageStatsSwitch[] = "enable-usage-stats";
+const char kInstallIfNeededSwitch[] = "install-if-needed";
 
 namespace {
 

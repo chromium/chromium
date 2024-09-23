@@ -681,9 +681,25 @@ class IntegrationTest : public ::testing::Test {
 
   void DMCleanup() { test_commands_->DMCleanup(); }
 
-  void InstallEnterpriseCompanionApp(
+  void InstallEnterpriseCompanionApp() {
+    test_commands_->InstallEnterpriseCompanionApp();
+  }
+
+  void InstallBrokenEnterpriseCompanionApp() {
+    test_commands_->InstallBrokenEnterpriseCompanionApp();
+  }
+
+  void UninstallBrokenEnterpriseCompanionApp() {
+    test_commands_->UninstallBrokenEnterpriseCompanionApp();
+  }
+
+  void InstallEnterpriseCompanionAppOverrides(
       const base::Value::Dict& external_overrides) {
-    test_commands_->InstallEnterpriseCompanionApp(external_overrides);
+    test_commands_->InstallEnterpriseCompanionAppOverrides(external_overrides);
+  }
+
+  void ExpectEnterpriseCompanionAppNotInstalled() {
+    test_commands_->ExpectEnterpriseCompanionAppNotInstalled();
   }
 
   void UninstallEnterpriseCompanionApp() {
@@ -1839,6 +1855,16 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
     DMCleanup();
     UninstallEnterpriseCompanionApp();
     ASSERT_NO_FATAL_FAILURE(SetMachineManaged(true));
+    ASSERT_TRUE(vapid_test_server_.Start());
+    InstallEnterpriseCompanionAppOverrides(
+        base::Value::Dict()
+            .Set("crash_upload_url", test_server_->crash_upload_url().spec())
+            .Set("dm_encrypted_reporting_url",
+                 vapid_test_server_.base_url().spec())
+            .Set("dm_realtime_reporting_url",
+                 vapid_test_server_.base_url().spec())
+            .Set("dm_server_url", test_server_->device_management_url().spec())
+            .Set("event_logging_url", vapid_test_server_.base_url().spec()));
   }
 
   void TearDown() override {
@@ -1860,6 +1886,10 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
   }
 
   std::unique_ptr<ScopedServer> test_server_;
+  // A test server that is not configured with any expectations or interesting
+  // responses. This is useful for providing addresses to the enterprise
+  // companion app for interactions not intended to be covered by these tests.
+  net::test_server::EmbeddedTestServer vapid_test_server_;
   static constexpr char kEnrollmentToken[] =
       "00001111-beef-f00d-2222-333344445555";
   static constexpr char kDMToken[] = "integration-dm-token";
@@ -1891,10 +1921,10 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
 
   DMPushEnrollmentToken(kEnrollmentToken);
 
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
+  ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
+      test_server_.get(), kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings);
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
@@ -1920,7 +1950,8 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
 }
 
 #if BUILDFLAG(IS_MAC)
-TEST_F(IntegrationTestDeviceManagement, FallbackToOutOfProcessFetcher) {
+TEST_F(IntegrationTestDeviceManagement, FallbackToOutOfProcessNetworkFetcher) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
   OmahaSettingsClientProto omaha_settings;
   omaha_settings.set_install_default(
       enterprise_management::INSTALL_DEFAULT_DISABLED);
@@ -1956,6 +1987,7 @@ TEST_F(IntegrationTestDeviceManagement, FallbackToOutOfProcessFetcher) {
   EXPECT_EQ(app_policy.app_guid(), kApp1.appid);
   EXPECT_EQ(app_policy.update(), enterprise_management::AUTOMATIC_UPDATES_ONLY);
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // BUILDFLAG(IS_MAC)
@@ -1971,10 +2003,10 @@ TEST_F(IntegrationTestDeviceManagement, AppInstall) {
   omaha_settings.mutable_application_settings()->Add(std::move(app));
 
   DMPushEnrollmentToken(kEnrollmentToken);
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
+  ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
+      test_server_.get(), kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings);
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
@@ -2019,10 +2051,10 @@ TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
   omaha_settings.mutable_application_settings()->Add(std::move(app2));
 
   DMPushEnrollmentToken(kEnrollmentToken);
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
+  ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
+      test_server_.get(), kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings);
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       /*request_attributes=*/{},
@@ -2051,10 +2083,10 @@ TEST_F(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
   OmahaSettingsClientProto omaha_settings;
   omaha_settings.set_update_default(enterprise_management::UPDATES_DISABLED);
   omaha_settings.set_cloud_policy_overrides_platform_policy(true);
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
+  ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
+      test_server_.get(), kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings);
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -2069,7 +2101,7 @@ TEST_F(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
   ASSERT_TRUE(WaitForUpdaterExit());
 
   // Verify the new instance is qualified and activated itself.
-  ExpectDeviceManagementPolicyFetchRequest(
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
       test_server_.get(), kDMToken, omaha_settings, /*first_request=*/false);
   test_server_->ExpectOnce({request::GetUpdaterUserAgentMatcher(),
                             request::GetContentMatcher(
@@ -2082,19 +2114,75 @@ TEST_F(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+#ifdef INCLUDE_ENTERPRISE_COMPANION_IN_INSTALLER
+// During the updater's installation and periodic tasks, the enterprise
+// companion app should not be installed if the device is not cloud managed.
+TEST_F(IntegrationTestDeviceManagement, FetchPolicy_SkipCompanionAppInstall) {
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
+
+  ExpectUpdateCheckRequest(test_server_.get());
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+#endif  // INCLUDE_ENTERPRISE_COMPANION_IN_INSTALLER
+
+// During the updater's installation, the updater should fall back to it's own
+// policy fetching implementation if the enterprise companion app is broken.
+TEST_F(IntegrationTestDeviceManagement, FetchPolicy_FallbackFromCompanionApp) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
+
+  DMPushEnrollmentToken(kEnrollmentToken);
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_install_default(
+      enterprise_management::INSTALL_DEFAULT_DISABLED);
+  omaha_settings.set_download_preference("not-cacheable");
+  ApplicationSettings app;
+  app.set_app_guid(kApp1.appid);
+  app.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+  omaha_settings.mutable_application_settings()->Add(std::move(app));
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  // Verify the policies downloaded by the updater.
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
+  ASSERT_NE(dm_storage, nullptr);
+  std::optional<OmahaSettingsClientProto> omaha_policy =
+      GetOmahaPolicySettings(dm_storage);
+  ASSERT_TRUE(omaha_policy);
+  EXPECT_EQ(omaha_policy->install_default(),
+            enterprise_management::INSTALL_DEFAULT_DISABLED);
+  EXPECT_EQ(omaha_policy->download_preference(), "not-cacheable");
+  ASSERT_GT(omaha_policy->application_settings_size(), 0);
+  const ApplicationSettings& app_policy =
+      omaha_policy->application_settings()[0];
+  EXPECT_EQ(app_policy.app_guid(), kApp1.appid);
+  EXPECT_EQ(app_policy.update(), enterprise_management::AUTOMATIC_UPDATES_ONLY);
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_F(IntegrationTestDeviceManagement, FetchPolicyViaCompanionApp) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
-  net::test_server::EmbeddedTestServer null_server;
-  ASSERT_TRUE(null_server.Start());
-  InstallEnterpriseCompanionApp(
-      base::Value::Dict()
-          .Set("crash_upload_url", test_server_->crash_upload_url().spec())
-          .Set("dm_encrypted_reporting_url", null_server.base_url().spec())
-          .Set("dm_realtime_reporting_url", null_server.base_url().spec())
-          .Set("dm_server_url", test_server_->device_management_url().spec())
-          .Set("event_logging_url", null_server.base_url().spec()));
+  InstallEnterpriseCompanionApp();
   ASSERT_TRUE(WaitForUpdaterExit());
 
   OmahaSettingsClientProto omaha_settings;
@@ -2147,15 +2235,7 @@ TEST_F(IntegrationTestDeviceManagement,
       base::StrCat({"appguid=", kApp1.appid, "&usagestats=1"})));
   ASSERT_TRUE(WaitForUpdaterExit());
 
-  net::test_server::EmbeddedTestServer null_server;
-  ASSERT_TRUE(null_server.Start());
-  InstallEnterpriseCompanionApp(
-      base::Value::Dict()
-          .Set("crash_upload_url", test_server_->crash_upload_url().spec())
-          .Set("dm_encrypted_reporting_url", null_server.base_url().spec())
-          .Set("dm_realtime_reporting_url", null_server.base_url().spec())
-          .Set("dm_server_url", test_server_->device_management_url().spec())
-          .Set("event_logging_url", null_server.base_url().spec()));
+  ASSERT_NO_FATAL_FAILURE(InstallEnterpriseCompanionApp());
 
   const base::FilePath companion_app_exe =
       enterprise_companion::GetInstallDirectory()->AppendASCII(
@@ -2179,10 +2259,10 @@ TEST_F(IntegrationTestDeviceManagement,
 #if BUILDFLAG(IS_WIN)
 // RuntimeEnrollmentToken is supported on Windows only.
 TEST_F(IntegrationTestDeviceManagement, RuntimeEnrollmentToken) {
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           OmahaSettingsClientProto());
+  ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
+      test_server_.get(), kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, OmahaSettingsClientProto());
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       test_server_.get(), kApp1.appid, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), kApp1.v1));
@@ -2212,8 +2292,8 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   // Cloud policy sets update default to disabled, app1 to auto-update, and
   // app2 to manual-update.
   DMPushEnrollmentToken(kEnrollmentToken);
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
+      test_server_.get(), kEnrollmentToken, kDMToken);
   OmahaSettingsClientProto omaha_settings;
   omaha_settings.set_update_default(enterprise_management::UPDATES_DISABLED);
   ApplicationSettings app1;
@@ -2224,8 +2304,8 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   app2.set_app_guid(kApp2.appid);
   app2.set_update(enterprise_management::MANUAL_UPDATES_ONLY);
   omaha_settings.mutable_application_settings()->Add(std::move(app2));
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings);
 
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
@@ -2271,8 +2351,8 @@ TEST_F(IntegrationTestDeviceManagement, IPolicyStatus) {
   policies.Set(kApp2.appid, base::Value::Dict().Set("Update", kPolicyEnabled));
   ASSERT_NO_FATAL_FAILURE(SetPlatformPolicies(policies));
   DMPushEnrollmentToken(kEnrollmentToken);
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
+      test_server_.get(), kEnrollmentToken, kDMToken);
   OmahaSettingsClientProto omaha_settings;
   omaha_settings.set_download_preference("cacheable");
   omaha_settings.set_update_default(enterprise_management::UPDATES_DISABLED);
@@ -2285,8 +2365,8 @@ TEST_F(IntegrationTestDeviceManagement, IPolicyStatus) {
       enterprise_management::ROLLBACK_TO_TARGET_VERSION_ENABLED);
   app1.set_target_version_prefix("2.0.");
   omaha_settings.mutable_application_settings()->Add(std::move(app1));
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings);
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       /*request_attributes=*/{},
@@ -2389,6 +2469,7 @@ class IntegrationTestCloudPolicyOverridesPlatformPolicy
       public IntegrationTestDeviceManagement {};
 
 TEST_P(IntegrationTestCloudPolicyOverridesPlatformPolicy, UseCloudPolicy) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
@@ -2462,6 +2543,7 @@ TEST_P(IntegrationTestCloudPolicyOverridesPlatformPolicy, UseCloudPolicy) {
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp2.appid));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp3.appid));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
@@ -2480,8 +2562,8 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v2));
 
   DMPushEnrollmentToken(kEnrollmentToken);
-  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
-                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementRegistrationRequestFromDefaultPolicyAgent(
+      test_server_.get(), kEnrollmentToken, kDMToken);
   OmahaSettingsClientProto omaha_settings;
   ApplicationSettings app;
   app.set_app_guid(kApp1.appid);
@@ -2489,8 +2571,8 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   app.set_rollback_to_target_version(
       enterprise_management::ROLLBACK_TO_TARGET_VERSION_ENABLED);
   omaha_settings.mutable_application_settings()->Add(std::move(app));
-  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
-                                           omaha_settings);
+  ExpectDeviceManagementPolicyFetchRequestFromDefaultPolicyAgent(
+      test_server_.get(), kDMToken, omaha_settings);
 
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
@@ -2511,6 +2593,7 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
 }
 
 TEST_F(IntegrationTestDeviceManagement, DMTokenDeletion) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -2543,10 +2626,12 @@ TEST_F(IntegrationTestDeviceManagement, DMTokenDeletion) {
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
 TEST_F(IntegrationTestDeviceManagement, DMTokenInvalidation) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -2579,10 +2664,12 @@ TEST_F(IntegrationTestDeviceManagement, DMTokenInvalidation) {
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
 TEST_F(IntegrationTestDeviceManagement, PublicKeyRotation) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/false));
 
@@ -2626,6 +2713,7 @@ TEST_F(IntegrationTestDeviceManagement, PublicKeyRotation) {
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
@@ -4725,6 +4813,7 @@ TEST_F(IntegrationInstallerResultsTestNewInstalls, OnDemandCancel) {
 }
 
 TEST_F(IntegrationTestDeviceManagement, NamedProxy) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/false));
 
@@ -4759,10 +4848,12 @@ TEST_F(IntegrationTestDeviceManagement, NamedProxy) {
   ASSERT_NO_FATAL_FAILURE(
       ExpectUninstallPing(test_server_.get(), update_check_url));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
 TEST_F(IntegrationTestDeviceManagement, PacScript) {
+  ASSERT_NO_FATAL_FAILURE(InstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/false));
 
@@ -4798,6 +4889,7 @@ TEST_F(IntegrationTestDeviceManagement, PacScript) {
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 #endif  // BUILDFLAG(IS_WIN)

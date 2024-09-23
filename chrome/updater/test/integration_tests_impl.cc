@@ -1587,7 +1587,44 @@ void DMCleanup(UpdaterScope scope) {
 #endif
 }
 
-void InstallEnterpriseCompanionApp(
+void InstallEnterpriseCompanionApp() {
+  base::FilePath exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  int exit_code = -1;
+  base::CommandLine command(exe_path.Append(kCompanionAppTestExecutableName));
+  command.AppendSwitch("install");
+  base::Process process = base::LaunchProcess(command, {});
+  EXPECT_TRUE(process.IsValid());
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                             &exit_code));
+}
+
+void InstallBrokenEnterpriseCompanionApp() {
+  std::optional<base::FilePath> install_dir =
+      enterprise_companion::GetInstallDirectory();
+  ASSERT_TRUE(install_dir);
+  ASSERT_TRUE(base::CreateDirectory(*install_dir));
+  ASSERT_TRUE(
+      base::WriteFile(install_dir->AppendASCII(kCompanionAppExecutableName),
+                      "broken enterprise companion app"));
+  VLOG(1) << "Broken enterprise companion app installed.";
+}
+
+void UninstallBrokenEnterpriseCompanionApp() {
+  std::optional<base::FilePath> install_dir =
+      enterprise_companion::GetInstallDirectory();
+  ASSERT_TRUE(install_dir);
+  for (const base::FilePath::StringType& process_name :
+       GetCompanionAppProcessNames()) {
+    KillProcesses(process_name, -1);
+    WaitForProcessesToExit(process_name, TestTimeouts::action_timeout());
+    EXPECT_FALSE(IsProcessRunning(process_name)) << process_name;
+  }
+  ASSERT_TRUE(base::DeletePathRecursively(*install_dir));
+  VLOG(1) << "Enterprise companion app manually uninstalled.";
+}
+
+void InstallEnterpriseCompanionAppOverrides(
     const base::Value::Dict& external_overrides) {
   std::optional<base::FilePath> json_path =
       enterprise_companion::GetOverridesFilePath();
@@ -1602,18 +1639,19 @@ void InstallEnterpriseCompanionApp(
 #else
   EXPECT_TRUE(json_serializer.Serialize(external_overrides));
 #endif
+  VLOG(1) << "Enterprise companion app overrides installed.";
+}
 
-  base::FilePath exe_path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-  int exit_code = -1;
-  base::CommandLine command(exe_path.Append(kCompanionAppTestExecutableName));
-  command.AppendSwitch("install");
-  base::Process process = base::LaunchProcess(command, {});
-  EXPECT_TRUE(process.IsValid());
-  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
-                                             &exit_code));
-  EXPECT_EQ(exit_code, 0);
-  VLOG(1) << "Enterprise companion app installed.";
+void ExpectEnterpriseCompanionAppNotInstalled() {
+  std::optional<base::FilePath> install_dir =
+      enterprise_companion::GetInstallDirectory();
+  if (!install_dir) {
+    VLOG(1) << "Cannot find enterprise companion app installation directory, "
+            << "assume it does not exist.";
+    return;
+  }
+  EXPECT_FALSE(
+      base::PathExists(install_dir->Append(kCompanionAppTestExecutableName)));
 }
 
 void UninstallEnterpriseCompanionApp() {
@@ -1629,23 +1667,13 @@ void UninstallEnterpriseCompanionApp() {
       install_dir->AppendASCII(kCompanionAppExecutableName));
   command_line.AppendSwitch(kUninstallCompanionAppSwitch);
   base::Process uninstall_process = base::LaunchProcess(command_line, {});
-  if (!uninstall_process.IsValid()) {
-    VLOG(1) << "Failed to launch enterprise companion app for uninstall, "
-            << "assume it does not exist.";
+  if (uninstall_process.IsValid() && WaitForProcess(uninstall_process) == 0) {
+    VLOG(1) << "Enterprise companion app is removed.";
     return;
   }
 
-  if (WaitForProcess(uninstall_process) != 0) {
-    VLOG(1) << "Failed to uninstall companion app, nuke it.";
-    for (const base::FilePath::StringType& process_name :
-         GetCompanionAppProcessNames()) {
-      KillProcesses(process_name, -1);
-      WaitForProcessesToExit(process_name, TestTimeouts::action_timeout());
-      EXPECT_FALSE(IsProcessRunning(process_name)) << process_name;
-    }
-    base::DeletePathRecursively(*install_dir);
-  }
-  VLOG(1) << "Enterprise companion app is removed.";
+  // Forcefully remove the installation in case a broken one exists.
+  ASSERT_NO_FATAL_FAILURE(UninstallBrokenEnterpriseCompanionApp());
 }
 
 void ExpectDeviceManagementRegistrationRequest(

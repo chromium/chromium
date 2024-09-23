@@ -68,4 +68,16 @@ bool MigrateLegacyUpdaters(
   return true;
 }
 
+std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
+    UpdaterScope scope) {
+  std::optional<base::FilePath> install_dir =
+      GetVersionedInstallDirectory(scope);
+  if (!install_dir) {
+    return std::nullopt;
+  }
+
+  return install_dir->AppendASCII(
+      base::StrCat({kCompanionAppExecutableName, kExecutableSuffix}));
+}
+
 }  // namespace updater

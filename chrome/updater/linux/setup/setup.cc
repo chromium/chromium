@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/linux/ipc_constants.h"
 #include "chrome/updater/linux/systemd_util.h"
@@ -60,6 +61,23 @@ int Setup(UpdaterScope scope) {
   if (!base::SetPosixFilePermissions(dest_path.value(), permissions_mask)) {
     return kErrorFailedToCopyBinary;
   }
+
+#ifdef INCLUDE_ENTERPRISE_COMPANION_IN_INSTALLER
+  // Copy the adjacent enterprise companion app at best effort.
+  base::FilePath enterprise_companion_src_path = exe_path.DirName().AppendASCII(
+      base::StrCat({kCompanionAppExecutableName, kExecutableSuffix}));
+  std::optional<base::FilePath> enterprise_companion_dest_path =
+      GetBundledEnterpriseCompanionExecutablePath(scope);
+  if (!enterprise_companion_dest_path) {
+    VLOG(1) << "Failed to get the bundled enterprise companion path.";
+  } else if (!base::CopyFile(enterprise_companion_src_path,
+                             *enterprise_companion_dest_path) ||
+             !base::SetPosixFilePermissions(*enterprise_companion_dest_path,
+                                            permissions_mask)) {
+    VLOG(1) << "Failed to copy " << enterprise_companion_src_path << " to "
+            << enterprise_companion_dest_path;
+  }
+#endif  // INCLUDE_ENTERPRISE_COMPANION_IN_INSTALLER
 
   return kErrorOk;
 }
