@@ -193,7 +193,6 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
         driver_.get(), client_.get(), /*api_client_creator=*/
         base::BindOnce(&MockFacilitatedPaymentsApiClient::CreateApiClient),
         optimization_guide_decider_.get());
-    manager_->is_test_ = true;
 
     // Using Autofill preferences since we use autofill's infra for syncing
     // bank accounts.
@@ -461,7 +460,7 @@ TEST_F(FacilitatedPaymentsManagerTest, ResettingPreventsPayment) {
   EXPECT_TRUE(
       manager_->initiate_payment_request_details_->IsReadyForPixPayment());
 
-  manager_->ResetForTesting();
+  manager_->Reset();
 
   EXPECT_FALSE(
       manager_->initiate_payment_request_details_->IsReadyForPixPayment());

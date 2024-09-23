@@ -41,11 +41,6 @@ FacilitatedPaymentsManager::~FacilitatedPaymentsManager() {
 }
 
 void FacilitatedPaymentsManager::Reset() {
-  // In tests, when the payment flow is abandoned, do not reset so the final
-  // states can be verified.
-  if (is_test_) {
-    return;
-  }
   has_payflow_started_ = false;
   ukm_source_id_ = 0;
   trigger_source_ = TriggerSource::kUnknown;
@@ -110,14 +105,12 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
   if (!is_pix_code_valid.has_value()) {
     // Pix code validator encountered an error.
     LogPaymentNotOfferedReason(PaymentNotOfferedReason::kCodeValidatorFailed);
-    Reset();
     return;
   }
 
   if (!is_pix_code_valid.value()) {
     // Pix code is not valid.
     LogPaymentNotOfferedReason(PaymentNotOfferedReason::kInvalidCode);
-    Reset();
     return;
   }
   // If a valid PIX code is found, and the user has Google wallet linked PIX
@@ -127,7 +120,6 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
   if (!payments_data_manager ||
       !payments_data_manager->IsFacilitatedPaymentsPixUserPrefEnabled() ||
       !payments_data_manager->HasMaskedBankAccounts()) {
-    Reset();
     return;
   }
 
@@ -137,12 +129,10 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
       !base::FeatureList::IsEnabled(kEnablePixPaymentsInLandscapeMode)) {
     LogPaymentNotOfferedReason(
         PaymentNotOfferedReason::kLandscapeScreenOrientation);
-    Reset();
     return;
   }
 
   if (!GetApiClient()) {
-    Reset();
     return;
   }
 
@@ -170,7 +160,6 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
       (base::TimeTicks::Now() - api_availability_check_start_time_));
   if (!is_api_available) {
     LogPaymentNotOfferedReason(PaymentNotOfferedReason::kApiNotAvailable);
-    Reset();
     return;
   }
 
@@ -196,7 +185,6 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     LogTransactionResult(TransactionResult::kAbandoned, trigger_source_,
                          base::TimeTicks::Now() - fop_selector_shown_time_,
                          ukm_source_id_);
-    Reset();
     return;
   }
 
@@ -217,7 +205,6 @@ void FacilitatedPaymentsManager::OnRiskDataLoaded(
   if (risk_data.empty()) {
     client_->ShowErrorScreen();
     LogPaymentNotOfferedReason(PaymentNotOfferedReason::kRiskDataEmpty);
-    Reset();
     return;
   }
   initiate_payment_request_details_->risk_data_ = risk_data;
@@ -238,7 +225,6 @@ void FacilitatedPaymentsManager::OnGetClientToken(
     LogTransactionResult(TransactionResult::kFailed, trigger_source_,
                          base::TimeTicks::Now() - fop_selector_shown_time_,
                          ukm_source_id_);
-    Reset();
     return;
   }
   initiate_payment_request_details_->client_token_ = client_token;
@@ -274,7 +260,6 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
     LogTransactionResult(TransactionResult::kFailed, trigger_source_,
                          base::TimeTicks::Now() - fop_selector_shown_time_,
                          ukm_source_id_);
-    Reset();
     return;
   }
   LogInitiatePaymentResult(/*result=*/true, latency);
@@ -284,7 +269,6 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
     LogTransactionResult(TransactionResult::kFailed, trigger_source_,
                          base::TimeTicks::Now() - fop_selector_shown_time_,
                          ukm_source_id_);
-    Reset();
     return;
   }
   std::optional<CoreAccountInfo> account_info = client_->GetCoreAccountInfo();
@@ -296,7 +280,6 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
     LogTransactionResult(TransactionResult::kFailed, trigger_source_,
                          base::TimeTicks::Now() - fop_selector_shown_time_,
                          ukm_source_id_);
-    Reset();
     return;
   }
   purchase_action_start_time_ = base::TimeTicks::Now();
@@ -312,7 +295,6 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
   // over, and the progress screen gets dismissed. Calling `DismissPrompt`
   // clears the associated Java objects.
   client_->DismissPrompt();
-  Reset();
   LogInitiatePurchaseActionResult(
       /*result=*/result ==
           FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk,
@@ -334,12 +316,6 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
   LogTransactionResult(transaction_result, trigger_source_,
                        base::TimeTicks::Now() - fop_selector_shown_time_,
                        ukm_source_id_);
-}
-
-void FacilitatedPaymentsManager::ResetForTesting() {
-  is_test_ = false;
-  Reset();
-  is_test_ = true;
 }
 
 }  // namespace payments::facilitated

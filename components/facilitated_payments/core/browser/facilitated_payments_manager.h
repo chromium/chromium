@@ -276,10 +276,6 @@ class FacilitatedPaymentsManager {
   void OnPurchaseActionResult(
       FacilitatedPaymentsApiClient::PurchaseActionResult result);
 
-  // Calling `Reset` has no effect in tests. Adding this method to specifically
-  // test `Resets` in tests.
-  void ResetForTesting();
-
   // Owner.
   const raw_ref<FacilitatedPaymentsDriver> driver_;
 
@@ -331,9 +327,6 @@ class FacilitatedPaymentsManager {
   // payflow like Pix code detection, copy button click, and copy button
   // double-click.
   bool has_payflow_started_ = false;
-
-  // Informs whether this instance was created in a test.
-  bool is_test_ = false;
 
   // Utility process validator for PIX code strings.
   data_decoder::DataDecoder utility_process_validator_;
