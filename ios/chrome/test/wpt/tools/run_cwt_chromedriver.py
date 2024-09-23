@@ -35,8 +35,8 @@ parser.add_argument('--build-dir', default=GetDefaultBuildDir(),
     help='Chrome build directory')
 parser.add_argument('--out-dir', default='/tmp/cwt_chromedriver',
     help='Output directory for CWTChromeDriver\'s dummy test case')
-parser.add_argument('--os', default='15.5', help='iOS version')
-parser.add_argument('--device', default='iPhone 11 Pro', help='Device type')
+parser.add_argument('--os', default='17.0', help='iOS version')
+parser.add_argument('--device', default='iPhone 14 Pro', help='Device type')
 parser.add_argument('--asan-build', help='Use ASan-related libraries',
     dest='asan_build', action='store_true')
 parser.set_defaults(asan_build=False)
@@ -47,7 +47,6 @@ args, _ = parser.parse_known_args()
 test_app = os.path.join(
     args.build_dir, 'ios_cwt_chromedriver_tests_module-Runner.app')
 host_app = os.path.join(args.build_dir, 'ios_cwt_chromedriver_tests.app')
-destination = iossim_util.get_simulator(args.device, args.os)
 
 if args.version:
     plist_path = os.path.join(host_app, 'Info.plist')
@@ -57,6 +56,7 @@ if args.version:
     print(current_version)
     sys.exit(0)
 
+destination = iossim_util.get_simulator(args.device, args.os)
 if not os.path.exists(args.out_dir):
   os.mkdir(args.out_dir)
 
