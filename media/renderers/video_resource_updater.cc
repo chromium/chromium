@@ -66,8 +66,7 @@ namespace media {
 namespace {
 
 bool MediaSharedBitmapConversionEnabled() {
-  return base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage) &&
-         base::FeatureList::IsEnabled(kMediaSharedBitmapToSharedImage);
+  return base::FeatureList::IsEnabled(kMediaSharedBitmapToSharedImage);
 }
 
 // Generates process-unique IDs to use for tracing video resources.

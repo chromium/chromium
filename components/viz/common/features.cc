@@ -290,9 +290,6 @@ BASE_FEATURE(kOnBeginFrameThrottleVideo,
 #endif
              );
 
-BASE_FEATURE(kSharedBitmapToSharedImage,
-             "SharedBitmapToSharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // Used to enable the HintSession::Mode::BOOST mode. BOOST mode try to force
 // the ADPF(Android Dynamic Performance Framework) to give Chrome more CPU
 // resources during a scroll.

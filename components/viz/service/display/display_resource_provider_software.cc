@@ -28,10 +28,8 @@ DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
       sync_point_manager_(sync_point_manager),
       gpu_scheduler_(scheduler),
       sync_point_order_data_(
-          (sync_point_manager_ &&
-           base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage))
-              ? sync_point_manager_->CreateSyncPointOrderData()
-              : nullptr) {
+          sync_point_manager_ ? sync_point_manager_->CreateSyncPointOrderData()
+                              : nullptr) {
   memory_tracker_ = std::make_unique<gpu::MemoryTypeTracker>(nullptr);
 }
 

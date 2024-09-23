@@ -4128,10 +4128,6 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
   // Release any context visibility before we destroy the LayerTreeFrameSink.
   SetContextVisibility(false);
 
-  bool all_resources_are_lost =
-      layer_tree_frame_sink_->context_provider() ||
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
-
   // Destroy the submit-frame trackers before destroying the frame sink.
   frame_trackers_.ClearAll();
 
@@ -4172,7 +4168,7 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
   // this assumption is violated, we may modify resources no longer considered
   // as exported while the display compositor is still making use of them,
   // leading to visual mistakes.
-  resource_provider_->ReleaseAllExportedResources(all_resources_are_lost);
+  resource_provider_->ReleaseAllExportedResources(/*lose=*/true);
 
   // We don't know if the next LayerTreeFrameSink will support GPU
   // rasterization. Make sure to clear the flag so that we force a

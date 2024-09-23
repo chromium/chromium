@@ -65,10 +65,6 @@ LayerTreeFrameSink::LayerTreeFrameSink(
       gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       shared_image_interface_(std::move(shared_image_interface)) {
   DETACH_FROM_THREAD(thread_checker_);
-
-  if (!base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage)) {
-    shared_image_interface_.reset();
-  }
 }
 
 LayerTreeFrameSink::~LayerTreeFrameSink() {
@@ -196,9 +192,7 @@ void LayerTreeFrameSink::GpuChannelLostOnClientThread() {
 
 scoped_refptr<gpu::ClientSharedImageInterface>
 LayerTreeFrameSink::shared_image_interface() const {
-  return base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage)
-             ? shared_image_interface_
-             : nullptr;
+  return shared_image_interface_;
 }
 
 }  // namespace cc

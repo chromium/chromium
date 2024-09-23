@@ -173,21 +173,15 @@ OutputSurfaceProviderImpl::CreateSoftwareOutputDeviceForPlatform(
 }
 
 gpu::SharedImageManager* OutputSurfaceProviderImpl::GetSharedImageManager() {
-  static const bool use_shared_image =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
-  return use_shared_image ? gpu_service_impl_->shared_image_manager() : nullptr;
+  return gpu_service_impl_->shared_image_manager();
 }
 
 gpu::SyncPointManager* OutputSurfaceProviderImpl::GetSyncPointManager() {
-  static const bool use_shared_image =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
-  return use_shared_image ? gpu_service_impl_->sync_point_manager() : nullptr;
+  return gpu_service_impl_->sync_point_manager();
 }
 
 gpu::Scheduler* OutputSurfaceProviderImpl::GetGpuScheduler() {
-  static const bool use_shared_image =
-      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
-  return use_shared_image ? gpu_service_impl_->gpu_scheduler() : nullptr;
+  return gpu_service_impl_->gpu_scheduler();
 }
 
 }  // namespace viz

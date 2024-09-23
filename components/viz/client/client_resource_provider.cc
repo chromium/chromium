@@ -388,9 +388,6 @@ void ClientResourceProvider::ReceiveReturnsFromParent(
     // Save the sync token only when the exported count is going to 0. Or IOW
     // drop all by the last returned sync token.
     if (returned.sync_token.HasData()) {
-      DCHECK(
-          !imported.resource.is_software ||
-          base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage));
       imported.returned_sync_token = returned.sync_token;
     }
 
