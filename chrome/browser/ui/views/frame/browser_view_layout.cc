@@ -127,7 +127,7 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
   }
 
   gfx::Size GetMaximumDialogSize() override {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC)
     // - small content (width < 400): dialog height <= 2x content height
     // - medium content (width < 750):
     //     content height <= dialog height <= 2x content height
