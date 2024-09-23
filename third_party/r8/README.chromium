@@ -82,16 +82,15 @@ cd $CHROMIUM_SRC
 java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 26 > third_party/r8/backported_methods.txt
 
 How to file bugs against R8:
-* Copy & paste the failing ninja command (starts with proguard.py), and add --dump-inputs.
-  * On siso you may need to find it at the beginning of `out/<Directory>/siso_output`.
-  * This also works for dex.py, it produces d8inputs.zip
-  * As a shortcut: third_party/r8/dump_inputs.py out/Release/apks/ChromePublic.apk.mapping
+* Create a dump (snapshot of R8 inputs):
+  * For R8: third_party/r8/dump_inputs.py out/Release/apks/ChromePublic.apk.mapping
+  * For D8: third_party/r8/dump_inputs.py out/Release/obj/.../foo_java.dex.jar
 * File bug at go/r8bug
 * Things to include (use discretion if some are not relevant):
   * src revision bug reproduces at
   * Repro steps (gn gen & autoninja commands)
     * Prefer enable_chrome_android_internal=false
-  * The r8inputs.zip from --dump-inputs
+  * The r8inputs.zip / d8inputs.zip
   * Any relevant dexdump analysis
 
 Example R8 git-bisect script:
