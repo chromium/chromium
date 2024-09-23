@@ -167,8 +167,6 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     return;
   }
 
-  uint32_t texture_target = GL_TEXTURE_EXTERNAL_OES;
-
   // No need to wait on any sync token as the SharedImage |mailbox_| should be
   // ready for use.
   if (!dcomp_texture_resources_) {
@@ -194,7 +192,8 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
                                 gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                     gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                                     gpu::SHARED_IMAGE_USAGE_RASTER_READ,
-                                texture_target);
+                                GL_TEXTURE_EXTERNAL_OES);
+
     CHECK(shared_image);
     dcomp_texture_resources_ =
         base::MakeRefCounted<DCOMPTextureMailboxResources>(
@@ -205,7 +204,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
       dcomp_texture_resources_->GetSharedImage();
 
   auto frame = media::VideoFrame::WrapSharedImage(
-      media::PIXEL_FORMAT_BGRA, shared_image, gpu::SyncToken(), texture_target,
+      media::PIXEL_FORMAT_BGRA, shared_image, gpu::SyncToken(),
       base::BindPostTask(
           media_task_runner_,
           base::BindOnce(&OnReleaseVideoFrame, dcomp_texture_resources_)),
@@ -242,8 +241,8 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   auto video_frame_texture = media::VideoFrame::WrapMappableSharedImage(
-      shared_image, sync_token, GL_TEXTURE_2D, base::NullCallback(),
-      gfx::Rect(natural_size), natural_size, base::TimeDelta::Min());
+      shared_image, sync_token, base::NullCallback(), gfx::Rect(natural_size),
+      natural_size, base::TimeDelta::Min());
   video_frame_texture->metadata().wants_promotion_hint = true;
   video_frame_texture->metadata().allow_overlay = true;
 

@@ -280,7 +280,7 @@ class VideoResourceUpdaterTest : public testing::Test {
     scoped_refptr<gpu::ClientSharedImage> shared_image =
         gpu::ClientSharedImage::CreateForTesting(target);
     scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImage(
-        format, shared_image, kMailboxSyncToken, target,
+        format, shared_image, kMailboxSyncToken,
         base::BindOnce(&VideoResourceUpdaterTest::SetReleaseSyncToken,
                        base::Unretained(this)),
         size,                // coded_size
@@ -321,7 +321,7 @@ class VideoResourceUpdaterTest : public testing::Test {
     scoped_refptr<gpu::ClientSharedImage> shared_image =
         gpu::ClientSharedImage::CreateForTesting(target);
     scoped_refptr<VideoFrame> video_frame = VideoFrame::WrapSharedImage(
-        format, shared_image, kMailboxSyncToken, target,
+        format, shared_image, kMailboxSyncToken,
         base::BindOnce(&VideoResourceUpdaterTest::SetReleaseSyncToken,
                        base::Unretained(this)),
         size,                // coded_size

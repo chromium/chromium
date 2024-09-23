@@ -888,12 +888,12 @@ class LayerTreeHostContextTestDontUseLostResources
         gfx::Size(4, 4), 0x80, 0x80, 0x80, base::TimeDelta());
     ASSERT_TRUE(color_video_frame_);
     hw_video_frame_ = VideoFrame::WrapSharedImage(
-        media::PIXEL_FORMAT_ARGB, shared_image, sync_token, GL_TEXTURE_2D,
+        media::PIXEL_FORMAT_ARGB, shared_image, sync_token,
         media::VideoFrame::ReleaseMailboxCB(), gfx::Size(4, 4),
         gfx::Rect(0, 0, 4, 4), gfx::Size(4, 4), base::TimeDelta());
     ASSERT_TRUE(hw_video_frame_);
     scaled_hw_video_frame_ = VideoFrame::WrapSharedImage(
-        media::PIXEL_FORMAT_ARGB, shared_image, sync_token, GL_TEXTURE_2D,
+        media::PIXEL_FORMAT_ARGB, shared_image, sync_token,
         media::VideoFrame::ReleaseMailboxCB(), gfx::Size(4, 4),
         gfx::Rect(0, 0, 3, 2), gfx::Size(4, 4), base::TimeDelta());
     ASSERT_TRUE(scaled_hw_video_frame_);

@@ -933,8 +933,8 @@ TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
       gpu::ClientSharedImage::CreateForTesting();
   auto video_frame = VideoFrame::WrapSharedImage(
       PIXEL_FORMAT_NV12, shared_image, gpu::SyncToken(),
-      GL_TEXTURE_RECTANGLE_ARB, base::BindOnce(MailboxHoldersReleased), size,
-      gfx::Rect(size), size, kNoTimestamp);
+      base::BindOnce(MailboxHoldersReleased), size, gfx::Rect(size), size,
+      kNoTimestamp);
 
   cc::PaintFlags flags;
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);

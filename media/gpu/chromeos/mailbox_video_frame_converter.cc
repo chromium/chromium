@@ -341,13 +341,6 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   CHECK_EQ(frame->format(), origin_frame->format());
   CHECK(buffer_format);
 
-  // The target should be GL_TEXTURE_2D unless external sampling is being
-  // used, which in this context is equivalent to the passed-in buffer format
-  // being multiplanar as we never use per-plane sampling in this context.
-  uint32_t texture_target = gfx::BufferFormatIsMultiplanar(*buffer_format)
-                                ? GL_TEXTURE_EXTERNAL_OES
-                                : GL_TEXTURE_2D;
-
   VideoFrame::ReleaseMailboxCB release_mailbox_cb = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> gpu_task_runner,
          base::WeakPtr<MailboxVideoFrameConverter> gpu_weak_ptr,
@@ -397,7 +390,7 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
           ? frame->coded_size()
           : GetRectSizeFromOrigin(frame->visible_rect());
   scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapSharedImage(
-      frame->format(), shared_image, shared_image_sync_token, texture_target,
+      frame->format(), shared_image, shared_image_sync_token,
       std::move(release_mailbox_cb), coded_size, frame->visible_rect(),
       frame->natural_size(), frame->timestamp());
   mailbox_frame->set_color_space(frame->ColorSpace());

@@ -835,8 +835,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     if (client_shared_image) {
       frame = media::VideoFrame::WrapSharedImage(
           format, std::move(client_shared_image), mailbox_holder.sync_token,
-          mailbox_holder.texture_target, std::move(release_cb), coded_size,
-          parsed_init.visible_rect, parsed_init.display_size, timestamp);
+          std::move(release_cb), coded_size, parsed_init.visible_rect,
+          parsed_init.display_size, timestamp);
     } else {
       frame = media::VideoFrame::WrapNativeTexture(
           format, mailbox_holder, std::move(release_cb), coded_size,

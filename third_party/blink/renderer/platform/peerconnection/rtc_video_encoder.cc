@@ -2012,8 +2012,8 @@ bool RTCVideoEncoder::Impl::CreateBlackGpuMemoryBufferFrame(
 
     gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
     black_gmb_frame_ = media::VideoFrame::WrapMappableSharedImage(
-        std::move(shared_image), sync_token, GL_TEXTURE_2D,
-        base::NullCallback(), gfx::Rect(size), natural_size, base::TimeDelta());
+        std::move(shared_image), sync_token, base::NullCallback(),
+        gfx::Rect(size), natural_size, base::TimeDelta());
   } else {
     auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
         natural_size, gfx::BufferFormat::YUV_420_BIPLANAR,

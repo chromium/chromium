@@ -56,9 +56,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
           gpu::ClientSharedImage::CreateForTesting();
 
       return media::VideoFrame::WrapSharedImage(
-          pixel_format, shared_image, gpu::SyncToken(),
-          shared_image->GetTextureTarget(), base::NullCallback(), coded_size,
-          visible_rect, natural_size, timestamp);
+          pixel_format, shared_image, gpu::SyncToken(), base::NullCallback(),
+          coded_size, visible_rect, natural_size, timestamp);
     }
     default:
       NOTREACHED_IN_MIGRATION() << "Unsupported storage type or pixel format";

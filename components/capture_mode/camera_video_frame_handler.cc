@@ -345,11 +345,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
 #endif
 
     CHECK(shared_image_);
-    auto buffer_texture_target = shared_image_->GetTextureTarget();
-
     auto frame = media::VideoFrame::WrapSharedImage(
         frame_info->pixel_format, shared_image_, mailbox_holder_sync_token_,
-        buffer_texture_target,
         base::BindOnce(&GpuMemoryBufferHandleHolder::OnMailboxReleased,
                        weak_ptr_factory_.GetWeakPtr()),
         frame_info->coded_size, frame_info->visible_rect,

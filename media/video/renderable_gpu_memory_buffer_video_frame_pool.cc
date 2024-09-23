@@ -298,13 +298,13 @@ FrameResources::CreateVideoFrameAndTakeGpuMemoryBuffer() {
   if (base::FeatureList::IsEnabled(
           kUseMappableSIForRenderableGpuMemoryBufferVideoFramePool)) {
     video_frame = VideoFrame::WrapMappableSharedImage(
-        shared_image_, sync_token_, shared_image_->GetTextureTarget(),
+        shared_image_, sync_token_,
         VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB(), visible_rect,
         natural_size, base::TimeDelta());
   } else {
     video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer_),
-        shared_image_, sync_token_, shared_image_->GetTextureTarget(),
+        shared_image_, sync_token_,
         VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB(), base::TimeDelta());
   }
   if (!video_frame) {

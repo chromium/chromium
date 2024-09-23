@@ -57,8 +57,8 @@ scoped_refptr<VideoFrame> CreateSharedImageFrame(
   auto callback = base::BindOnce(&DestroySharedImage, shared_image,
                                  std::move(destroyed_callback));
   auto frame = VideoFrame::WrapSharedImage(
-      format, std::move(shared_image), sync_token, texture_target,
-      std::move(callback), coded_size, visible_rect, natural_size, timestamp);
+      format, std::move(shared_image), sync_token, std::move(callback),
+      coded_size, visible_rect, natural_size, timestamp);
   // Set the format type to take new code path with single multiplanar shared
   // image.
   frame->set_shared_image_format_type(

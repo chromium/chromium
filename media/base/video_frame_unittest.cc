@@ -553,7 +553,7 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
       gpu::ClientSharedImage::CreateForTesting();
   auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
       visible_rect, coded_size, std::move(gmb), shared_image, gpu::SyncToken(),
-      5, base::DoNothing(), timestamp);
+      base::DoNothing(), timestamp);
 
   EXPECT_EQ(frame->layout().format(), PIXEL_FORMAT_NV12);
   EXPECT_EQ(frame->layout().coded_size(), coded_size);
@@ -659,7 +659,7 @@ TEST(VideoFrame, TextureNoLongerNeededCallbackIsCalled) {
     scoped_refptr<gpu::ClientSharedImage> shared_image =
         gpu::ClientSharedImage::CreateForTesting();
     scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
-        PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(), 5,
+        PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
         base::BindOnce(&TextureCallback, &called_sync_token),
         gfx::Size(10, 10),   // coded_size
         gfx::Rect(10, 10),   // visible_rect
@@ -695,7 +695,7 @@ TEST(VideoFrame,
   gpu::SyncToken called_sync_token;
   {
     scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
-        PIXEL_FORMAT_I420, shared_image, sync_token, target,
+        PIXEL_FORMAT_I420, shared_image, sync_token,
         base::BindOnce(&TextureCallback, &called_sync_token),
         gfx::Size(10, 10),   // coded_size
         gfx::Rect(10, 10),   // visible_rect

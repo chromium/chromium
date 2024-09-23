@@ -867,9 +867,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       texture_selector_->PixelFormat(), shared_image,
-      shared_image->creation_sync_token(), GL_TEXTURE_EXTERNAL_OES,
-      VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
-      natural_size, timestamp);
+      shared_image->creation_sync_token(), VideoFrame::ReleaseMailboxCB(),
+      picture_buffer->size(), visible_rect, natural_size, timestamp);
 
   if (!frame) {
     // This can happen if, somehow, we get an unsupported combination of

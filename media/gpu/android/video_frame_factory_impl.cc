@@ -262,8 +262,8 @@ void VideoFrameFactoryImpl::CreateVideoFrame_OnImageReady(
 
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       pixel_format, std::move(record.shared_image), gpu::SyncToken(),
-      GL_TEXTURE_EXTERNAL_OES, VideoFrame::ReleaseMailboxCB(),
-      frame_info.coded_size, frame_info.visible_rect, natural_size, timestamp);
+      VideoFrame::ReleaseMailboxCB(), frame_info.coded_size,
+      frame_info.visible_rect, natural_size, timestamp);
 
   // If, for some reason, we failed to create a frame, then fail.  Note that we
   // don't need to call |release_cb|; dropping it is okay since the api says so.

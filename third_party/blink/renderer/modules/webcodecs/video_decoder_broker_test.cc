@@ -64,7 +64,7 @@ class FakeGpuVideoDecoder : public media::FakeVideoDecoder {
     scoped_refptr<gpu::ClientSharedImage> shared_image =
         gpu::ClientSharedImage::CreateForTesting();
     scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapSharedImage(
-        media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(), 0,
+        media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
         media::VideoFrame::ReleaseMailboxCB(), current_config_.coded_size(),
         current_config_.visible_rect(), current_config_.natural_size(),
         buffer.timestamp());

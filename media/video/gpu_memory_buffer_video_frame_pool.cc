@@ -1160,13 +1160,12 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   // mailboxes refer to will be used only after all the previous commands posted
   // in the SharedImageInterface have been processed.
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
-  auto texture_target = frame_resource->shared_image->GetTextureTarget();
 
   VideoPixelFormat frame_format = VideoFormat(output_format_);
 
   // Create the VideoFrame backed by native textures.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
-      frame_format, frame_resource->shared_image, sync_token, texture_target,
+      frame_format, frame_resource->shared_image, sync_token,
       VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect, natural_size,
       timestamp);
 

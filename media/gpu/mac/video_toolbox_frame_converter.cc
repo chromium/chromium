@@ -249,8 +249,6 @@ void VideoToolboxFrameConverter::Convert(
   }
 
 
-  GLenum target = texture_rectangle_ ? GL_TEXTURE_RECTANGLE_ARB : GL_TEXTURE_2D;
-
   // |image| must be retained until after the release sync token passes.
   VideoFrame::ReleaseMailboxCB release_cb = base::BindPostTask(
       gpu_task_runner_,
@@ -262,7 +260,7 @@ void VideoToolboxFrameConverter::Convert(
   // expensive whenever the renderer is not doing readback.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       video_pixel_format, shared_image, shared_image->creation_sync_token(),
-      target, std::move(release_cb), coded_size, visible_rect, natural_size,
+      std::move(release_cb), coded_size, visible_rect, natural_size,
       metadata->timestamp);
 
   if (!frame) {

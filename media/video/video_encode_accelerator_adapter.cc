@@ -238,7 +238,7 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &GpuMemoryBufferVideoFramePool::ReuseFrame, this, shared_image));
       video_frame = media::VideoFrame::WrapMappableSharedImage(
-          std::move(shared_image), sync_token, GL_TEXTURE_2D,
+          std::move(shared_image), sync_token,
           std::move(shared_image_release_cb), gfx::Rect(visible_size),
           visible_size, base::TimeDelta());
       return video_frame;

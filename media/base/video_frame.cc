@@ -482,7 +482,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
     VideoPixelFormat format,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     gpu::SyncToken sync_token,
-    uint32_t texture_target,
     ReleaseMailboxCB mailbox_holder_release_cb,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -510,7 +509,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
 scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     gpu::SyncToken sync_token,
-    uint32_t texture_target,
     ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
@@ -752,7 +750,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
-    uint32_t texture_target,
     ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
     base::TimeDelta timestamp) {
   scoped_refptr<VideoFrame> frame =

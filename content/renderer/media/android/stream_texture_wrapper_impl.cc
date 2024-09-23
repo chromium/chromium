@@ -67,7 +67,6 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
     const gfx::Rect& visible_rect,
     const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info) {
   gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
-  uint32_t texture_target = GL_TEXTURE_EXTERNAL_OES;
   // The SI backing this VideoFrame will be read by the display compositor and
   // raster. The latter will be over GL if not using OOP-R. NOTE: GL usage can
   // be eliminated once OOP-R ships definitively.
@@ -83,7 +82,7 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
                               gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                   gpu::SHARED_IMAGE_USAGE_GLES2_READ |
                                   gpu::SHARED_IMAGE_USAGE_RASTER_READ,
-                              texture_target);
+                              GL_TEXTURE_EXTERNAL_OES);
 
   // The pixel format doesn't matter here as long as it's valid for texture
   // frames. But SkiaRenderer wants to ensure that the format of the resource
@@ -99,7 +98,6 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
   scoped_refptr<media::VideoFrame> new_frame =
       media::VideoFrame::WrapSharedImage(
           media::PIXEL_FORMAT_ABGR, shared_image, gpu::SyncToken(),
-          texture_target,
           base::BindPostTask(main_task_runner_,
                              base::BindOnce(&OnReleaseVideoFrame, factory_,
                                             std::move(shared_image))),

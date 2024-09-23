@@ -361,10 +361,9 @@ bool StructTraits<media::mojom::VideoFrameDataView,
           gpu::ClientSharedImage::ImportUnowned(*exported_shared_image);
     }
 
-    uint32_t texture_target = gpu_memory_buffer_data.texture_target();
     frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer), shared_image,
-        sync_token, texture_target, base::NullCallback(), timestamp);
+        sync_token, base::NullCallback(), timestamp);
   } else if (data.is_mailbox_data()) {
     media::mojom::MailboxVideoFrameDataDataView mailbox_data;
     data.GetMailboxDataDataView(&mailbox_data);
@@ -402,9 +401,8 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     }
 
     frame = media::VideoFrame::WrapSharedImage(
-        format, shared_image, sync_token, shared_image_data.texture_target(),
-        media::VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect,
-        natural_size, timestamp);
+        format, shared_image, sync_token, media::VideoFrame::ReleaseMailboxCB(),
+        coded_size, visible_rect, natural_size, timestamp);
 
     frame->set_ycbcr_info(ycbcr_info);
   } else {

@@ -381,7 +381,6 @@ VideoCaptureImpl::CreateVideoFrameInitData(
               video_frame_init_data.ready_buffer->info->pixel_format,
               buffer_context->shared_image(),
               buffer_context->shared_image_sync_token(),
-              buffer_context->shared_image()->GetTextureTarget(),
               media::VideoFrame::ReleaseMailboxCB(),
               gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
               gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
@@ -610,9 +609,6 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
                                ->shared_image->mailbox());
   }
 
-  const unsigned texture_target =
-      video_frame_init_data.buffer_context->gmb_resources()
-          ->shared_image->GetTextureTarget();
   const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   auto& shared_image =
@@ -624,7 +620,6 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
       media::VideoFrame::WrapExternalGpuMemoryBuffer(
           gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
           gmb_size, std::move(gpu_memory_buffer), shared_image, sync_token,
-          texture_target,
           base::BindOnce(&BufferContext::MailboxHolderReleased,
                          video_frame_init_data.buffer_context),
           video_frame_init_data.ready_buffer->info->timestamp);

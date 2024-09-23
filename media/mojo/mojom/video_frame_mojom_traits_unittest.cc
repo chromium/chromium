@@ -241,7 +241,7 @@ TEST_F(VideoFrameStructTraitsTest, SharedImageVideoFrame) {
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       gpu::ClientSharedImage::CreateForTesting();
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
-      PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(), 0,
+      PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
       VideoFrame::ReleaseMailboxCB(), gfx::Size(100, 100),
       gfx::Rect(10, 10, 80, 80), gfx::Size(200, 100), base::Seconds(100));
 
@@ -310,7 +310,7 @@ TEST_F(VideoFrameStructTraitsTest, GpuMemoryBufferSharedImageVideoFrame) {
           gpu::ClientSharedImage::CreateForTesting()};
   auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
       visible_rect, visible_rect.size(), std::move(gmb), shared_images,
-      gpu::SyncToken(), 5, base::NullCallback(), timestamp);
+      gpu::SyncToken(), base::NullCallback(), timestamp);
   ASSERT_TRUE(RoundTrip(&frame));
   ASSERT_TRUE(frame);
   ASSERT_EQ(frame->storage_type(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);

@@ -432,11 +432,9 @@ void MojoStableVideoDecoder::OnFrameResourceDecoded(
   // buffer once the decoded frame is no longer needed.
   auto client_shared_image = shared_image->client_shared_image();
   auto sync_token = shared_image->GenUnverifiedSyncToken();
-  auto texture_target = shared_image->texture_target();
 
   scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapSharedImage(
       frame_resource->format(), std::move(client_shared_image), sync_token,
-      texture_target,
       /*mailbox_holders_release_cb=*/
       base::DoNothingWithBoundArgs(std::move(shared_image), frame_resource),
       /*coded_size=*/GetRectSizeFromOrigin(frame_resource->visible_rect()),
