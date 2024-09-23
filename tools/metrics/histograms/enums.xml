@@ -19486,6 +19486,7 @@ from previous Chrome versions.
   <int value="-318702417" label="DeviceBoundSessions:disabled"/>
   <int value="-317758331" label="WebViewThreadSafeMedia:disabled"/>
   <int value="-317195508" label="TabGroupsContinuationAndroid:disabled"/>
+  <int value="-316343353" label="WebViewSupervisedUserSiteDetection:enabled"/>
   <int value="-315741215"
       label="IntentBlockExternalFormRedirectsNoGesture:enabled"/>
   <int value="-315604713" label="WebUSB:enabled"/>
@@ -21197,6 +21198,7 @@ from previous Chrome versions.
   <int value="378994579" label="Previews:enabled"/>
   <int value="379190682" label="ReorderBookmarks:enabled"/>
   <int value="379326303" label="enable-add-to-shelf"/>
+  <int value="379397486" label="WebViewSupervisedUserSiteBlock:disabled"/>
   <int value="379428799" label="security-chip-animation"/>
   <int value="379502873" label="webrtc-hw-decoding:enabled"/>
   <int value="380372760" label="V8Orinoco:disabled"/>
@@ -21373,6 +21375,7 @@ from previous Chrome versions.
   <int value="455698038"
       label="disable-gesture-requirement-for-media-playback"/>
   <int value="455754036" label="MirroringService:disabled"/>
+  <int value="456908798" label="WebViewSupervisedUserSiteBlock:enabled"/>
   <int value="457265823" label="NtpWideModules:enabled"/>
   <int value="457301531" label="SiteIsolationForGuests:disabled"/>
   <int value="457881889" label="enable-autoplay-muted-videos"/>
@@ -23579,6 +23582,7 @@ from previous Chrome versions.
   <int value="1372680885" label="enable-mtp-write-support"/>
   <int value="1373777956" label="disable-threaded-gpu-rasterization"/>
   <int value="1374350431" label="WebViewEmptyComponentLoaderPolicy:enabled"/>
+  <int value="1374413617" label="WebViewSupervisedUserSiteDetection:disabled"/>
   <int value="1375165388" label="LazyFrameLoading:enabled"/>
   <int value="1376062044" label="StopAppIndexingReport:enabled"/>
   <int value="1376139800" label="SeaPen:enabled"/>
