@@ -523,9 +523,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "multiword",
       base::FeatureList::IsEnabled(ash::features::kAssistMultiWord)));
-  features.Append(GenerateFeatureFlag(
-      "stylushandwriting",
-      base::FeatureList::IsEnabled(ash::features::kImeStylusHandwriting)));
+  features.Append(GenerateFeatureFlag("stylushandwriting", false));
   features.Append(GenerateFeatureFlag("roundCorners", false));
   features.Append(
       GenerateFeatureFlag("systemjapanesephysicaltyping",

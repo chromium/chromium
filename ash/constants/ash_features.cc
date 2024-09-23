@@ -1669,11 +1669,6 @@ BASE_FEATURE(kImeSystemEmojiPickerVariantGrouping,
              "SystemEmojiPickerVariantGrouping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable or disable a new UI for stylus writing on the virtual keyboard
-BASE_FEATURE(kImeStylusHandwriting,
-             "StylusHandwriting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables debug info UI for Korean input method's internal-mode switch.
 BASE_FEATURE(kImeKoreanModeSwitchDebug,
              "ImeKoreanModeSwitchDebug",

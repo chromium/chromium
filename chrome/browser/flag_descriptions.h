@@ -4150,9 +4150,6 @@ extern const char kImeSystemEmojiPickerMojoSearchDescription[];
 extern const char kImeSystemEmojiPickerVariantGroupingName[];
 extern const char kImeSystemEmojiPickerVariantGroupingDescription[];
 
-extern const char kImeStylusHandwritingName[];
-extern const char kImeStylusHandwritingDescription[];
-
 extern const char kImeUsEnglishModelUpdateName[];
 extern const char kImeUsEnglishModelUpdateDescription[];
 
