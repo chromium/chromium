@@ -8,8 +8,11 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/feature_list.h"
 
 namespace google_apis {
+
+COMPONENT_EXPORT(GOOGLE_APIS) BASE_DECLARE_FEATURE(kOverrideAPIKeyFeature);
 
 // Returns an API key that can be used to override the API key and that is
 // configured via an experimental feature.

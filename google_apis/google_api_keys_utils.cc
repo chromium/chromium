@@ -13,14 +13,14 @@ namespace google_apis {
 
 namespace {
 
-BASE_FEATURE(kOverrideAPIKeyFeature,
-             "OverrideAPIKey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 const base::FeatureParam<std::string> kOverrideAPIKeyFeatureParam{
     &kOverrideAPIKeyFeature, /*name=*/"api_key", /*default_value=*/""};
 
 }  // namespace
+
+BASE_FEATURE(kOverrideAPIKeyFeature,
+             "OverrideAPIKey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::string GetAPIKeyOverrideViaFeature() {
   if (base::FeatureList::IsEnabled(kOverrideAPIKeyFeature)) {

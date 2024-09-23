@@ -5,11 +5,10 @@
 #ifndef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #define GOOGLE_APIS_GOOGLE_API_KEYS_H_
 
-// If you add more includes to this file, you also need to add them to
-// google_api_keys_unittest.cc.
 #include <string>
 
 #include "base/component_export.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "google_apis/buildflags.h"
@@ -65,6 +64,8 @@ enum class Channel;
 // unavailable.
 
 namespace google_apis {
+
+class ApiKeyCache;
 
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAPIKeysDevelopersHowToURL[];
 
@@ -167,6 +168,12 @@ void SetOAuth2ClientSecret(OAuth2Client client,
 // Returns if the API key using in the current build is the one for official
 // Google Chrome.
 COMPONENT_EXPORT(GOOGLE_APIS) bool IsGoogleChromeAPIKeyUsed();
+
+// Sets a testing global instance of `ApiKeyCache` and returns a scoped object
+// that will restore the previous value once destroyed.
+COMPONENT_EXPORT(GOOGLE_APIS)
+base::ScopedClosureRunner
+    SetScopedApiKeyCacheForTesting(ApiKeyCache* api_key_cache);
 
 }  // namespace google_apis
 
