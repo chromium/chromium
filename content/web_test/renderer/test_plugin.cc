@@ -234,7 +234,9 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
   } else if (blink::features::IsCanvasSharedBitmapConversionEnabled()) {
     scoped_refptr<gpu::GpuChannelHost> gpu_channel =
         blink::Platform::Current()->EstablishGpuChannelSync();
-    DCHECK(gpu_channel);
+    if (!gpu_channel) {
+      return false;
+    }
 
     shared_image_interface_ = gpu_channel->CreateClientSharedImageInterface();
     DCHECK(shared_image_interface_);
