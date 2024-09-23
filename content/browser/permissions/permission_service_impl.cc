@@ -280,6 +280,28 @@ void PermissionServiceImpl::RequestPermissionsInternal(
     if (!PermissionUtil::ValidateDomainOverride(request_description.permissions,
                                                 context_->render_frame_host(),
                                                 permissions[0])) {
+      // TODO(crbug.com/332235257): Here we decouple the validation logic in
+      // ValidateDomainOverride to debug the crash. We can remove this code
+      // after 1 milestone when we have enough info.
+      if (request_description.permissions.size() > 1) {
+        ReceivedBadMessage();
+        return;
+      }
+
+      RenderFrameHost* rfh = context_->render_frame_host();
+      if (!rfh || !rfh->IsInPrimaryMainFrame()) {
+        ReceivedBadMessage();
+        return;
+      }
+
+      const url::Origin& overridden_origin =
+          PermissionUtil::ExtractDomainOverride(permissions[0]);
+
+      if (rfh->GetLastCommittedOrigin().IsSameOriginWith(overridden_origin)) {
+        ReceivedBadMessage();
+        return;
+      }
+
       ReceivedBadMessage();
       return;
     }
