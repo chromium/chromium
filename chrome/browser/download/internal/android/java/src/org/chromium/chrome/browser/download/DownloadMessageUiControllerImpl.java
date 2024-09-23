@@ -177,6 +177,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         public String description;
         public String link;
         public int icon;
+        public boolean ignoreAction;
 
         public @IconType int iconType = IconType.DRAWABLE;
 
@@ -225,6 +226,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             forceShow = other.forceShow;
             downloadCount = other.downloadCount;
             resultState = other.resultState;
+            ignoreAction = other.ignoreAction;
         }
     }
 
@@ -234,6 +236,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         public int pending;
         public int failed;
         public int completed;
+        // Download is blocked, each blocked downloaded is also counted in failed.
         public int blocked;
 
         /**
@@ -751,15 +754,30 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
                 // TODO(shaktisahu): Incorporate various types of failure messages.
                 // TODO(shaktisahu, xingliu): Consult UX to handle multiple schedule variations.
                 if (downloadCount.blocked > 0) {
-                    info.description =
-                            getContext()
-                                    .getResources()
-                                    .getQuantityString(
-                                            R.plurals.download_message_multiple_download_blocked,
-                                            downloadCount.blocked,
-                                            downloadCount.blocked);
+                    if (downloadCount.failed == 1) {
+                        info.description =
+                                getContext()
+                                        .getString(
+                                                R.string.download_message_single_download_blocked);
+                    } else {
+                        info.description =
+                                getContext()
+                                        .getResources()
+                                        .getQuantityString(
+                                                R.plurals
+                                                        .download_message_multiple_download_blocked,
+                                                downloadCount.blocked,
+                                                downloadCount.blocked);
+                    }
                 }
-                info.link = getContext().getString(R.string.details_link);
+                boolean allFailedDownloadsAreBlocked =
+                        (downloadCount.blocked == downloadCount.failed);
+                if (allFailedDownloadsAreBlocked) {
+                    info.link = getContext().getString(R.string.ok);
+                    info.ignoreAction = true;
+                } else {
+                    info.link = getContext().getString(R.string.details_link);
+                }
             }
         }
 
@@ -884,7 +902,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mPropertyModel.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, info.link);
         mPropertyModel.set(MessageBannerProperties.ON_DISMISSED, this::onMessageDismissed);
         mPropertyModel.set(
-                MessageBannerProperties.ON_PRIMARY_ACTION, () -> onPrimaryAction(info.id));
+                MessageBannerProperties.ON_PRIMARY_ACTION,
+                () -> onPrimaryAction(info.id, info.ignoreAction));
         final MessageDispatcher dispatcher = getMessageDispatcher();
         mDismissRunnable =
                 () -> {
@@ -1002,9 +1021,14 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         mNotificationIds.remove(contentId);
     }
 
-    private @PrimaryActionClickBehavior int onPrimaryAction(ContentId itemId) {
+    private @PrimaryActionClickBehavior int onPrimaryAction(
+            ContentId itemId, boolean ignoreAction) {
         OfflineItem offlineItem = mTrackedItems.remove(itemId);
         removeNotification(itemId);
+        if (ignoreAction) {
+            return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
+        }
+
         if (itemId != null) {
             mDelegate.openDownload(
                     itemId,

@@ -2956,9 +2956,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           =1 {1 download pending}
           other {# downloads pending}}
       </message>
+      <message name="IDS_DOWNLOAD_MESSAGE_SINGLE_DOWNLOAD_BLOCKED" desc="Download message label describing that one download was blocked due to corporate policy">
+        Blocked by your organization
+      </message>
       <message name="IDS_DOWNLOAD_MESSAGE_MULTIPLE_DOWNLOAD_BLOCKED" desc="Download message label describing that one or more downloads are blocked due to corporate policy">
         {FILE_COUNT, plural,
-          =1 {Blocked by your organization}
+          =1 {1 was blocked by your organization}
           other {# were blocked by your organization}}
       </message>
 
