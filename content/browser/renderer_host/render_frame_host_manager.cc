@@ -2255,13 +2255,13 @@ void RenderFrameHostManager::OnDidUpdateFrameOwnerProperties(
     const blink::mojom::FrameOwnerProperties& properties) {
   // FrameOwnerProperties exist only for frames that have a parent.
   CHECK(frame_tree_node_->parent());
-  SiteInstanceImpl* parent_instance =
-      frame_tree_node_->parent()->GetSiteInstance();
+  SiteInstanceGroup* parent_group =
+      frame_tree_node_->parent()->GetSiteInstance()->group();
 
   auto properties_for_local_frame = properties.Clone();
 
   // Notify the RenderFrame if it lives in a different process from its parent.
-  if (render_frame_host_->GetSiteInstance() != parent_instance) {
+  if (render_frame_host_->GetSiteInstance()->group() != parent_group) {
     render_frame_host_->GetAssociatedLocalFrame()->SetFrameOwnerProperties(
         std::move(properties_for_local_frame));
   }
