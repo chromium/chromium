@@ -40,6 +40,16 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
   return self;
 }
 
+- (UIImage*)resizeImageToFillFrame:(UIImage*)thumbnailImage {
+  if (!thumbnailImage) {
+    return nil;
+  }
+
+  return ResizeImage(thumbnailImage,
+                     CGSizeMake(self.frame.size.width, self.frame.size.height),
+                     ProjectionMode::kAspectFill);
+}
+
 - (UIImage*)thumbnailImageWithDiscardIntentOverlay:(UIImage*)thumbnailImage {
   CGFloat imageWidth = self.frame.size.width;
   CGFloat imageHeight = self.frame.size.height;
@@ -103,9 +113,10 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
 
+  UIImage* resizedImage = [self resizeImageToFillFrame:_thumbnailImage];
   UIImage* imageToSet =
-      selected ? [self thumbnailImageWithDiscardIntentOverlay:_thumbnailImage]
-               : _thumbnailImage;
+      selected ? [self thumbnailImageWithDiscardIntentOverlay:resizedImage]
+               : resizedImage;
 
   [self applyThumbnailImage:imageToSet animated:YES];
 }
@@ -114,10 +125,6 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
   if (!thumbnailImage) {
     return;
   }
-
-  thumbnailImage = ResizeImage(
-      thumbnailImage, CGSizeMake(self.frame.size.width, self.frame.size.height),
-      ProjectionMode::kAspectFill);
 
   if (!animated) {
     [self setBackgroundImage:thumbnailImage forState:UIControlStateNormal];
