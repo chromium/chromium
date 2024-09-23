@@ -47,7 +47,7 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
   mixer[kColorProductSpecificationsSummaryBackground] = {
       ui::kColorPrimaryBackground};
   mixer[kColorProductSpecificationsSummaryBackgroundDragging] = {
-      ui::kColorSysStateRippleNeutralOnSubtle};
+      ui::kColorSysStateHoverOnSubtle};
   mixer[kColorProductSpecificationsTonalButtonBackground] = {
       ui::kColorSysTonalContainer};
 }

@@ -1,6 +1,9 @@
 <style include="cr-hidden-style">
   :host {
     --table-min-width: 726px;
+    --summary-container-padding: 16px;
+    --column-padding: 4px;
+
     align-items: flex-start;
     display: flex;
     flex-direction: column;
@@ -23,11 +26,15 @@
     display: flex;
     min-height: 50px;
     min-width: var(--table-min-width);
-    padding: 16px;
+    padding: var(--summary-container-padding);
     width: fit-content;
   }
 
   #summaryContainer:has(horizontal-carousel:not([hidden])) {
+    padding: calc(var(--summary-container-padding) - var(--column-padding));
+  }
+
+  #summaryContainer:has(horizontal-carousel[can-scroll_]:not([hidden])) {
     padding-bottom: 2px;
   }
 

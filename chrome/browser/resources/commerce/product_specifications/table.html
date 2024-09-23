@@ -23,12 +23,14 @@
   .col {
     display: grid;
     grid-template-rows: subgrid;
+    padding: var(--column-padding);
     width: var(--column-width);
   }
 
   .col[is-dragging] {
     background-color: var(
         --color-product-specifications-summary-background-dragging);
+    border-radius: 10px;
     z-index: 2;
   }
 
@@ -110,7 +112,7 @@
   }
 
   .col[is-first-column] .detail-title span {
-    left: 0;
+    left: var(--column-padding);
     position: sticky;
   }
 
@@ -120,6 +122,7 @@
 
   #newColumnSelectorContainer {
     order: var(--num-columns); /* Keep at the end during drag-and-drop. */
+    padding-top: var(--column-padding);
     position: sticky;
     right: 0;
     z-index: 2;
