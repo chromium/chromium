@@ -15,72 +15,11 @@ import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 
+import type {DataContainer} from './batch_upload.js';
 import {getCss} from './batch_upload_app.css.js';
 import {getHtml} from './batch_upload_app.html.js';
 import {BatchUploadBrowserProxyImpl} from './browser_proxy.js';
 import type {BatchUploadBrowserProxy} from './browser_proxy.js';
-
-// TODO(b/363204445): to be removed with real implementation.
-// These structures are temporary and will be replaced with mojo generated
-// structures to be used and filled by the browser side.
-class Data {
-  id: number = -1;
-  iconUrl: string = '';
-  title: string = '';
-  subtitle: string = '';
-}
-
-class DataSection {
-  sectionTitle: string = '';
-  sectionSubtitle: string = '';
-  dataItems: Data[] = [];
-}
-
-enum DataType {
-  PASSWORDS,
-  ADDRESSES,
-}
-
-// TODO(b/363204445): to be removed with real implementation. Used for temporary
-// manual testing only.
-function createDummyData(dataType: DataType): DataSection {
-  if (dataType === DataType.PASSWORDS) {
-    const dataItem = new Data();
-    dataItem.id = 1;
-    dataItem.iconUrl = 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
-    dataItem.title = 'password1';
-    dataItem.subtitle = 'username1';
-    const dataItem2 = new Data();
-    dataItem2.id = 2;
-    dataItem2.iconUrl = 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE';
-    dataItem2.title = 'password2';
-    dataItem2.subtitle = 'username2';
-
-    const dataSection = new DataSection();
-    dataSection.dataItems.push(dataItem);
-    dataSection.dataItems.push(dataItem2);
-    dataSection.sectionTitle = 'Passwords';
-    dataSection.sectionSubtitle = '2 passwords';
-
-    return dataSection;
-  }
-
-  if (dataType === DataType.ADDRESSES) {
-    const dataItem = new Data();
-    dataItem.id = 3;
-    dataItem.iconUrl = '';
-    dataItem.title = 'address';
-    dataItem.subtitle = 'street';
-
-    const dataSection = new DataSection();
-    dataSection.dataItems.push(dataItem);
-    dataSection.sectionTitle = 'Addresses';
-
-    return dataSection;
-  }
-
-  return new DataSection();
-}
 
 export interface BatchUploadAppElement {
   $: {
@@ -113,29 +52,30 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
   private batchUploadBrowserProxy_: BatchUploadBrowserProxy =
       BatchUploadBrowserProxyImpl.getInstance();
 
-  protected dataSections_: DataSection[] = [];
+  // Stores the input coming from the browser initialized in
+  // `initializeInputAndOutputData_()`.
+  protected dataSections_: DataContainer[] = [];
+  // Mapping between the collapse section and the expand button indexed by the
+  // input sections
   protected dataSectionsExpanded_: boolean[] = [];
+
+  // To be used as the output in `saveToAccount_()`. The size maps directly to
+  // the input `dataSections_`. It is initialized in
+  // `initializeInputAndOutputData_()`.
+  private dataSectionsSelected_: Array<Array<[boolean, number]>> = [];
 
   override connectedCallback() {
     super.connectedCallback();
 
-    this.batchUploadBrowserProxy_.callbackRouter.sendData.addListener(() => {
-      // Populate data.
-      // TODO(b/363204445): Currently dummy data, should be received by the
-      // `sendData` callback.
-      this.dataSections_.push(createDummyData(DataType.PASSWORDS));
-      this.dataSectionsExpanded_.push(false);
-      this.dataSections_.push(createDummyData(DataType.ADDRESSES));
-      this.dataSectionsExpanded_.push(false);
+    this.batchUploadBrowserProxy_.callbackRouter.sendDataItems.addListener(
+        (containerList: DataContainer[]) => {
+          // Populate data with input from browser.
+          this.initializeInputAndOutputData_(containerList);
 
-      this.validateInput_();
-      this.prepareOutput_();
+          this.requestUpdate();
 
-      this.requestUpdate();
-
-      // Requesting an update without explicitly waiting for it to finish.
-      this.updateViewHeight_();
-    });
+          this.updateViewHeight_();
+        });
   }
 
   // Requests the browser to update the native view to match the current height
@@ -148,36 +88,66 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
     this.batchUploadBrowserProxy_.handler.updateViewHeight(height);
   }
 
-  // Validates the input that the Ui assumes for display.
-  private validateInput_() {
+  // Creates and validates the input structure that the Ui assumes for display.
+  // Creates the equivalent output variable of selected ids.
+  // Expected to be called once.
+  private initializeInputAndOutputData_(containerList: DataContainer[]) {
+    assert(this.dataSections_.length === 0);
+    assert(this.dataSectionsExpanded_.length === 0);
+    assert(this.dataSectionsSelected_.length === 0);
+
+    // A data container is equivalent to a section in the Ui.
+    this.dataSections_ = containerList;
+    this.dataSectionsExpanded_ = Array(this.dataSections_.length).fill(false);
+
     // There should be at least one section.
     assert(
         this.dataSections_ !== undefined && this.dataSections_.length !== 0,
         'There should at least be one section to show.');
 
-    // And any section should not be empty.
     for (const section of this.dataSections_) {
+      // And any section should not be empty.
       assert(
           section.dataItems !== undefined && section.dataItems.length !== 0,
           'Sections should have at least one item to show.');
 
+      const sectionSelected: Array<[boolean, number]> = [];
       const sectionItemsIdSet = new Set<number>();
       for (const item of section.dataItems) {
+        // Ids within a section should not be repeated.
         assert(
             !sectionItemsIdSet.has(item.id),
             item.id + ' already exists in this section.' +
                 ' An Id should be unique per section');
         sectionItemsIdSet.add(item.id);
-      }
-    }
-  }
 
-  private prepareOutput_() {
-    // TODO(b/359797313): implement logic related to checkboxes/toggles.
+        // By default all items are selected at the start.
+        sectionSelected.push([true, item.id]);
+      }
+
+      this.dataSectionsSelected_.push(sectionSelected);
+    }
   }
 
   protected close_() {
     this.batchUploadBrowserProxy_.handler.close();
+  }
+
+  protected saveToAccount_() {
+    const idsToMove: number[][] = [];
+    // Read the selected output value to extract the ids.
+    for (const sectionSelected of this.dataSectionsSelected_) {
+      const idsToMoveSection: number[] = [];
+      for (const selectedItem of sectionSelected) {
+        // Only add the item id if it is selected.
+        if (selectedItem[0]) {
+          idsToMoveSection.push(selectedItem[1]);
+        }
+      }
+      idsToMove.push(idsToMoveSection);
+    }
+
+    this.batchUploadBrowserProxy_.handler.saveToAccount(idsToMove);
   }
 
   protected getDialogSubtitle_(): string {
@@ -186,12 +156,18 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
       return '';
     }
 
-    return this.dataSections_[0]!.sectionSubtitle;
+    return this.dataSections_[0]!.dialogSubtitle;
   }
 
-  protected getSectionTitle_(section: DataSection): string {
-    const numberOfSelectedItems = section.dataItems.length;
-    return section.sectionTitle + ' (' + numberOfSelectedItems + ')';
+  protected getSectionTitle_(sectionIndex: number): string {
+    const sectionSelected = this.dataSectionsSelected_[sectionIndex]!;
+    // Count the number of selected items in this section.
+    const selectedItemCount = sectionSelected.reduce((sum, [selected]) => {
+      return sum + (selected ? 1 : 0);
+    }, 0);
+
+    return this.dataSections_[sectionIndex]!.sectionTitle + ' (' +
+        selectedItemCount + ')';
   }
 
   protected onExpandClicked_(e: Event) {
@@ -224,13 +200,15 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
   }
 
   protected onCheckedChanged_(e: CustomEvent<boolean>) {
-    // TODO(b/359797313): implement checked values and link to output.
-    console.error('checked: ' + e.detail);
     const currentTarget = e.currentTarget as HTMLElement;
 
-    // Getting the index set in `data-index` property.
-    const index = Number(currentTarget.dataset['index']);
-    console.error('index: ' + index);
+    const sectionIndex = Number(currentTarget.dataset['sectionIndex']);
+    const itemIndex = Number(currentTarget.dataset['itemIndex']);
+    this.dataSectionsSelected_[sectionIndex]![itemIndex]![0] = e.detail;
+
+    // Used to update the section title through `getSectionTitle_` with the
+    // number of selected items.
+    this.requestUpdate();
   }
 }
 

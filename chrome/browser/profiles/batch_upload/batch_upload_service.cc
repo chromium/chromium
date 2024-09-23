@@ -5,10 +5,12 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/grit/generated_resources.h"
 
 namespace {
 
@@ -16,32 +18,51 @@ namespace {
 // TODO(b/359146556): remove when actual providers are implemented.
 class DummyBatchUploadDataProvider : public BatchUploadDataProvider {
  public:
-  explicit DummyBatchUploadDataProvider(BatchUploadDataType type)
-      : BatchUploadDataProvider(type) {}
+  explicit DummyBatchUploadDataProvider(BatchUploadDataType type,
+                                        int title_id,
+                                        int item_count)
+      : BatchUploadDataProvider(type),
+        title_id_(title_id),
+        item_count_(item_count) {}
 
-  bool HasLocalData() const override { return true; }
+  bool HasLocalData() const override { return item_count_ > 0; }
 
   BatchUploadDataContainer GetLocalData() const override {
-    BatchUploadDataContainer container(/*section_name_id=*/123,
+    BatchUploadDataContainer container(/*section_name_id=*/title_id_,
                                        /*dialog_subtitle_id=*/456);
-    container.items.push_back(
-        BatchUploadDataItemModel{.id = BatchUploadDataItemModel::Id(321),
-                                 .title = "title",
-                                 .subtitle = "subtitle"});
+    for (int i = 0; i < item_count_; ++i) {
+      container.items.push_back(BatchUploadDataItemModel{
+          .id = BatchUploadDataItemModel::Id(i),
+          .title = "title_" + base::UTF16ToUTF8(base::FormatNumber(i)),
+          .subtitle = "subtitle_" + base::UTF16ToUTF8(base::FormatNumber(i))});
+    }
     return container;
   }
 
   bool MoveToAccountStorage(const std::vector<BatchUploadDataItemModel::Id>&
                                 item_ids_to_move) override {
+    // TODO(b/359146556): temporary output until there is the real
+    // implementations.
+    LOG(ERROR) << "XXX: Moving items:";
+    for (auto& id : item_ids_to_move) {
+      LOG(ERROR) << "XXX: id: " << id;
+    }
     return true;
   }
+
+ private:
+  int title_id_ = 0;
+  int item_count_ = 0;
 };
 
 // Returns a dummy implementation.
 // TODO(b/359146556): remove when actual providers are implemented.
 std::unique_ptr<BatchUploadDataProvider> MakeDummyBatchUploadDataProvider(
-    BatchUploadDataType type) {
-  return std::make_unique<DummyBatchUploadDataProvider>(type);
+    BatchUploadDataType type,
+    int title_id,
+    int item_count) {
+  return std::make_unique<DummyBatchUploadDataProvider>(type, title_id,
+                                                        item_count);
 }
 
 // Gets the `BatchUploadDataProvider` of a single data type. Can also be used in
@@ -51,11 +72,14 @@ std::unique_ptr<BatchUploadDataProvider> MakeDummyBatchUploadDataProvider(
 std::unique_ptr<BatchUploadDataProvider> GetBatchUploadDataProvider(
     Profile& profile,
     BatchUploadDataType type) {
+  // TODO(b/359146556): real implementations to be added per data type.
   switch (type) {
     case BatchUploadDataType::kPasswords:
+      return MakeDummyBatchUploadDataProvider(
+          type, IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS, 2);
     case BatchUploadDataType::kAddresses:
-      // TODO(b/359146556): real implementations to be added per data type.
-      return MakeDummyBatchUploadDataProvider(type);
+      return MakeDummyBatchUploadDataProvider(
+          type, IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES, 3);
   }
 }
 

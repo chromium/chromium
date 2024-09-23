@@ -12,6 +12,7 @@ class TestBatchUploadHandler extends TestBrowserProxy implements
     super([
       'updateViewHeight',
       'close',
+      'saveToAccount',
     ]);
   }
 
@@ -21,6 +22,10 @@ class TestBatchUploadHandler extends TestBrowserProxy implements
 
   close() {
     this.methodCalled('close');
+  }
+
+  saveToAccount(idsToMove: number[][]) {
+    this.methodCalled('saveToAccount', idsToMove);
   }
 }
 

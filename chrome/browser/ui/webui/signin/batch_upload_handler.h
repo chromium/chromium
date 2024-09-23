@@ -32,6 +32,8 @@ class BatchUploadHandler : public batch_upload::mojom::PageHandler {
 
   // batch_upload::mojom::PageHandler:
   void UpdateViewHeight(uint32_t height) override;
+  void SaveToAccount(
+      const std::vector<std::vector<int32_t>>& idsToMove) override;
   void Close() override;
 
  private:

@@ -13,7 +13,7 @@ export function getHtml(this: BatchUploadAppElement) {
   <div id="header">
     <div id="title">${this.i18n('batchUploadTitle')}</div>
     <div id="subtitle">
-      ${this.getDialogSubtitle_()} and other items are saved only to this device. To use them on your other devices, save them in your account.
+      ${this.getDialogSubtitle_()}
     </div>
 
     <div id="account-info-row">
@@ -28,7 +28,9 @@ export function getHtml(this: BatchUploadAppElement) {
     html`
     <div class="data-section">
       <div class="data-section-header">
-        <div class="data-section-title">${this.getSectionTitle_(section)}</div>
+        <div class="data-section-title">
+          ${this.getSectionTitle_(sectionIndex)}
+        </div>
         <cr-expand-button class="expand-button" no-hover
             @click="${this.onExpandClicked_}"
             data-index="${sectionIndex}">
@@ -44,7 +46,8 @@ export function getHtml(this: BatchUploadAppElement) {
           html`
           <div class="data-item">
             <cr-checkbox class="item-checkbox" checked
-                data-index="${itemIndex}"
+                data-section-index="${sectionIndex}"
+                data-item-index="${itemIndex}"
                 @change="${this.onCheckedChanged_}"/>
             <div class="data-item-content">
               <img class="item-icon" alt="Item icon" src="${item.iconUrl}">
@@ -63,7 +66,8 @@ export function getHtml(this: BatchUploadAppElement) {
     <cr-button id='close-button' @click="${this.close_}">
       ${this.i18n('cancel')}
     </cr-button>
-    <cr-button id='save-button' class="action-button" @click="${this.close_}">
+    <cr-button id='save-button' class="action-button"
+        @click="${this.saveToAccount_}">
       ${this.i18n('saveToAccount')}
     </cr-button>
   </div>

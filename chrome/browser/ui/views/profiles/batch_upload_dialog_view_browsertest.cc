@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -36,8 +37,10 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
   bool HasLocalData() const override { return has_local_data_; }
 
   BatchUploadDataContainer GetLocalData() const override {
-    BatchUploadDataContainer container(/*section_name_id=*/123,
-                                       /*dialog_subtitle_id=*/456);
+    // IDs used here are arbitrary and should not be checked.
+    BatchUploadDataContainer container(
+        /*section_name_id=*/IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS,
+        /*dialog_subtitle_id=*/IDS_BATCH_UPLOAD_SUBTITLE);
     if (has_local_data_) {
       // Add an arbitrary item.
       container.items.push_back({.id = BatchUploadDataItemModel::Id(123),

@@ -4,11 +4,13 @@
 
 #include <string>
 
+#include "base/i18n/number_formatting.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/profiles/batch_upload_dialog_view.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -22,23 +24,30 @@ namespace {
 // other tests with more useful functions for testing.
 class BatchUploadDataProviderFake : public BatchUploadDataProvider {
  public:
-  explicit BatchUploadDataProviderFake(BatchUploadDataType type)
-      : BatchUploadDataProvider(type) {}
+  explicit BatchUploadDataProviderFake(BatchUploadDataType type, int item_count)
+      : BatchUploadDataProvider(type),
+        item_count_(item_count),
+        section_name_id_(type == BatchUploadDataType::kPasswords
+                             ? IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS
+                             : IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES),
+        data_name(type == BatchUploadDataType::kPasswords ? "password"
+                                                          : "address") {}
 
-  void SetHasLocalData(bool has_local_data) {
-    has_local_data_ = has_local_data;
-  }
-
-  bool HasLocalData() const override { return has_local_data_; }
+  bool HasLocalData() const override { return item_count_ > 0; }
 
   BatchUploadDataContainer GetLocalData() const override {
-    BatchUploadDataContainer container(/*section_name_id=*/123,
-                                       /*dialog_subtitle_id=*/456);
-    if (has_local_data_) {
-      // Add an arbitrary item.
-      container.items.push_back({.id = BatchUploadDataItemModel::Id(123),
-                                 .title = "data_title",
-                                 .subtitle = "data_subtitle"});
+    BatchUploadDataContainer container(
+        section_name_id_,
+        /*dialog_subtitle_id=*/IDS_BATCH_UPLOAD_SUBTITLE);
+
+    // Add arbitrary items.
+    for (int i = 0; i < item_count_; ++i) {
+      container.items.push_back(
+          {.id = BatchUploadDataItemModel::Id(i),
+           .title =
+               data_name + "_title_" + base::UTF16ToUTF8(base::FormatNumber(i)),
+           .subtitle = data_name + "_subtitle_" +
+                       base::UTF16ToUTF8(base::FormatNumber(i))});
     }
     return container;
   }
@@ -49,6 +58,9 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
   }
 
  private:
+  int item_count_;
+  int section_name_id_;
+  const std::string data_name;
   bool has_local_data_ = false;
 };
 
@@ -76,7 +88,8 @@ class BatchUploadDialogViewPixelTest
       public testing::WithParamInterface<TestParam> {
  public:
   BatchUploadDialogViewPixelTest()
-      : fake_provider_(BatchUploadDataType::kPasswords) {
+      : fake_provider_(BatchUploadDataType::kPasswords, 2),
+        fake_provider2_(BatchUploadDataType::kAddresses, 1) {
     // The Batch Upload view seems not to be resized properly on changes which
     // causes the view to go out of bounds. This should not happen and needs to
     // be investigated further. As a work around, to have a proper screenshot
@@ -102,10 +115,8 @@ class BatchUploadDialogViewPixelTest
     views::NamedWidgetShownWaiter widget_waiter(
         views::test::AnyWidgetTestPasskey{}, "BatchUploadDialogView");
 
-    fake_provider_.SetHasLocalData(true);
-
     BatchUploadDialogView::CreateBatchUploadDialogView(
-        *browser(), /*data_providers_list=*/{&fake_provider_},
+        *browser(), /*data_providers_list=*/{&fake_provider_, &fake_provider2_},
         /*complete_callback*/ base::DoNothing());
 
     widget_waiter.WaitIfNeededAndGet();
@@ -114,6 +125,7 @@ class BatchUploadDialogViewPixelTest
 
  private:
   BatchUploadDataProviderFake fake_provider_;
+  BatchUploadDataProviderFake fake_provider2_;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       switches::kBatchUploadDesktop};
