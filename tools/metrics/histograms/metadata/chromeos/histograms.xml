@@ -74,13 +74,12 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <owner>chromeos-cross-device-eng@google.com</owner>
   </variant>
   <variant name="Fingerprint" summary="fingerprint">
-    <owner>rsorokin@chromium.org</owner>
     <owner>tomhughes@chromium.org</owner>
     <owner>cros-oac@google.com</owner>
     <owner>chromeos-fingerprint@google.com</owner>
   </variant>
   <variant name="LockOnSuspend" summary="lock screen on device suspend">
-    <owner>rsorokin@chromium.org</owner>
+    <owner>antrim@chromium.org</owner>
     <owner>cros-oac@google.com</owner>
   </variant>
   <variant name="NearbyShare" summary="Nearby Share">
@@ -1479,7 +1478,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.FeatureUsage.{FeatureName}" enum="FeatureUsageEvent"
     expires_after="2025-02-10">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Records device eligibility, enabled status, and success rate for the
@@ -1491,7 +1490,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.FeatureUsage.{FeatureName}.Usetime" units="ms"
     expires_after="2025-02-10">
-  <owner>rsorokin@chromium.org</owner>
+  <owner>antrim@chromium.org</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
     Records the duration of time (ms) a given {FeatureName} feature was used.
@@ -1657,8 +1656,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Gaia.Message.{GaiaAuthFlow}.{MessageName}"
-    enum="BooleanReceived" expires_after="2024-09-15">
-  <owner>rsorokin@google.com</owner>
+    enum="BooleanReceived" expires_after="2025-02-10">
+  <owner>ayag@chromium.org</owner>
   <owner>cros-3pidp@google.com</owner>
   <summary>
     Records whether or not {MessageName} was received during the {GaiaAuthFlow}
@@ -3116,7 +3115,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram name="ChromeOS.SAML.InSessionPasswordChangeEvent"
     enum="SamlInSessionPasswordChangeEvent" expires_after="2025-03-09">
   <owner>mslus@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-3pidp@google.com</owner>
   <summary>
     Records how often users are guided through the SAML in-session password
     change flow, and how often it is completed succesfully.
