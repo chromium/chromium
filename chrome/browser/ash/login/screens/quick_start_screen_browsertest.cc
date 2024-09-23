@@ -211,6 +211,9 @@ class QuickStartBrowserTest : public OobeBaseTest {
     WaitForSigninScreen();
     WaitForGaiaPageLoad();
     OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();
+    histogram_tester_.ExpectBucketCount(
+        kEntryPointVisibleHistogram,
+        quick_start::QuickStartMetrics::EntryPoint::GAIA_SCREEN, 1);
   }
 
   void EnterQuickStartFlowFromWelcomeScreen() {

@@ -434,8 +434,16 @@ void GaiaScreen::OnQuickStartButtonClicked() {
 }
 
 void GaiaScreen::SetQuickStartButtonVisibility(bool visible) {
-  if (view_) {
-    view_->SetQuickStartEntryPointVisibility(visible);
+  if (!view_) {
+    return;
+  }
+
+  view_->SetQuickStartEntryPointVisibility(visible);
+
+  if (visible && !has_emitted_quick_start_visible) {
+    has_emitted_quick_start_visible = true;
+    quick_start::QuickStartMetrics::RecordEntryPointVisible(
+        quick_start::QuickStartMetrics::EntryPoint::GAIA_SCREEN);
   }
 }
 

@@ -109,6 +109,10 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
 
   bool MaybeLoginWithCachedCredentials();
 
+  // Whether the QuickStart entry point visibility has already been determined.
+  // This flag prevents duplicate histogram entries.
+  bool has_emitted_quick_start_visible = false;
+
   AuthFactorEditor auth_factor_editor_;
   std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;
   std::unique_ptr<policy::AccountStatusCheckFetcher> account_status_fetcher_;
