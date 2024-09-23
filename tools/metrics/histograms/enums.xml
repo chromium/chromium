@@ -12162,6 +12162,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Other"/>
   <int value="1" label="DXGI_ERROR_DEVICE_HUNG"/>
   <int value="2" label="DXGI_ERROR_DEVICE_REMOVED"/>
+  <int value="3" label="Failed to create device."/>
 </enum>
 
 <enum name="GpuImageUsageState">
