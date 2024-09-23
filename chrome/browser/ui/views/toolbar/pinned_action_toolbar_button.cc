@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -399,6 +400,13 @@ void PinnedActionToolbarButtonActionViewInterface::InvokeActionImpl(
     actions::ActionItem* action_item) {
   base::RecordAction(
       base::UserMetricsAction("Actions.PinnedToolbarButtonActivation"));
+  std::optional<actions::ActionId> action_id = action_item->GetActionId();
+  CHECK(action_id.has_value());
+  const std::optional<std::string> metrics_name =
+      actions::ActionIdMap::ActionIdToString(action_id.value());
+  CHECK(metrics_name.has_value());
+  base::RecordComputedAction(base::StrCat(
+      {"Actions.PinnedToolbarButtonActivation.", metrics_name.value()}));
 
   base::AutoReset<bool> needs_delayed_destruction =
       action_view_->SetNeedsDelayedDestruction(true);
