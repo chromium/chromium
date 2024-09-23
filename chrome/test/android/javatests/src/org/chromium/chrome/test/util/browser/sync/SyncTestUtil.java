@@ -19,6 +19,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.TransportState;
 import org.chromium.components.sync.UserSelectableType;
 
 import java.util.ArrayList;
@@ -112,7 +113,9 @@ public final class SyncTestUtil {
     /** Waits for sync machinery to become active. */
     public static void waitForSyncTransportActive() {
         CriteriaHelper.pollUiThread(
-                () -> getSyncServiceForLastUsedProfile().isTransportStateActive(),
+                () ->
+                        getSyncServiceForLastUsedProfile().getTransportState()
+                                == TransportState.ACTIVE,
                 "Timed out waiting for sync transport state to become active.",
                 TIMEOUT_MS,
                 INTERVAL_MS);
