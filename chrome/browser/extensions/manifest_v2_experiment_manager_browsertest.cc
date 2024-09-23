@@ -835,9 +835,12 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
                        PRE_PRE_FlowFromWarningToUnsupported) {
   EXPECT_EQ(MV2ExperimentStage::kWarning, GetActiveExperimentStage());
-  // Install an MV2 extension.
-  const Extension* extension = AddMV2Extension("Test MV2 Extension");
-  ASSERT_TRUE(extension);
+  // Install two MV2 extensions.
+  const Extension* extension1 = AddMV2Extension("Test MV2 Extension 1");
+  ASSERT_TRUE(extension1);
+
+  const Extension* extension2 = AddMV2Extension("Test MV2 Extension 2");
+  ASSERT_TRUE(extension2);
 }
 IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
                        PRE_FlowFromWarningToUnsupported) {
@@ -846,22 +849,31 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
 
   WaitForExtensionSystemReady();
 
-  // The extension should be disabled. Re-enable it (allowed in this phase).
-  const Extension* extension = GetExtensionByName(
-      "Test MV2 Extension", extension_registry()->disabled_extensions());
-  ASSERT_TRUE(extension);
-  const ExtensionId extension_id = extension->id();
+  // Both extensions should be disabled.
+  const Extension* extension1 = GetExtensionByName(
+      "Test MV2 Extension 1", extension_registry()->disabled_extensions());
+  ASSERT_TRUE(extension1);
+  const ExtensionId extension_id1 = extension1->id();
   EXPECT_EQ(
       static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs()->GetDisableReasons(extension_id));
-  extension_service()->EnableExtension(extension_id);
+      extension_prefs()->GetDisableReasons(extension_id1));
+  const Extension* extension2 = GetExtensionByName(
+      "Test MV2 Extension 2", extension_registry()->disabled_extensions());
+  ASSERT_TRUE(extension1);
+  const ExtensionId extension_id2 = extension2->id();
+  EXPECT_EQ(
+      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
+      extension_prefs()->GetDisableReasons(extension_id2));
 
-  // The extension should be properly re-enabled, the disable reasons cleared,
-  // and the extension should be marked as explicitly re-enabled.
+  // Re-enable the first MV2 extension (this is allowed in this phase).
+  extension_service()->EnableExtension(extension_id1);
+
+  // The first extension should be properly re-enabled, the disable reasons
+  // cleared, and the extension should be marked as explicitly re-enabled.
   EXPECT_TRUE(
-      extension_registry()->enabled_extensions().Contains(extension_id));
-  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id));
-  EXPECT_TRUE(WasExtensionReEnabledByUser(extension_id));
+      extension_registry()->enabled_extensions().Contains(extension_id1));
+  EXPECT_EQ(0, extension_prefs()->GetDisableReasons(extension_id1));
+  EXPECT_TRUE(WasExtensionReEnabledByUser(extension_id1));
 }
 IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
                        FlowFromWarningToUnsupported) {
@@ -869,17 +881,27 @@ IN_PROC_BROWSER_TEST_F(ManifestV2ExperimentManagerBrowserTest,
 
   WaitForExtensionSystemReady();
 
-  // In the "unsupported" phase, the extension should be disabled again, even
-  // though it was re-enabled in a previous phase.
-  const Extension* extension = GetExtensionByName(
-      "Test MV2 Extension", extension_registry()->disabled_extensions());
-  ASSERT_TRUE(extension);
-  const ExtensionId extension_id = extension->id();
+  // In the "unsupported" phase, both extensions should be disabled again, even
+  // though the first was re-enabled in a previous phase.
+  const Extension* extension1 = GetExtensionByName(
+      "Test MV2 Extension 1", extension_registry()->disabled_extensions());
+  ASSERT_TRUE(extension1);
+  const ExtensionId extension_id1 = extension1->id();
 
-  EXPECT_TRUE(WasExtensionReEnabledByUser(extension_id));
+  EXPECT_TRUE(WasExtensionReEnabledByUser(extension_id1));
   EXPECT_EQ(
       static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
-      extension_prefs()->GetDisableReasons(extension_id));
+      extension_prefs()->GetDisableReasons(extension_id1));
+
+  const Extension* extension2 = GetExtensionByName(
+      "Test MV2 Extension 2", extension_registry()->disabled_extensions());
+  ASSERT_TRUE(extension2);
+  const ExtensionId extension_id2 = extension2->id();
+
+  EXPECT_FALSE(WasExtensionReEnabledByUser(extension_id2));
+  EXPECT_EQ(
+      static_cast<int>(disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION),
+      extension_prefs()->GetDisableReasons(extension_id2));
 }
 
 class ManifestV2ExperimentWithLegacyExtensionSupportTest
