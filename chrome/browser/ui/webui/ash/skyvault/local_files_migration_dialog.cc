@@ -16,10 +16,14 @@
 #include "chrome/common/webui_url_constants.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 namespace policy::local_user_files {
+
+// Dialog size.
+constexpr gfx::Size kDialogSize{448, 360};
 
 // static
 bool LocalFilesMigrationDialog::Show(CloudProvider cloud_provider,
@@ -57,9 +61,7 @@ LocalFilesMigrationDialog::LocalFilesMigrationDialog(
       cloud_provider_(cloud_provider),
       migration_start_time_(std::move(migration_start_time)),
       migration_callback_(std::move(migration_callback)) {
-  // TODO(b/342340599): Set appropriate height when the text is finalized.
-  set_dialog_size(gfx::Size(SystemWebDialogDelegate::kDialogWidth,
-                            SystemWebDialogDelegate::kDialogHeight));
+  set_dialog_size(kDialogSize);
 
   // This callback runs just before destroying this instance.
   RegisterOnDialogClosedCallback(

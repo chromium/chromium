@@ -1,5 +1,4 @@
 <style include="cr-page-host-style cr-shared-style md-select cros-color-overrides">
-  /* TODO(b/342340599): add proper styling. */
   cr-dialog::part(dialog) {
     border-radius: 0%;
     height: 100%;
@@ -74,15 +73,22 @@
     --cr-dialog-button-container-padding-horizontal: 24px;
     --cr-dialog-button-container-padding-top: 24px;
   }
+
+  .managed-icon {
+    width: 32px;
+    height: 32px;
+  }
 </style>
 
 <cr-dialog id="dialog" show-on-attach>
-  <!-- TODO(b/342340599): Make this color sensitive. -->
-  <div class="managed-icon-container">
-    <img src="chrome://resources/images/business.svg"
-      alt="Managed Icon" class="managed-icon">
+  <div slot="title" id="title">
+    <div class="managed-icon-container">
+      <!-- TODO(b/342340599): Make this color sensitive. -->
+      <img src="chrome://resources/images/business.svg"
+        alt="Managed Icon" class="managed-icon">
+    </div>
+    <div id="title-text"></div>
   </div>
-  <div slot="title" id="title"></div>
   <div slot="body">
     <p class="message" id="start-message"></p>
     <p class="message" id="done-message"></p>

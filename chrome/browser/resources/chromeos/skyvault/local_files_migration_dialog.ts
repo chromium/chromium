@@ -95,7 +95,7 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
       return;
     }
 
-    const title = this.$('#title');
+    const title = this.$('#title-text');
     const dismissButton = this.$('#dismiss-button');
     const providerName = this.getCloudProviderName_(this.cloudProvider);
     const remainingTimeValue = remainingTime.value;
