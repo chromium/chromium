@@ -7625,3 +7625,8 @@ crbug.com/353746882 external/wpt/fs/FileSystemFileHandle-cross-primitive-locking
 # Gardener 2024-07-24
 crbug.com/40186254 fast/events/touch/gesture/gesture-tap-reset-selection-range.html [ Failure Pass Timeout ]
 crbug.com/40186254 fast/events/touch/gesture/long-press-drag-drop-touch-editing-combined-in-iframe.html [ Failure Pass Timeout ]
+
+# Branch gardener 2024-09-23
+crbug.com/363051117 [ Mac14 ] editing/selection/modify_move/move-by-word-visually-crash-test-5.html [ Failure Pass ]
+crbug.com/365589062 [ Mac14 ] fast/css-grid-layout/grid-auto-repeat-huge-grid-010.html [ Failure Pass ]
+crbug.com/369085369 [ Mac14 ] webaudio/AudioParam/audioparam-rate-change-357391257.html [ Failure Pass ]
