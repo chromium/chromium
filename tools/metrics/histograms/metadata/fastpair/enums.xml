@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Device already paired"/>
   <int value="3" label="Bond successful"/>
   <int value="4" label="Passkey negotiated"/>
-  <int value="5" label="Recieved passkey response"/>
+  <int value="5" label="Received passkey response"/>
   <int value="6" label="Passkey validated"/>
   <int value="7" label="Passkey confirmed"/>
   <int value="8" label="Pairing complete"/>
