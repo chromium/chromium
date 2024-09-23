@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
@@ -24,6 +26,8 @@ NSString* const kLensUserEducationDarkMode = @"lens_usered_darkmode";
 
 @implementation LensOverlayConsentViewController {
   id<LottieAnimation> _animationViewWrapper;
+  BOOL _isAnimationPlaying;
+  UIButton* _animationPlayerButton;
 }
 
 - (void)viewDidLoad {
@@ -95,15 +99,31 @@ NSString* const kLensUserEducationDarkMode = @"lens_usered_darkmode";
           ? [self createAnimation:kLensUserEducationDarkMode]
           : [self createAnimation:kLensUserEducationLightMode];
 
-  _animationViewWrapper.animationView
-      .translatesAutoresizingMaskIntoConstraints = NO;
-  _animationViewWrapper.animationView.contentMode =
-      UIViewContentModeScaleAspectFit;
+  UIView* animationView = _animationViewWrapper.animationView;
+
+  animationView.translatesAutoresizingMaskIntoConstraints = NO;
+  animationView.contentMode = UIViewContentModeScaleAspectFit;
+
+  _animationPlayerButton = [self newAnimationPlayerButton];
+
+  [_animationPlayerButton addTarget:self
+                             action:@selector(animationPlayerButtonTapped)
+                   forControlEvents:UIControlEventTouchUpInside];
+
+  [animationView addSubview:_animationPlayerButton];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_animationPlayerButton.rightAnchor
+        constraintEqualToAnchor:animationView.rightAnchor
+                       constant:-20],
+    [_animationPlayerButton.bottomAnchor
+        constraintEqualToAnchor:animationView.bottomAnchor
+                       constant:-20]
+  ]];
 
   // The consent dialog vertical stack.
   UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _animationViewWrapper.animationView, consentDescriptionVerticalStack,
-    termsButtonsVerticalStack
+    animationView, consentDescriptionVerticalStack, termsButtonsVerticalStack
   ]];
   verticalStack.axis = UILayoutConstraintAxisVertical;
   verticalStack.alignment = UIStackViewAlignmentFill;
@@ -118,6 +138,7 @@ NSString* const kLensUserEducationDarkMode = @"lens_usered_darkmode";
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   [_animationViewWrapper play];
+  _isAnimationPlaying = YES;
 }
 
 - (CGSize)preferredContentSize {
@@ -163,6 +184,43 @@ NSString* const kLensUserEducationDarkMode = @"lens_usered_darkmode";
   button.pointerInteractionEnabled = YES;
 
   return button;
+}
+
+- (UIButton*)newAnimationPlayerButton {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider = CreateDefaultEffectCirclePointerStyleProvider();
+  button.tintColor =
+      [UIColor colorNamed:kLensOverlayConsentDialogAnimationPlayerButtonColor];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
+      configurationWithPointSize:22
+                          weight:UIImageSymbolWeightRegular
+                           scale:UIImageSymbolScaleMedium];
+  [button setPreferredSymbolConfiguration:symbolConfig
+                          forImageInState:UIControlStateNormal];
+
+  [button setImage:DefaultSymbolWithPointSize(kPauseButton, 22)
+          forState:UIControlStateNormal];
+  button.imageView.contentMode = UIViewContentModeScaleAspectFit;
+
+  return button;
+}
+
+- (void)animationPlayerButtonTapped {
+  _isAnimationPlaying = !_isAnimationPlaying;
+
+  if (_isAnimationPlaying) {
+    [_animationPlayerButton
+        setImage:DefaultSymbolWithPointSize(kPauseButton, 22)
+        forState:UIControlStateNormal];
+    [_animationViewWrapper play];
+  } else {
+    [_animationPlayerButton setImage:DefaultSymbolWithPointSize(kPlayButton, 22)
+                            forState:UIControlStateNormal];
+    [_animationViewWrapper pause];
+  }
 }
 
 // Creates and returns the LottieAnimation view for the `animationAssetName`.

@@ -82,6 +82,7 @@ extern NSString* const kTabGroupGreyColor;
 extern NSString* const kWhiteBlackAlpha50Color;
 // Lens overlay consent dialog description text color.
 extern NSString* const kLensOverlayConsentDialogDescriptionColor;
+extern NSString* const kLensOverlayConsentDialogAnimationPlayerButtonColor;
 // ***************
 // Standard Colors
 // ***************
