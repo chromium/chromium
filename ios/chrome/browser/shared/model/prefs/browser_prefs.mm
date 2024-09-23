@@ -418,8 +418,31 @@ void MigrateDictPref(std::string_view pref_name,
   source_pref_service->ClearPref(pref_name);
 }
 
+// Migrates a Time pref from source to target PrefService.
+void MigrateTimePref(std::string_view pref_name,
+                     PrefService* target_pref_service,
+                     PrefService* source_pref_service) {
+  const PrefService::Preference* target_pref =
+      target_pref_service->FindPreference(pref_name);
+  CHECK(target_pref);
+
+  const PrefService::Preference* source_pref =
+      source_pref_service->FindPreference(pref_name);
+  CHECK(source_pref);
+
+  // Only migrate the pref if 1. it is not set in target,
+  // 2. it is not the default in source.
+  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
+    target_pref_service->SetTime(pref_name,
+                                 source_pref_service->GetTime(pref_name));
+  }
+
+  // In all cases, clear the pref from source.
+  source_pref_service->ClearPref(pref_name);
+}
+
 // Helper function migrating the `list` preference from LocalState prefs to
-// BrowserState prefs.
+// Profile prefs.
 void MigrateListPrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,
     PrefService* profile_pref_service) {
@@ -428,7 +451,7 @@ void MigrateListPrefFromLocalStatePrefsToProfilePrefs(
 }
 
 // Helper function migrating the `string` preference from LocalState prefs to
-// BrowserState prefs.
+// Profile prefs.
 void MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,
     PrefService* profile_pref_service) {
@@ -437,7 +460,7 @@ void MigrateStringPrefFromLocalStatePrefsToProfilePrefs(
 }
 
 // Helper function migrating the `int` preference from LocalState prefs to
-// BrowserState prefs.
+// Profile prefs.
 void MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,
     PrefService* profile_pref_service) {
@@ -445,7 +468,7 @@ void MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
                      GetApplicationContext()->GetLocalState());
 }
 
-// Helper function migrating the `bool` preference from BrowserState prefs to
+// Helper function migrating the `bool` preference from Profile prefs to
 // LocalState prefs.
 void MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
     std::string_view pref_name,
@@ -455,12 +478,21 @@ void MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
 }
 
 // Helper function migrating the `Value::Dict` preference from LocalState prefs
-// to BrowserState prefs.
+// to Profile prefs.
 void MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
     std::string_view pref_name,
     PrefService* profile_pref_service) {
   MigrateDictPref(pref_name, profile_pref_service,
                   GetApplicationContext()->GetLocalState());
+}
+
+// Helper function migrating the `base::Time` preference from Profile prefs
+// to LocalState prefs.
+void MigrateTimePrefFromProfilePrefsToLocalStatePrefs(
+    std::string_view pref_name,
+    PrefService* profile_pref_service) {
+  MigrateTimePref(pref_name, GetApplicationContext()->GetLocalState(),
+                  profile_pref_service);
 }
 
 }  // namespace
@@ -713,6 +745,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kMagicStackSafetyCheckNotificationsShown);
 
   password_manager::PasswordManager::RegisterLocalPrefs(registry);
+
+  // Prefs used to skip too frequent identity confirmation snackbar prompt.
+  registry->RegisterTimePref(prefs::kIdentityConfirmationSnackbarLastPromptTime,
+                             base::Time());
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -914,7 +950,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Register prefs used to skip too frequent History Sync Opt-In prompt.
   history_sync::RegisterBrowserStatePrefs(registry);
 
-  // Prefs used to skip too frequent identity confirmation snackbar prompt.
+  // Deprecated pref, moved to LocalState.
   registry->RegisterTimePref(prefs::kIdentityConfirmationSnackbarLastPromptTime,
                              base::Time());
   registry->RegisterIntegerPref(
@@ -1292,6 +1328,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 09/2024.
   MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
       password_manager::prefs::kCredentialProviderEnabledOnStartup, prefs);
+
+  // Added 09/2024.
+  MigrateTimePrefFromProfilePrefsToLocalStatePrefs(
+      prefs::kIdentityConfirmationSnackbarLastPromptTime, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

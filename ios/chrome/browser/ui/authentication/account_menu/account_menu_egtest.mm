@@ -137,18 +137,18 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
   if (lastCount == 0) {
     // Set params for reminder after 1 day.
     [ChromeEarlGrey
-        setTimeValue:base::Time::Now() - base::Days(1)
-         forUserPref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
+             setTimeValue:base::Time::Now() - base::Days(1)
+        forLocalStatePref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
   } else if (lastCount == 1) {
     // Set params for reminder after 7 days.
     [ChromeEarlGrey
-        setTimeValue:base::Time::Now() - base::Days(7)
-         forUserPref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
+             setTimeValue:base::Time::Now() - base::Days(7)
+        forLocalStatePref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
   } else if (lastCount == 2) {
     // Set params for reminder after 30 days.
     [ChromeEarlGrey
-        setTimeValue:base::Time::Now() - base::Days(30)
-         forUserPref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
+             setTimeValue:base::Time::Now() - base::Days(30)
+        forLocalStatePref:prefs::kIdentityConfirmationSnackbarLastPromptTime];
   }
 }
 

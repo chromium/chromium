@@ -52,11 +52,15 @@ class BrowserPrefsTest : public PlatformTest {
 // Check that the migration of a pref from profile prefService to
 // localState prefService is performed correctly.
 TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
+  base::Time now = base::Time::Now();
+
   // Simulate registering a value different from default in profile prefService.
   pref_service()->SetBoolean(prefs::kBottomOmnibox, true);
   pref_service()->SetBoolean(prefs::kBottomOmniboxByDefault, true);
   pref_service()->SetBoolean(
       password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
+  pref_service()->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
+                          now);
 
   EXPECT_EQ(pref_service()->GetBoolean(prefs::kBottomOmnibox), true);
   EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmnibox), false);
@@ -70,6 +74,13 @@ TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetBoolean(
                 password_manager::prefs::kCredentialProviderEnabledOnStartup),
             false);
+
+  EXPECT_EQ(pref_service()->GetTime(
+                prefs::kIdentityConfirmationSnackbarLastPromptTime),
+            now);
+  EXPECT_EQ(local_state()->GetTime(
+                prefs::kIdentityConfirmationSnackbarLastPromptTime),
+            base::Time());
 
   MigrateObsoleteBrowserStatePrefs(base::FilePath(), pref_service());
 
@@ -86,6 +97,13 @@ TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetBoolean(
                 password_manager::prefs::kCredentialProviderEnabledOnStartup),
             true);
+
+  EXPECT_EQ(pref_service()->GetTime(
+                prefs::kIdentityConfirmationSnackbarLastPromptTime),
+            base::Time());
+  EXPECT_EQ(local_state()->GetTime(
+                prefs::kIdentityConfirmationSnackbarLastPromptTime),
+            now);
 }
 
 // Check that the migration of a pref from localState prefService to

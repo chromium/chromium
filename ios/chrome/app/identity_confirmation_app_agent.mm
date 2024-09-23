@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -149,11 +150,12 @@ enum class IdentityConfirmationSnackbarDecision {
   }
 
   PrefService* prefService = browser->GetBrowserState()->GetPrefs();
+  PrefService* localState = GetApplicationContext()->GetLocalState();
 
   const int displayCount =
       prefService->GetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount);
   const base::Time lastPrompted =
-      prefService->GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime);
+      localState->GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime);
 
   base::TimeDelta identityConfirmationMinDisplayInterval;
   if (displayCount == 0) {
@@ -185,8 +187,8 @@ enum class IdentityConfirmationSnackbarDecision {
   // comparable between enabled and disabled groups.
   prefService->SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount,
                           displayCount + 1);
-  prefService->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
-                       base::Time::Now());
+  localState->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
+                      base::Time::Now());
 
   if (!base::FeatureList::IsEnabled(kIdentityConfirmationSnackbar)) {
     return IdentityConfirmationSnackbarDecision::kDontShowFeatureDisabled;
