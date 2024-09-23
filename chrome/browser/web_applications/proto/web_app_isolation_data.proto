@@ -97,4 +97,6 @@ message IsolationData {
   optional PendingUpdateInfo pending_update_info = 6;
 
   optional IntegrityBlockData integrity_block_data = 7;
+
+  optional string update_manifest_url = 8;
 }

@@ -895,6 +895,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       *mutable_data->mutable_integrity_block_data() =
           isolation_data.integrity_block_data()->ToProto();
     }
+
+    if (const auto& update_manifest_url =
+            isolation_data.update_manifest_url()) {
+      mutable_data->set_update_manifest_url(update_manifest_url->spec());
+    }
   }
 
   local_data->set_user_link_capturing_preference(
@@ -1717,6 +1722,17 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
       isolation_data_builder.SetIntegrityBlockData(std::move(*result));
     }
 
+    if (local_data.isolation_data().has_update_manifest_url()) {
+      GURL update_manifest_url(
+          local_data.isolation_data().update_manifest_url());
+      if (!update_manifest_url.is_valid()) {
+        DLOG(ERROR) << "WebApp proto isolation_data.update_manifest_url is not "
+                       "a valid GURL.";
+        return nullptr;
+      }
+      isolation_data_builder.SetUpdateManifestUrl(
+          std::move(update_manifest_url));
+    }
     web_app->SetIsolationData(std::move(isolation_data_builder).Build());
   }
 

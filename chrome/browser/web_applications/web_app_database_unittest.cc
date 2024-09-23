@@ -1074,6 +1074,9 @@ TEST_F(WebAppDatabaseProtoDataTest, SavesIsolationDataUpdateInfo) {
   base::FilePath path(FILE_PATH_LITERAL("bundle_path"));
   base::FilePath update_path(FILE_PATH_LITERAL("update_path"));
 
+  static constexpr std::string_view kUpdateManifestUrl =
+      "https://update-manifest.com";
+
   auto integrity_block_data =
       IsolatedWebAppIntegrityBlockData(test::CreateSignatures());
 
@@ -1084,6 +1087,7 @@ TEST_F(WebAppDatabaseProtoDataTest, SavesIsolationDataUpdateInfo) {
               IwaStorageUnownedBundle{update_path}, base::Version("2.0.0"),
               integrity_block_data))
           .SetIntegrityBlockData(integrity_block_data)
+          .SetUpdateManifestUrl(GURL(kUpdateManifestUrl))
           .Build();
 
   std::unique_ptr<WebApp> web_app = CreateIsolatedWebApp(isolation_data);

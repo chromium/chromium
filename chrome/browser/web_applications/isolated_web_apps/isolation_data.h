@@ -12,6 +12,7 @@
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "url/gurl.h"
 
 namespace web_app {
 
@@ -67,6 +68,9 @@ class IsolationData {
       const {
     return integrity_block_data_;
   }
+  const std::optional<GURL>& update_manifest_url() const {
+    return update_manifest_url_;
+  }
 
  private:
   IsolationData(
@@ -74,7 +78,8 @@ class IsolationData {
       base::Version version,
       std::set<std::string> controlled_frame_partitions,
       std::optional<PendingUpdateInfo> pending_update_info,
-      std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data);
+      std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data,
+      std::optional<GURL> update_manifest_url);
 
   IsolatedWebAppStorageLocation location_;
   base::Version version_;
@@ -91,6 +96,13 @@ class IsolationData {
   // rotation by comparing the stored public keys against the rotated key.
   // key. Please don't rely on it for anything security-critical!
   std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data_;
+
+  // Informs the browser where to look up the update manifest for this IWA.
+  // This field is only used for dev mode installs from update manifest via
+  // chrome://web-app-internals; for all other install types this field is
+  // left blank. For unmanaged installs this will likely need to have a
+  // counterpart in PendingUpdateInfo.
+  std::optional<GURL> update_manifest_url_;
 
  public:
   class Builder {
@@ -125,6 +137,13 @@ class IsolationData {
     Builder&& SetIntegrityBlockData(
         IsolatedWebAppIntegrityBlockData integrity_block_data) &&;
 
+    // Update manifest is supposed to be set only for selected dev-mode
+    // installs. Will `CHECK` if applied to a prod-mode location.
+    Builder& SetUpdateManifestUrl(GURL update_manifest_url) &;
+    Builder&& SetUpdateManifestUrl(GURL update_manifest_url) &&;
+
+    // When adding new setters to the builder, make sure to update the the
+    // Builder(const IsolationData&) constructor to forward the new field.
     IsolationData Build() &&;
 
    private:
@@ -134,6 +153,7 @@ class IsolationData {
     std::set<std::string> controlled_frame_partitions_;
     std::optional<IsolationData::PendingUpdateInfo> pending_update_info_;
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data_;
+    std::optional<GURL> update_manifest_url_;
   };
 };
 

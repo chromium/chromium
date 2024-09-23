@@ -1058,6 +1058,9 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
           get_location_type(), pending_version, integrity_block_data);
       idb.SetPendingUpdateInfo(std::move(pending_update_info));
     }
+    if (dev_mode && random.next_bool()) {
+      idb.SetUpdateManifestUrl(GURL("https://update-manifest.com"));
+    }
     app->SetIsolationData(std::move(idb).Build());
   }
 

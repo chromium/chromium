@@ -15,12 +15,14 @@ IsolationData::IsolationData(
     base::Version version,
     std::set<std::string> controlled_frame_partitions,
     std::optional<PendingUpdateInfo> pending_update_info,
-    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data)
+    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data,
+    std::optional<GURL> update_manifest_url)
     : location_(std::move(location)),
       version_(std::move(version)),
       controlled_frame_partitions_(std::move(controlled_frame_partitions)),
       pending_update_info_(std::move(pending_update_info)),
-      integrity_block_data_(std::move(integrity_block_data)) {}
+      integrity_block_data_(std::move(integrity_block_data)),
+      update_manifest_url_(std::move(update_manifest_url)) {}
 
 IsolationData::~IsolationData() = default;
 IsolationData::IsolationData(const IsolationData&) = default;
@@ -41,6 +43,10 @@ base::Value IsolationData::AsDebugValue() const {
           .Set("integrity_block_data",
                integrity_block_data_ ? integrity_block_data_->AsDebugValue()
                                      : base::Value());
+
+  if (update_manifest_url_) {
+    debug_dict.Set("update_manifest_url", update_manifest_url_->spec());
+  }
 
   return base::Value(std::move(debug_dict));
 }
@@ -80,7 +86,8 @@ IsolationData::Builder::Builder(const IsolationData& isolation_data)
       controlled_frame_partitions_(
           isolation_data.controlled_frame_partitions()),
       pending_update_info_(isolation_data.pending_update_info()),
-      integrity_block_data_(isolation_data.integrity_block_data()) {}
+      integrity_block_data_(isolation_data.integrity_block_data()),
+      update_manifest_url_(isolation_data.update_manifest_url()) {}
 
 IsolationData::Builder::~Builder() = default;
 
@@ -139,11 +146,29 @@ IsolationData::Builder&& IsolationData::Builder::SetIntegrityBlockData(
   return std::move(*this);
 }
 
+IsolationData::Builder& IsolationData::Builder::SetUpdateManifestUrl(
+    GURL update_manifest_url) & {
+  CHECK(location_.dev_mode())
+      << "This field is supposed to be used only with dev mode installs via "
+         "chrome://web-app-internals.";
+  update_manifest_url_ = std::move(update_manifest_url);
+  return *this;
+}
+
+IsolationData::Builder&& IsolationData::Builder::SetUpdateManifestUrl(
+    GURL update_manifest_url) && {
+  CHECK(location_.dev_mode())
+      << "This field is supposed to be used only with dev mode installs via "
+         "chrome://web-app-internals.";
+  update_manifest_url_ = std::move(update_manifest_url);
+  return std::move(*this);
+}
+
 IsolationData IsolationData::Builder::Build() && {
-  return IsolationData(std::move(location_), std::move(version_),
-                       std::move(controlled_frame_partitions_),
-                       std::move(pending_update_info_),
-                       std::move(integrity_block_data_));
+  return IsolationData(
+      std::move(location_), std::move(version_),
+      std::move(controlled_frame_partitions_), std::move(pending_update_info_),
+      std::move(integrity_block_data_), std::move(update_manifest_url_));
 }
 
 }  // namespace web_app

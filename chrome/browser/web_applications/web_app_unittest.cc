@@ -404,6 +404,9 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
   WebApp app{GenerateAppId(/*manifest_id_path=*/std::nullopt,
                            GURL("https://example.com"))};
 
+  static constexpr std::string_view kUpdateManifestUrl =
+      "https://update-manifest.com";
+
   auto integrity_block_data = CreateIntegrityBlockData();
   app.SetIsolationData(
       IsolationData::Builder(
@@ -414,6 +417,7 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
                   base::FilePath(FILE_PATH_LITERAL("random_folder"))},
               base::Version("2.0.0"), integrity_block_data))
           .SetIntegrityBlockData(integrity_block_data)
+          .SetUpdateManifestUrl(GURL(kUpdateManifestUrl))
           .Build());
 
   EXPECT_TRUE(app.isolation_data().has_value());
@@ -444,12 +448,14 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
           "version": "2.0.0",
           "integrity_block_data": $1
         },
-        "integrity_block_data": $2
+        "integrity_block_data": $2,
+        "update_manifest_url": "$3"
       })|";
 
   base::Value expected_isolation_data = *base::JSONReader::Read(
       base::ReplaceStringPlaceholders(kExpectedIsolationDataFormat,
-                                      {ib_data_serialized, ib_data_serialized},
+                                      {ib_data_serialized, ib_data_serialized,
+                                       GURL(kUpdateManifestUrl).spec()},
                                       /*offsets=*/nullptr));
 
   base::Value::Dict debug_app = app.AsDebugValue().GetDict().Clone();
