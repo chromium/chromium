@@ -1545,7 +1545,7 @@
   {
     "name": "clear-login-database-for-all-migrated-upm-users",
     "owners": [ "izuzic@google.com", "vsemeniuk@chromium.org" ],
-    "expiry_milestone": 129
+    "expiry_milestone": 133
   },
   {
     "name": "clear-undecryptable-passwords",
