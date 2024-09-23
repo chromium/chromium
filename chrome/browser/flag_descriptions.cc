@@ -7122,11 +7122,6 @@ const char kImeAssistMultiWordName[] =
 const char kImeAssistMultiWordDescription[] =
     "Enable assistive multi word suggestions for native IME";
 
-const char kImeAssistMultiWordExpandedName[] =
-    "Enable expanded assistive multi word suggestions";
-const char kImeAssistMultiWordExpandedDescription[] =
-    "Enable expanded assistive multi word suggestions for native IME";
-
 const char kImeFstDecoderParamsUpdateName[] =
     "Enable FST Decoder parameters update";
 const char kImeFstDecoderParamsUpdateDescription[] =

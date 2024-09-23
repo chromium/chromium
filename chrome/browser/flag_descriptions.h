@@ -4111,9 +4111,6 @@ extern const char kHotspotDescription[];
 extern const char kImeAssistMultiWordName[];
 extern const char kImeAssistMultiWordDescription[];
 
-extern const char kImeAssistMultiWordExpandedName[];
-extern const char kImeAssistMultiWordExpandedDescription[];
-
 extern const char kImeFstDecoderParamsUpdateName[];
 extern const char kImeFstDecoderParamsUpdateDescription[];
 

@@ -143,12 +143,6 @@ BASE_FEATURE(kAssistMultiWord,
              "AssistMultiWord",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to enable assistive multi word suggestions on an expanded
-// list of surfaces.
-BASE_FEATURE(kAssistMultiWordExpanded,
-             "AssistMultiWordExpanded",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAssistantNativeIcons,
              "AssistantNativeIcons",
              base::FEATURE_ENABLED_BY_DEFAULT);

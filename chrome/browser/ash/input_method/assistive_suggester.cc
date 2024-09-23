@@ -253,11 +253,6 @@ bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
                                         active_engine_id_);
 }
 
-bool AssistiveSuggester::IsExpandedMultiWordSuggestEnabled() {
-  return IsMultiWordSuggestEnabled() &&
-         base::FeatureList::IsEnabled(features::kAssistMultiWordExpanded);
-}
-
 bool AssistiveSuggester::IsDiacriticsOnPhysicalKeyboardLongpressEnabled() {
   return base::FeatureList::IsEnabled(
              features::kDiacriticsOnPhysicalKeyboardLongpress) &&
@@ -530,8 +525,7 @@ void AssistiveSuggester::ProcessExternalSuggestions(
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   RecordSuggestionsMatch(suggestions);
 
-  if (!enabled_suggestions.multi_word_suggestions &&
-      !IsExpandedMultiWordSuggestEnabled()) {
+  if (!enabled_suggestions.multi_word_suggestions) {
     if (IsTopResultMultiWord(suggestions)) {
       RecordAssistiveDisabledReasonForMultiWord(
           GetDisabledReasonForMultiWord(enabled_suggestions));
