@@ -8,6 +8,7 @@
 
 external/wpt/longtask-timing/*
 external/wpt/webauthn/*
+external/wpt/WebCryptoAPI/*
 
 virtual/gpu/external/wpt/*
 virtual/longtask-from-loaf/external/wpt/*
