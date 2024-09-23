@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -70,7 +71,13 @@ UserEventSyncBridge::UserEventSyncBridge(
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-UserEventSyncBridge::~UserEventSyncBridge() = default;
+UserEventSyncBridge::~UserEventSyncBridge() {
+  // TODO(crbug.com/362428820): Remove logging once investigation is complete.
+  if (store_) {
+    VLOG(1) << "UserEvents during destruction: "
+            << store_->in_memory_data().size();
+  }
+}
 
 std::unique_ptr<MetadataChangeList>
 UserEventSyncBridge::CreateMetadataChangeList() {

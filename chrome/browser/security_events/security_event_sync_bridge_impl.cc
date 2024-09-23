@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -59,7 +60,13 @@ SecurityEventSyncBridgeImpl::SecurityEventSyncBridgeImpl(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-SecurityEventSyncBridgeImpl::~SecurityEventSyncBridgeImpl() {}
+SecurityEventSyncBridgeImpl::~SecurityEventSyncBridgeImpl() {
+  // TODO(crbug.com/362428820): Remove logging once investigation is complete.
+  if (store_) {
+    VLOG(1) << "SecurityEvents during destruction: "
+            << store_->in_memory_data().size();
+  }
+}
 
 void SecurityEventSyncBridgeImpl::RecordSecurityEvent(
     sync_pb::SecurityEventSpecifics specifics) {
