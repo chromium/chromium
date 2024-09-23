@@ -247,6 +247,7 @@ public class TabSwitcherDrawable extends TintedDrawable {
      * not. Any non-test callsite should be guarded by the DATA_SHARING flag.
      */
     public void setNotificationIconStatus(boolean shouldShow) {
+        if (mShouldShowNotificationIcon == shouldShow) return;
         mShouldShowNotificationIcon = shouldShow;
         invalidateSelf();
 

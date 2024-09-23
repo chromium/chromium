@@ -9,12 +9,16 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.PluralsRes;
+import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable.TabSwitcherDrawableLocation;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -25,7 +29,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
  * TODO(twellington): Replace with TabSwitcherButtonCoordinator so code can be shared with bottom
  * toolbar.
  */
-public class ToggleTabStackButton extends ListMenuButton {
+public class ToggleTabStackButton extends ListMenuButton implements TabSwitcherDrawable.Observer {
     private final Callback<Integer> mTabCountSupplierObserver;
     private TabSwitcherDrawable mTabSwitcherButtonDrawable;
     private ObservableSupplier<Integer> mTabCountSupplier;
@@ -51,6 +55,7 @@ public class ToggleTabStackButton extends ListMenuButton {
                         BrandedColorScheme.APP_DEFAULT,
                         TabSwitcherDrawableLocation.TAB_TOOLBAR);
         setImageDrawable(mTabSwitcherButtonDrawable);
+        mTabSwitcherButtonDrawable.addTabSwitcherDrawableObserver(this);
     }
 
     /** Called to destroy the tab stack button. */
@@ -58,6 +63,7 @@ public class ToggleTabStackButton extends ListMenuButton {
         if (mTabCountSupplier != null) {
             mTabCountSupplier.removeObserver(mTabCountSupplierObserver);
         }
+        mTabSwitcherButtonDrawable.removeTabSwitcherDrawableObserver(this);
     }
 
     void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
@@ -92,6 +98,25 @@ public class ToggleTabStackButton extends ListMenuButton {
         try (TraceEvent e = TraceEvent.scoped("ToggleTabStackButton.onLayout")) {
             super.onLayout(changed, left, top, right, bottom);
         }
+    }
+
+    // TabSwitcherDrawable.Observer implementation.
+
+    @Override
+    public void onDrawableStateChanged() {
+        @PluralsRes
+        int drawableDescRes = R.plurals.accessibility_toolbar_btn_tabswitcher_toggle_default;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
+                && mTabSwitcherButtonDrawable.getShowIconNotificationStatus()) {
+            drawableDescRes =
+                    R.plurals
+                            .accessibility_toolbar_btn_tabswitcher_toggle_default_with_notification;
+        }
+
+        int tabCount = mTabCountSupplier.get();
+        String drawableText = getResources().getQuantityString(drawableDescRes, tabCount, tabCount);
+        setContentDescription(drawableText);
+        TooltipCompat.setTooltipText(this, drawableText);
     }
 
     /**
