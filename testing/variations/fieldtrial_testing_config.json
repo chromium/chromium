@@ -17201,6 +17201,21 @@
             ]
         }
     ],
+    "PinTimeoutMigration": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootMigrateToModernPin"
+                    ]
+                }
+            ]
+        }
+    ],
     "PinTimeoutSetup": [
         {
             "platforms": [
