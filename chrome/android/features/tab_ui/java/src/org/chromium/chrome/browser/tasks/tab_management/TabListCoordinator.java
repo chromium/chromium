@@ -36,6 +36,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -298,8 +299,13 @@ public class TabListCoordinator
                 parentView.addView(mRecyclerView);
             }
 
+            // GRID and LIST both have fixed size. STRIP has a fixed size only if DATA_SHARING is
+            // off.
+            boolean hasFixedSize =
+                    mMode != TabListMode.STRIP
+                            || !ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING);
             mRecyclerView.setAdapter(mAdapter);
-            mRecyclerView.setHasFixedSize(true);
+            mRecyclerView.setHasFixedSize(hasFixedSize);
             if (recyclerListener != null) mRecyclerView.setRecyclerListener(recyclerListener);
 
             if (mMode == TabListMode.GRID) {
