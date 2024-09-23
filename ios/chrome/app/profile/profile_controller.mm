@@ -13,9 +13,9 @@
 
 @implementation ProfileController
 
-- (instancetype)init {
+- (instancetype)initWithAppState:(AppState*)appState {
   if ((self = [super init])) {
-    _state = [[ProfileState alloc] init];
+    _state = [[ProfileState alloc] initWithAppState:appState];
     [_state addObserver:self];
   }
   return self;

@@ -10,6 +10,7 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+@class AppState;
 @protocol ProfileStateAgent;
 @protocol ProfileStateObserver;
 @class SceneState;
@@ -17,6 +18,9 @@
 // Represents the state for a single Profile and responds to the state
 // changes and system events.
 @interface ProfileState : NSObject
+
+// The global AppState.
+@property(nonatomic, weak, readonly) AppState* appState;
 
 // Profile initialisation stage.
 @property(nonatomic, assign) ProfileInitStage initStage;
@@ -28,6 +32,10 @@
 // All agents that have been attached. Use -addAgent: and -removeAgent: to
 // add and remove agents.
 @property(nonatomic, readonly) NSArray<id<ProfileStateAgent>>* connectedAgents;
+
+// The designated initializer.
+- (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 // Adds a new agent. Agents are owned by the profile state.
 // This automatically sets the profile state on the `agent`.

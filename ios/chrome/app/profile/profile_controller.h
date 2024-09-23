@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+@class AppState;
 @class ProfileState;
 
 // The controller for a single Profile, owned by MainController. Owns all
@@ -15,6 +16,10 @@
 
 // Contains information about the Profile state.
 @property(nonatomic, readonly) ProfileState* state;
+
+// The designated initializer.
+- (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

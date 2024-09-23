@@ -729,7 +729,8 @@ SEQUENCE_CHECKER(_sequenceChecker);
 - (void)initializeBrowserState:(ChromeBrowserState*)browserState {
   DCHECK(!browserState->IsOffTheRecord());
 
-  ProfileController* controller = [[ProfileController alloc] init];
+  ProfileController* controller =
+      [[ProfileController alloc] initWithAppState:self.appState];
   controller.state.profile = browserState;
   auto insertion_result = _profileControllers.insert(
       std::make_pair(browserState->GetProfileName(), controller));

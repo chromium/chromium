@@ -51,7 +51,8 @@ using SceneObservingProfileAgentTest = PlatformTest;
 // the agent is notified about the scene.
 TEST_F(SceneObservingProfileAgentTest, sceneConnected) {
   AppState* app_state = OCMClassMock([AppState class]);
-  ProfileState* profile_state = [[ProfileState alloc] init];
+  ProfileState* profile_state =
+      [[ProfileState alloc] initWithAppState:app_state];
   ProgressInitStage(profile_state, ProfileInitStage::InitStageUIReady);
 
   SampleSceneObservingProfileAgent* agent =
@@ -70,7 +71,8 @@ TEST_F(SceneObservingProfileAgentTest, sceneConnected) {
 // then the agent is not notified about the scene.
 TEST_F(SceneObservingProfileAgentTest, sceneConnected_NotReady) {
   AppState* app_state = OCMClassMock([AppState class]);
-  ProfileState* profile_state = [[ProfileState alloc] init];
+  ProfileState* profile_state =
+      [[ProfileState alloc] initWithAppState:app_state];
 
   SampleSceneObservingProfileAgent* agent =
       [[SampleSceneObservingProfileAgent alloc] init];

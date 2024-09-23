@@ -39,7 +39,7 @@ using ProfileStateTest = PlatformTest;
 
 // Tests that a newly created ProfileState has no -profile.
 TEST_F(ProfileStateTest, initializer) {
-  ProfileState* state = [[ProfileState alloc] init];
+  ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
   EXPECT_EQ(state.profile, nullptr);
 }
 
@@ -48,7 +48,7 @@ TEST_F(ProfileStateTest, profile) {
   base::test::TaskEnvironment task_environment;
   std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
 
-  ProfileState* state = [[ProfileState alloc] init];
+  ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
   EXPECT_EQ(state.profile, nullptr);
 
   state.profile = profile.get();
@@ -61,7 +61,7 @@ TEST_F(ProfileStateTest, profile) {
 
 // Tests that initStage can be set and get correctly.
 TEST_F(ProfileStateTest, initStages) {
-  ProfileState* state = [[ProfileState alloc] init];
+  ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
   state.initStage = ProfileInitStage::InitStageLoadProfile;
   while (state.initStage != ProfileInitStage::InitStageFinal) {
     const ProfileInitStage nextStage =
@@ -75,7 +75,7 @@ TEST_F(ProfileStateTest, initStages) {
 
 // Tests adding and removing profile state agents.
 TEST_F(ProfileStateTest, connectedAgents) {
-  ProfileState* state = [[ProfileState alloc] init];
+  ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
   EXPECT_NSEQ(state.connectedAgents, @[]);
 
   [state addAgent:[[TestProfileStateAgent alloc] init]];
@@ -96,7 +96,7 @@ TEST_F(ProfileStateTest, connectedAgents) {
 // (and that they are called on registration if the current stage is not
 // InitStageLoadProfile).
 TEST_F(ProfileStateTest, observers) {
-  ProfileState* state = [[ProfileState alloc] init];
+  ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
 
   ObserverForProfileStateTest* observer1 =
       [[ObserverForProfileStateTest alloc] init];

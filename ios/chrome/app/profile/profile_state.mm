@@ -55,8 +55,9 @@
 
 #pragma mark - NSObject
 
-- (instancetype)init {
+- (instancetype)initWithAppState:(AppState*)appState {
   if ((self = [super init])) {
+    _appState = appState;
     _agents = [[NSMutableArray alloc] init];
     _observers = [ProfileStateObserverList observers];
   }

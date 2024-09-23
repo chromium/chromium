@@ -20,7 +20,7 @@ using ObservingProfileAgentTest = PlatformTest;
 // Tests that adding an ObservingProfileAgent to ProfileState correctly
 // sets the -profileState property.
 TEST_F(ObservingProfileAgentTest, profileState) {
-  ProfileState* state = [[ProfileState alloc] init];
+  ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
 
   SampleObservingProfileAgent* agent =
       [[SampleObservingProfileAgent alloc] init];
@@ -33,7 +33,7 @@ TEST_F(ObservingProfileAgentTest, profileState) {
 // Tests that adding an ObservingProfileAgent to ProfileState allow
 // retrieving it via the -agentFromProfile: method.
 TEST_F(ObservingProfileAgentTest, agentFromProfile) {
-  ProfileState* state = [[ProfileState alloc] init];
+  ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
   EXPECT_EQ([SampleObservingProfileAgent agentFromProfile:state], nil);
 
   SampleObservingProfileAgent* agent =
