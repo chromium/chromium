@@ -784,7 +784,7 @@
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 05f19ac3
     <receiver  # DIFF-ANCHOR: 226134db
-        android:name="org.chromium.chrome.browser.shortcuts_widget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
+        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
         android:exported="true"
         android:label="@string/dino_widget_text">
       <intent-filter>  # DIFF-ANCHOR: 4ed161a4
@@ -793,7 +793,7 @@
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/quick_action_search_widget_dino_info"/>
     </receiver>  # DIFF-ANCHOR: 226134db
     <receiver  # DIFF-ANCHOR: 5a0b9536
-        android:name="org.chromium.chrome.browser.shortcuts_widget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
+        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
         android:exported="true"
         android:label="@string/quick_action_search_widget_title">
       <intent-filter>  # DIFF-ANCHOR: 4ed161a4
