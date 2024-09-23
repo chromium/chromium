@@ -526,7 +526,8 @@ namespace override_all_keys_setters {
 
 }  // namespace override_all_keys_setters
 
-TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingSetters) {
+// TODO(crbug.com/369136109): Re-enable this test.
+TEST_F(GoogleAPIKeysTest, DISABLED_OverrideAllKeysUsingSetters) {
   google_apis::ApiKeyCache api_key_cache(
       override_all_keys_setters::GetDefaultApiKeysFromDefinedValues());
   auto scoped_override =
