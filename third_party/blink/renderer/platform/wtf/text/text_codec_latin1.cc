@@ -110,18 +110,19 @@ void TextCodecLatin1::RegisterCodecs(TextCodecRegistrar registrar) {
   registrar("US-ASCII", NewStreamingTextDecoderWindowsLatin1, nullptr);
 }
 
-String TextCodecLatin1::Decode(const char* bytes,
-                               wtf_size_t length,
+String TextCodecLatin1::Decode(base::span<const uint8_t> bytes,
                                FlushBehavior,
                                bool,
                                bool&) {
-  if (!length)
+  if (bytes.empty()) {
     return g_empty_string;
+  }
   base::span<LChar> characters;
-  String result = String::CreateUninitialized(length, characters);
+  String result = String::CreateUninitialized(
+      base::checked_cast<wtf_size_t>(bytes.size()), characters);
 
-  const uint8_t* source = reinterpret_cast<const uint8_t*>(bytes);
-  const uint8_t* end = reinterpret_cast<const uint8_t*>(bytes + length);
+  const uint8_t* source = bytes.data();
+  const uint8_t* end = source + bytes.size();
   const uint8_t* aligned_end = AlignToMachineWord(end);
   LChar* destination = characters.data();
 
@@ -160,7 +161,8 @@ String TextCodecLatin1::Decode(const char* bytes,
 
 upConvertTo16Bit:
   base::span<UChar> characters16;
-  String result16 = String::CreateUninitialized(length, characters16);
+  String result16 = String::CreateUninitialized(
+      base::checked_cast<wtf_size_t>(bytes.size()), characters16);
 
   UChar* destination16 = characters16.data();
 
@@ -208,10 +210,12 @@ upConvertTo16Bit:
 }
 
 template <typename CharType>
-static std::string EncodeComplexWindowsLatin1(const CharType* characters,
-                                              wtf_size_t length,
-                                              UnencodableHandling handling) {
+static std::string EncodeComplexWindowsLatin1(
+    base::span<const CharType> char_data,
+    UnencodableHandling handling) {
   DCHECK_NE(handling, kNoUnencodables);
+  const auto* characters = char_data.data();
+  const wtf_size_t length = base::checked_cast<wtf_size_t>(char_data.size());
   wtf_size_t target_length = length;
   Vector<char> result(target_length);
   char* bytes = result.data();
@@ -258,15 +262,14 @@ static std::string EncodeComplexWindowsLatin1(const CharType* characters,
 }
 
 template <typename CharType>
-std::string TextCodecLatin1::EncodeCommon(const CharType* characters,
-                                          wtf_size_t length,
+std::string TextCodecLatin1::EncodeCommon(base::span<const CharType> characters,
                                           UnencodableHandling handling) {
-  std::string string(length, '\0');
+  std::string string(characters.size(), '\0');
 
   // Convert the string a fast way and simultaneously do an efficient check to
   // see if it's all ASCII.
   UChar ored = 0;
-  for (wtf_size_t i = 0; i < length; ++i) {
+  for (size_t i = 0; i < characters.size(); ++i) {
     UChar c = characters[i];
     string[i] = static_cast<char>(c);
     ored |= c;
@@ -276,19 +279,17 @@ std::string TextCodecLatin1::EncodeCommon(const CharType* characters,
     return string;
 
   // If it wasn't all ASCII, call the function that handles more-complex cases.
-  return EncodeComplexWindowsLatin1(characters, length, handling);
+  return EncodeComplexWindowsLatin1(characters, handling);
 }
 
-std::string TextCodecLatin1::Encode(const UChar* characters,
-                                    wtf_size_t length,
+std::string TextCodecLatin1::Encode(base::span<const UChar> characters,
                                     UnencodableHandling handling) {
-  return EncodeCommon(characters, length, handling);
+  return EncodeCommon(characters, handling);
 }
 
-std::string TextCodecLatin1::Encode(const LChar* characters,
-                                    wtf_size_t length,
+std::string TextCodecLatin1::Encode(base::span<const LChar> characters,
                                     UnencodableHandling handling) {
-  return EncodeCommon(characters, length, handling);
+  return EncodeCommon(characters, handling);
 }
 
 }  // namespace WTF

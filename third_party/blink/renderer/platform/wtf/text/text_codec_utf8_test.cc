@@ -51,17 +51,14 @@ TEST(TextCodecUTF8, DecodeAscii) {
   TextEncoding encoding("UTF-8");
   std::unique_ptr<TextCodec> codec(NewTextCodec(encoding));
 
-  const char kTestCase[] = "HelloWorld";
-  wtf_size_t test_case_size = sizeof(kTestCase) - 1;
-
   bool saw_error = false;
+  const auto input = base::byte_span_from_cstring("HelloWorld");
   const String& result =
-      codec->Decode(kTestCase, test_case_size, FlushBehavior::kDataEOF,
-                    false, saw_error);
+      codec->Decode(input, FlushBehavior::kDataEOF, false, saw_error);
   EXPECT_FALSE(saw_error);
-  ASSERT_EQ(test_case_size, result.length());
-  for (wtf_size_t i = 0; i < test_case_size; ++i) {
-    EXPECT_EQ(kTestCase[i], result[i]);
+  ASSERT_EQ(input.size(), result.length());
+  for (wtf_size_t i = 0; i < input.size(); ++i) {
+    EXPECT_EQ(input[i], result[i]);
   }
 }
 
@@ -71,12 +68,11 @@ TEST(TextCodecUTF8, DecodeChineseCharacters) {
 
   // "Kanji" in Chinese characters.
   const char kTestCase[] = "\xe6\xbc\xa2\xe5\xad\x97";
-  wtf_size_t test_case_size = sizeof(kTestCase) - 1;
 
   bool saw_error = false;
   const String& result =
-      codec->Decode(kTestCase, test_case_size, FlushBehavior::kDataEOF,
-                    false, saw_error);
+      codec->Decode(base::byte_span_from_cstring(kTestCase),
+                    FlushBehavior::kDataEOF, false, saw_error);
   EXPECT_FALSE(saw_error);
   ASSERT_EQ(2u, result.length());
   EXPECT_EQ(0x6f22U, result[0]);
@@ -89,7 +85,8 @@ TEST(TextCodecUTF8, Decode0xFF) {
 
   bool saw_error = false;
   const String& result =
-      codec->Decode("\xff", 1, FlushBehavior::kDataEOF, false, saw_error);
+      codec->Decode(base::byte_span_from_cstring("\xff"),
+                    FlushBehavior::kDataEOF, false, saw_error);
   EXPECT_TRUE(saw_error);
   ASSERT_EQ(1u, result.length());
   EXPECT_EQ(0xFFFDU, result[0]);
@@ -101,11 +98,13 @@ TEST(TextCodecUTF8, DecodeOverflow) {
 
   // Prime the partial sequence buffer.
   bool saw_error = false;
-  codec->Decode("\xC2", 1, FlushBehavior::kDoNotFlush, false, saw_error);
+  codec->Decode(base::byte_span_from_cstring("\xC2"),
+                FlushBehavior::kDoNotFlush, false, saw_error);
   EXPECT_FALSE(saw_error);
 
   EXPECT_DEATH_IF_SUPPORTED(
-      codec->Decode(nullptr, std::numeric_limits<wtf_size_t>::max(),
+      codec->Decode(base::as_bytes(
+                        base::span("", std::numeric_limits<wtf_size_t>::max())),
                     FlushBehavior::kDataEOF, false, saw_error),
       "");
 }

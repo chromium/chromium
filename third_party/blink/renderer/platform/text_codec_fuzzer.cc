@@ -57,28 +57,29 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Now, use the rest of the fuzzy data to stress test decoding and encoding.
   const std::string byte_string = fuzzed_data.ConsumeRemainingBytes();
+  auto byte_span = base::as_byte_span(byte_string);
   std::unique_ptr<TextCodec> codec = NewTextCodec(encoding);
 
   // Treat as bytes-off-the-wire.
   bool saw_error;
   const String decoded =
-      codec->Decode(byte_string.data(), byte_string.length(), flush_behavior,
-                    stop_on_error, saw_error);
+      codec->Decode(byte_span, flush_behavior, stop_on_error, saw_error);
 
   // Treat as blink 8-bit string (latin1).
   if (size % sizeof(LChar) == 0) {
     std::unique_ptr<TextCodec> lchar_codec = NewTextCodec(encoding);
-    lchar_codec->Encode(reinterpret_cast<const LChar*>(byte_string.data()),
-                        byte_string.length() / sizeof(LChar),
-                        unencodable_handling);
+    lchar_codec->Encode(byte_span, unencodable_handling);
   }
 
   // Treat as blink 16-bit string (utf-16) if there are an even number of bytes.
   if (size % sizeof(UChar) == 0) {
+    // SAFETY: We have no way to convert a byte span to a UChar span.
+    // `byte_span` contains at least byte_span.size() / sizeof(UChar) UChars.
+    auto uchar_span = UNSAFE_BUFFERS(
+        base::span(reinterpret_cast<const UChar*>(byte_span.data()),
+                   byte_span.size() / sizeof(UChar)));
     std::unique_ptr<TextCodec> uchar_codec = NewTextCodec(encoding);
-    uchar_codec->Encode(reinterpret_cast<const UChar*>(byte_string.data()),
-                        byte_string.length() / sizeof(UChar),
-                        unencodable_handling);
+    uchar_codec->Encode(uchar_span, unencodable_handling);
   }
 
   if (decoded.IsNull())
@@ -86,11 +87,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Round trip the bytes (aka encode the decoded bytes).
   if (decoded.Is8Bit()) {
-    codec->Encode(decoded.Characters8(), decoded.length(),
-                  unencodable_handling);
+    codec->Encode(decoded.Span8(), unencodable_handling);
   } else {
-    codec->Encode(decoded.Characters16(), decoded.length(),
-                  unencodable_handling);
+    codec->Encode(decoded.Span16(), unencodable_handling);
   }
   return 0;
 }

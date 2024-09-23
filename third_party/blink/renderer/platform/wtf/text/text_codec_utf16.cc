@@ -70,8 +70,7 @@ void TextCodecUTF16::RegisterCodecs(TextCodecRegistrar registrar) {
   registrar("UTF-16BE", NewStreamingTextDecoderUTF16BE, nullptr);
 }
 
-String TextCodecUTF16::Decode(const char* bytes,
-                              wtf_size_t length,
+String TextCodecUTF16::Decode(base::span<const uint8_t> bytes,
                               FlushBehavior flush,
                               bool,
                               bool& saw_error) {
@@ -79,7 +78,7 @@ String TextCodecUTF16::Decode(const char* bytes,
   const bool really_flush = flush != FlushBehavior::kDoNotFlush &&
                             flush != FlushBehavior::kFetchEOF;
 
-  if (!length) {
+  if (bytes.empty()) {
     if (really_flush && (have_lead_byte_ || have_lead_surrogate_)) {
       have_lead_byte_ = have_lead_surrogate_ = false;
       saw_error = true;
@@ -88,8 +87,8 @@ String TextCodecUTF16::Decode(const char* bytes,
     return String();
   }
 
-  const unsigned char* p = reinterpret_cast<const unsigned char*>(bytes);
-  const wtf_size_t num_bytes = length + have_lead_byte_;
+  const uint8_t* p = bytes.data();
+  const wtf_size_t num_bytes = bytes.size() + have_lead_byte_;
   const bool will_have_extra_byte = num_bytes & 1;
   const wtf_size_t num_chars_in = num_bytes / 2;
   const wtf_size_t max_chars_out =
@@ -156,8 +155,7 @@ String TextCodecUTF16::Decode(const char* bytes,
   return String::Adopt(buffer);
 }
 
-std::string TextCodecUTF16::Encode(const UChar* characters,
-                                   wtf_size_t length,
+std::string TextCodecUTF16::Encode(base::span<const UChar> characters,
                                    UnencodableHandling) {
   // We need to be sure we can double the length without overflowing.
   // Since the passed-in length is the length of an actual existing
@@ -165,18 +163,18 @@ std::string TextCodecUTF16::Encode(const UChar* characters,
   // the buffer doesn't occupy the entire address space, we can
   // assert here that doubling the length does not overflow wtf_size_t
   // and there's no need for a runtime check.
-  DCHECK_LE(length, std::numeric_limits<wtf_size_t>::max() / 2);
+  DCHECK_LE(characters.size(), std::numeric_limits<wtf_size_t>::max() / 2);
 
-  std::string result(length * 2, '\0');
+  std::string result(characters.size() * 2, '\0');
 
   if (little_endian_) {
-    for (wtf_size_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       UChar c = characters[i];
       result[i * 2] = static_cast<char>(c);
       result[i * 2 + 1] = c >> 8;
     }
   } else {
-    for (wtf_size_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       UChar c = characters[i];
       result[i * 2] = c >> 8;
       result[i * 2 + 1] = static_cast<char>(c);
@@ -186,21 +184,20 @@ std::string TextCodecUTF16::Encode(const UChar* characters,
   return result;
 }
 
-std::string TextCodecUTF16::Encode(const LChar* characters,
-                                   wtf_size_t length,
+std::string TextCodecUTF16::Encode(base::span<const LChar> characters,
                                    UnencodableHandling) {
   // In the LChar case, we do actually need to perform this check in release. :)
-  CHECK_LE(length, std::numeric_limits<wtf_size_t>::max() / 2);
+  CHECK_LE(characters.size(), std::numeric_limits<wtf_size_t>::max() / 2);
 
-  std::string result(length * 2, '\0');
+  std::string result(characters.size() * 2, '\0');
 
   if (little_endian_) {
-    for (wtf_size_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       result[i * 2] = characters[i];
       result[i * 2 + 1] = 0;
     }
   } else {
-    for (wtf_size_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < characters.size(); ++i) {
       result[i * 2] = 0;
       result[i * 2 + 1] = characters[i];
     }

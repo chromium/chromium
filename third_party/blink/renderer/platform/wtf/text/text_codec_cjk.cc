@@ -47,8 +47,7 @@ namespace WTF {
 class TextCodecCJK::Decoder {
  public:
   virtual ~Decoder() = default;
-  virtual String Decode(const uint8_t* bytes,
-                        wtf_size_t length,
+  virtual String Decode(base::span<const uint8_t> bytes,
                         bool flush,
                         bool stop_on_error,
                         bool& saw_error);
@@ -629,13 +628,12 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
  public:
   Iso2022JpDecoder() = default;
 
-  String Decode(const uint8_t* bytes,
-                wtf_size_t length,
+  String Decode(base::span<const uint8_t> bytes,
                 bool flush,
                 bool stop_on_error,
                 bool& saw_error) override {
     StringBuilder result;
-    result.ReserveCapacity(length);
+    result.ReserveCapacity(bytes.size());
 
     if (prepended_byte_ &&
         ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==
@@ -658,7 +656,7 @@ class Iso2022JpDecoder : public TextCodecCJK::Decoder {
         return result.ToString();
       }
     }
-    for (size_t i = 0; i < length; ++i) {
+    for (size_t i = 0; i < bytes.size(); ++i) {
       if (ParseByte(bytes[i], result) == SawError::kYes) {
         saw_error = true;
         result.Append(kReplacementCharacter);
@@ -932,14 +930,13 @@ class Gb18030Decoder : public TextCodecCJK::Decoder {
  public:
   Gb18030Decoder() = default;
 
-  String Decode(const uint8_t* bytes,
-                wtf_size_t length,
+  String Decode(base::span<const uint8_t> bytes,
                 bool flush,
                 bool stop_on_error,
                 bool& saw_error) override {
     saw_error_ = &saw_error;
-    String result = TextCodecCJK::Decoder::Decode(bytes, length, flush,
-                                                  stop_on_error, saw_error);
+    String result =
+        TextCodecCJK::Decoder::Decode(bytes, flush, stop_on_error, saw_error);
     // Ensures that `saw_error_` won't be used for the next run.
     saw_error_ = nullptr;
     return result;
@@ -1131,13 +1128,12 @@ std::unique_ptr<TextCodec> TextCodecCJK::Create(const TextEncoding& encoding,
   return nullptr;
 }
 
-String TextCodecCJK::Decoder::Decode(const uint8_t* bytes,
-                                     wtf_size_t length,
+String TextCodecCJK::Decoder::Decode(base::span<const uint8_t> bytes,
                                      bool flush,
                                      bool stop_on_error,
                                      bool& saw_error) {
   StringBuilder result;
-  result.ReserveCapacity(length);
+  result.ReserveCapacity(bytes.size());
 
   if (prepended_byte_ &&
       ParseByte(*std::exchange(prepended_byte_, std::nullopt), result) ==
@@ -1149,7 +1145,7 @@ String TextCodecCJK::Decoder::Decode(const uint8_t* bytes,
       return result.ToString();
     }
   }
-  for (size_t i = 0; i < length; ++i) {
+  for (size_t i = 0; i < bytes.size(); ++i) {
     if (ParseByte(bytes[i], result) == SawError::kYes) {
       saw_error = true;
       result.Append(kReplacementCharacter);
@@ -1180,12 +1176,10 @@ String TextCodecCJK::Decoder::Decode(const uint8_t* bytes,
   return result.ToString();
 }
 
-String TextCodecCJK::Decode(const char* charBytes,
-                            wtf_size_t length,
+String TextCodecCJK::Decode(base::span<const uint8_t> data,
                             FlushBehavior flush_behavior,
                             bool stop_on_error,
                             bool& saw_error) {
-  auto* bytes = reinterpret_cast<const uint8_t*>(charBytes);
   bool flush = flush_behavior != FlushBehavior::kDoNotFlush;
   if (!decoder_) {
     switch (encoding_) {
@@ -1209,7 +1203,7 @@ String TextCodecCJK::Decode(const char* charBytes,
         break;
     }
   }
-  return decoder_->Decode(bytes, length, flush, stop_on_error, saw_error);
+  return decoder_->Decode(data, flush, stop_on_error, saw_error);
 }
 
 Vector<uint8_t> TextCodecCJK::EncodeCommon(StringView string,
@@ -1232,17 +1226,21 @@ Vector<uint8_t> TextCodecCJK::EncodeCommon(StringView string,
   return {};
 }
 
-std::string TextCodecCJK::Encode(const UChar* characters,
-                                 wtf_size_t length,
+std::string TextCodecCJK::Encode(base::span<const UChar> characters,
                                  UnencodableHandling handling) {
-  Vector<uint8_t> v = EncodeCommon(StringView(characters, length), handling);
+  Vector<uint8_t> v = EncodeCommon(
+      StringView(characters.data(),
+                 base::checked_cast<wtf_size_t>(characters.size())),
+      handling);
   return std::string(v.begin(), v.end());
 }
 
-std::string TextCodecCJK::Encode(const LChar* characters,
-                                 wtf_size_t length,
+std::string TextCodecCJK::Encode(base::span<const LChar> characters,
                                  UnencodableHandling handling) {
-  Vector<uint8_t> v = EncodeCommon(StringView(characters, length), handling);
+  Vector<uint8_t> v = EncodeCommon(
+      StringView(characters.data(),
+                 base::checked_cast<wtf_size_t>(characters.size())),
+      handling);
   return std::string(v.begin(), v.end());
 }
 
