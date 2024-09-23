@@ -204,10 +204,6 @@ class PermissionsManager : public KeyedService {
   ExtensionSiteAccess GetSiteAccess(const Extension& extension,
                                     const GURL& url) const;
 
-  // Returns whether the extension requests host permissions or activeTab.
-  bool ExtensionRequestsHostPermissionsOrActiveTab(
-      const Extension& extension) const;
-
   // Returns true if the associated extension can be affected by
   // runtime host permissions.
   bool CanAffectExtension(const Extension& extension) const;
@@ -244,6 +240,10 @@ class PermissionsManager : public KeyedService {
   // This may only be called for extensions that can be affected (i.e., for
   // which CanAffectExtension() returns true). Anything else will DCHECK.
   bool HasWithheldHostPermissions(const Extension& extension) const;
+
+  // Returns whether the `extension` has requested activeTab, either as a
+  // required or optional permission.
+  bool HasRequestedActiveTab(const Extension& extension) const;
 
   // Returns true if this extension uses the activeTab permission and would
   // probably be able to to access the given `url`. The actual checks when an

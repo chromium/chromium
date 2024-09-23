@@ -572,10 +572,11 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
   bool has_policy_entry = !is_component_ && is_required_by_policy;
   bool policy_entry_in_subpage = false;
 
-  // Show section only when the extension requests host permissions.
+  // Show section only when the extension requests host permissions or has
+  // activeTab permission.
   auto* permissions_manager = PermissionsManager::Get(profile_);
-  if (permissions_manager->ExtensionRequestsHostPermissionsOrActiveTab(
-          *extension)) {
+  if (permissions_manager->HasRequestedHostPermissions(*extension) ||
+      permissions_manager->HasRequestedActiveTab(*extension)) {
     content::WebContents* web_contents = GetActiveWebContents();
     const GURL& url = web_contents->GetLastCommittedURL();
     auto site_setting = permissions_manager->GetUserSiteSetting(origin_);

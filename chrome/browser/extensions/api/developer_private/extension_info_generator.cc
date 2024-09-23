@@ -321,13 +321,14 @@ developer::RuntimeHostPermissions CreateRuntimeHostPermissionsInfo(
   return runtime_host_permissions;
 }
 
-// Returns if the extension can access site data. This checks for host
-// permissions, activeTab and API permissions that will surface a warning for
-// all hosts access.
+// Returns whether the extension can access site data through host permissions,
+// activeTab permissions or API permissions.
 bool CanAccessSiteData(PermissionsManager* permissions_manager,
                        const Extension& extension) {
-  return permissions_manager->ExtensionRequestsHostPermissionsOrActiveTab(
-             extension) ||
+  // We check whether permissions warn all hosts because it's the
+  // only way to compute if API permissions that can access site data.
+  return permissions_manager->HasRequestedHostPermissions(extension) ||
+         permissions_manager->HasRequestedActiveTab(extension) ||
          PermissionsParser::GetRequiredPermissions(&extension)
              .ShouldWarnAllHosts() ||
          PermissionsParser::GetOptionalPermissions(&extension)

@@ -540,25 +540,20 @@ TEST_F(PermissionsManagerUnittest, HasRequestedHostPermissions) {
   EXPECT_FALSE(manager_->HasRequestedHostPermissions(*active_tab_extension));
 }
 
-TEST_F(PermissionsManagerUnittest,
-       ExtensionRequestsHostPermissionsOrActiveTab) {
+TEST_F(PermissionsManagerUnittest, HasRequestedActiveTab) {
   auto no_permissions_extension = AddExtension("Extension");
+  auto requested_site_extension = AddExtensionWithHostPermission(
+      "RequestedUrl Extension", "*://*.requested.com/*");
   auto dnr_extension =
       AddExtensionWithAPIPermission("DNR extension", "declarativeNetRequest");
   auto active_tab_extension = AddExtensionWithActiveTab("ActiveTab Extension");
-  auto host_permissions_extension = AddExtensionWithHostPermission(
-      "RequestedUrl Extension", "*://*.requested.com/*");
 
-  // Verify that ExtensionRequestsHostPermissionsOrActiveTab returns true only
-  // for extensions that explicitly request host permissions or activeTab.
-  EXPECT_FALSE(manager_->ExtensionRequestsHostPermissionsOrActiveTab(
-      *no_permissions_extension));
-  EXPECT_FALSE(
-      manager_->ExtensionRequestsHostPermissionsOrActiveTab(*dnr_extension));
-  EXPECT_TRUE(manager_->ExtensionRequestsHostPermissionsOrActiveTab(
-      *active_tab_extension));
-  EXPECT_TRUE(manager_->ExtensionRequestsHostPermissionsOrActiveTab(
-      *host_permissions_extension));
+  // Verify that HasRequestedActiveTab returns true only for extensions
+  // that explicitly requested activeTab.
+  EXPECT_FALSE(manager_->HasRequestedActiveTab(*no_permissions_extension));
+  EXPECT_FALSE(manager_->HasRequestedActiveTab(*requested_site_extension));
+  EXPECT_FALSE(manager_->HasRequestedActiveTab(*dnr_extension));
+  EXPECT_TRUE(manager_->HasRequestedActiveTab(*active_tab_extension));
 }
 
 class PermissionsManagerWithPermittedSitesUnitTest

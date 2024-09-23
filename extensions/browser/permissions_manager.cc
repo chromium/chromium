@@ -431,7 +431,8 @@ PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
   PermissionsManager::ExtensionSiteAccess extension_access;
 
   // Extension that doesn't request host permission has no access.
-  if (!ExtensionRequestsHostPermissionsOrActiveTab(extension)) {
+  if (!HasRequestedHostPermissions(extension) &&
+      !HasRequestedActiveTab(extension)) {
     return extension_access;
   }
 
@@ -498,26 +499,15 @@ PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
   return extension_access;
 }
 
-bool PermissionsManager::ExtensionRequestsHostPermissionsOrActiveTab(
-    const Extension& extension) const {
-  if (HasRequestedHostPermissions(extension)) {
-    return true;
-  }
-
-  return PermissionsParser::GetRequiredPermissions(&extension)
-             .HasAPIPermission(mojom::APIPermissionID::kActiveTab) ||
-         PermissionsParser::GetOptionalPermissions(&extension)
-             .HasAPIPermission(mojom::APIPermissionID::kActiveTab);
-}
-
 bool PermissionsManager::CanAffectExtension(const Extension& extension) const {
   // Certain extensions are always exempt from having permissions withheld.
   if (!util::CanWithholdPermissionsFromExtension(extension))
     return false;
 
-  // The extension can be affected by runtime host permissions if it requests
-  // host permissions.
-  return ExtensionRequestsHostPermissionsOrActiveTab(extension);
+  // The extension can be affected by runtime host permissions if extension can
+  // have site access to it.
+  return HasRequestedHostPermissions(extension) ||
+         HasRequestedActiveTab(extension);
 }
 
 bool PermissionsManager::CanUserSelectSiteAccess(
@@ -593,6 +583,14 @@ bool PermissionsManager::HasBroadGrantedHostPermissions(
 bool PermissionsManager::HasWithheldHostPermissions(
     const Extension& extension) const {
   return extension_prefs_->GetWithholdingPermissions(extension.id());
+}
+
+bool PermissionsManager::HasRequestedActiveTab(
+    const Extension& extension) const {
+  return PermissionsParser::GetRequiredPermissions(&extension)
+             .HasAPIPermission(mojom::APIPermissionID::kActiveTab) ||
+         PermissionsParser::GetOptionalPermissions(&extension)
+             .HasAPIPermission(mojom::APIPermissionID::kActiveTab);
 }
 
 bool PermissionsManager::HasActiveTabAndCanAccess(const Extension& extension,
