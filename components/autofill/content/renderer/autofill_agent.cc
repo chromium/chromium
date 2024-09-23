@@ -1320,12 +1320,9 @@ void AutofillAgent::ShowSuggestions(
   if (!element.SuggestedValue().IsEmpty()) {
     return;
   }
-
-  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  if (input_element && !input_element.IsTextField()) {
+  if (!form_util::IsTextAreaElementOrTextInput(element)) {
     return;
   }
-  DCHECK(input_element || form_util::IsTextAreaElement(element));
 
   const bool show_for_empty_value =
       config_.uses_keyboard_accessory_for_suggestions ||
@@ -1361,14 +1358,15 @@ void AutofillAgent::ShowSuggestions(
     QueryAutofillSuggestions(element, trigger_source);
     return;
   }
-  if (IsPasswordsAutofillManuallyTriggered(trigger_source)) {
-    is_popup_possibly_visible_ = password_autofill_agent_->ShowSuggestions(
-        input_element, trigger_source);
-    return;
-  }
 
   // Proceed with generating suggestions based on the field type.
-  if (input_element) {
+  if (const WebInputElement input_element =
+          element.DynamicTo<WebInputElement>()) {
+    if (IsPasswordsAutofillManuallyTriggered(trigger_source)) {
+      is_popup_possibly_visible_ = password_autofill_agent_->ShowSuggestions(
+          input_element, trigger_source);
+      return;
+    }
     if (password_generation_agent_ &&
         password_generation_agent_->ShowPasswordGenerationSuggestions(
             input_element)) {
