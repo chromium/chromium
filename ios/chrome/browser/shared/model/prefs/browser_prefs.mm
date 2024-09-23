@@ -468,6 +468,15 @@ void MigrateIntegerPrefFromLocalStatePrefsToProfilePrefs(
                      GetApplicationContext()->GetLocalState());
 }
 
+// Helper function migrating the `int` preference from Profile prefs to
+// LocalState prefs.
+void MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
+    std::string_view pref_name,
+    PrefService* profile_pref_service) {
+  MigrateIntegerPref(pref_name, GetApplicationContext()->GetLocalState(),
+                     profile_pref_service);
+}
+
 // Helper function migrating the `bool` preference from Profile prefs to
 // LocalState prefs.
 void MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
@@ -749,6 +758,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Prefs used to skip too frequent identity confirmation snackbar prompt.
   registry->RegisterTimePref(prefs::kIdentityConfirmationSnackbarLastPromptTime,
                              base::Time());
+
+  registry->RegisterIntegerPref(
+      prefs::kIdentityConfirmationSnackbarDisplayCount, 0);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -953,6 +965,7 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated pref, moved to LocalState.
   registry->RegisterTimePref(prefs::kIdentityConfirmationSnackbarLastPromptTime,
                              base::Time());
+  // Deprecated pref, moved to LocalState.
   registry->RegisterIntegerPref(
       prefs::kIdentityConfirmationSnackbarDisplayCount, 0);
 
@@ -1332,6 +1345,9 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 09/2024.
   MigrateTimePrefFromProfilePrefsToLocalStatePrefs(
       prefs::kIdentityConfirmationSnackbarLastPromptTime, prefs);
+
+  MigrateIntegerPrefFromProfilePrefsToLocalStatePrefs(
+      prefs::kIdentityConfirmationSnackbarDisplayCount, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

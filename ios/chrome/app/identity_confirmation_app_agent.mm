@@ -149,11 +149,10 @@ enum class IdentityConfirmationSnackbarDecision {
     return IdentityConfirmationSnackbarDecision::kDontShowNotOnStartPage;
   }
 
-  PrefService* prefService = browser->GetBrowserState()->GetPrefs();
   PrefService* localState = GetApplicationContext()->GetLocalState();
 
   const int displayCount =
-      prefService->GetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount);
+      localState->GetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount);
   const base::Time lastPrompted =
       localState->GetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime);
 
@@ -185,8 +184,8 @@ enum class IdentityConfirmationSnackbarDecision {
   // At this point, the snackbar will be shown, except if the feature flag is
   // disabled. Either way, update the prefs, so that the metrics remain
   // comparable between enabled and disabled groups.
-  prefService->SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount,
-                          displayCount + 1);
+  localState->SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount,
+                         displayCount + 1);
   localState->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
                       base::Time::Now());
 

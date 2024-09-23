@@ -131,8 +131,8 @@ id<GREYMatcher> snackbarMessageMatcher(FakeSystemIdentity* identity) {
 // displaying it.
 - (void)prepareSnackbarParamsForNextDisplayWithLastCount:(int)lastCount {
   [ChromeEarlGrey
-      setIntegerValue:lastCount
-          forUserPref:prefs::kIdentityConfirmationSnackbarDisplayCount];
+        setIntegerValue:lastCount
+      forLocalStatePref:prefs::kIdentityConfirmationSnackbarDisplayCount];
 
   if (lastCount == 0) {
     // Set params for reminder after 1 day.

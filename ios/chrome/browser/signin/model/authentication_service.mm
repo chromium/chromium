@@ -367,8 +367,8 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
   PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
   local_pref_service->SetTime(
       prefs::kIdentityConfirmationSnackbarLastPromptTime, base::Time::Now());
-  pref_service_->SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount,
-                            0);
+  local_pref_service->SetInteger(
+      prefs::kIdentityConfirmationSnackbarDisplayCount, 0);
   crash_keys::SetCurrentlySignedIn(true);
 }
 
