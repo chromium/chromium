@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/extensions/webview/web_view.h"
+#include "third_party/blink/renderer/extensions/webview/web_view_android.h"
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom-blink.h"
@@ -25,27 +25,28 @@ const char kInvalidContext[] = "Invalid context";
 
 namespace blink {
 
-const char WebView::kSupplementName[] = "WebView";
+const char WebViewAndroid::kSupplementName[] = "WebView";
 
-WebView& WebView::From(ExecutionContext& execution_context) {
+WebViewAndroid& WebViewAndroid::From(ExecutionContext& execution_context) {
   CHECK(!execution_context.IsContextDestroyed());
 
   auto* supplement =
-      Supplement<ExecutionContext>::From<WebView>(execution_context);
+      Supplement<ExecutionContext>::From<WebViewAndroid>(execution_context);
 
   if (!supplement) {
-    supplement = MakeGarbageCollected<WebView>(execution_context);
+    supplement = MakeGarbageCollected<WebViewAndroid>(execution_context);
     ProvideTo(execution_context, supplement);
   }
   return *supplement;
 }
 
-WebView::WebView(ExecutionContext& execution_context)
+WebViewAndroid::WebViewAndroid(ExecutionContext& execution_context)
     : Supplement<ExecutionContext>(execution_context),
       ExecutionContextClient(&execution_context),
       media_integrity_service_remote_(&execution_context) {}
 
-void WebView::EnsureServiceConnection(ExecutionContext* execution_context) {
+void WebViewAndroid::EnsureServiceConnection(
+    ExecutionContext* execution_context) {
   if (media_integrity_service_remote_.is_bound()) {
     return;
   }
@@ -54,10 +55,10 @@ void WebView::EnsureServiceConnection(ExecutionContext* execution_context) {
   execution_context->GetBrowserInterfaceBroker().GetInterface(
       media_integrity_service_remote_.BindNewPipeAndPassReceiver(task_runner));
   media_integrity_service_remote_.set_disconnect_handler(WTF::BindOnce(
-      &WebView::OnServiceConnectionError, WrapWeakPersistent(this)));
+      &WebViewAndroid::OnServiceConnectionError, WrapWeakPersistent(this)));
 }
 
-void WebView::OnServiceConnectionError() {
+void WebViewAndroid::OnServiceConnectionError() {
   media_integrity_service_remote_.reset();
   for (auto& resolver : provider_resolvers_) {
     ScriptState* script_state = resolver->GetScriptState();
@@ -73,7 +74,7 @@ void WebView::OnServiceConnectionError() {
 }
 
 ScriptPromise<MediaIntegrityTokenProvider>
-WebView::getExperimentalMediaIntegrityTokenProvider(
+WebViewAndroid::getExperimentalMediaIntegrityTokenProvider(
     ScriptState* script_state,
     GetMediaIntegrityTokenProviderParams* params,
     ExceptionState& exception_state) {
@@ -133,7 +134,7 @@ WebView::getExperimentalMediaIntegrityTokenProvider(
   provider_resolvers_.insert(resolver);
   media_integrity_service_remote_->GetIntegrityProvider(
       std::move(provider_pending_receiver), cloud_project_number,
-      WTF::BindOnce(&WebView::OnGetIntegrityProviderResponse,
+      WTF::BindOnce(&WebViewAndroid::OnGetIntegrityProviderResponse,
                     WrapPersistent(this), WrapPersistent(script_state),
                     std::move(provider_pending_remote), cloud_project_number,
                     WrapPersistent(resolver)));
@@ -141,7 +142,7 @@ WebView::getExperimentalMediaIntegrityTokenProvider(
   return promise;
 }
 
-void WebView::OnGetIntegrityProviderResponse(
+void WebViewAndroid::OnGetIntegrityProviderResponse(
     ScriptState* script_state,
     mojo::PendingRemote<mojom::blink::WebViewMediaIntegrityProvider>
         provider_pending_remote,
@@ -171,7 +172,7 @@ void WebView::OnGetIntegrityProviderResponse(
   resolver->Resolve(provider);
 }
 
-void WebView::Trace(Visitor* visitor) const {
+void WebViewAndroid::Trace(Visitor* visitor) const {
   visitor->Trace(provider_resolvers_);
   visitor->Trace(media_integrity_service_remote_);
   Supplement<ExecutionContext>::Trace(visitor);

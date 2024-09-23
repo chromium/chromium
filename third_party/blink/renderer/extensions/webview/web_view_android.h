@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_WEBVIEW_WEB_VIEW_H_
-#define THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_WEBVIEW_WEB_VIEW_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_WEBVIEW_WEB_VIEW_ANDROID_H_
+#define THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_WEBVIEW_WEB_VIEW_ANDROID_H_
 
 #include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -17,17 +17,18 @@
 
 namespace blink {
 
-class EXTENSIONS_WEBVIEW_EXPORT WebView : public ScriptWrappable,
-                                          public Supplement<ExecutionContext>,
-                                          public ExecutionContextClient {
+class EXTENSIONS_WEBVIEW_EXPORT WebViewAndroid
+    : public ScriptWrappable,
+      public Supplement<ExecutionContext>,
+      public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static const char kSupplementName[];
 
-  static WebView& From(ExecutionContext&);
+  static WebViewAndroid& From(ExecutionContext&);
 
-  explicit WebView(ExecutionContext&);
+  explicit WebViewAndroid(ExecutionContext&);
 
   ScriptPromise<MediaIntegrityTokenProvider>
   getExperimentalMediaIntegrityTokenProvider(
@@ -56,4 +57,4 @@ class EXTENSIONS_WEBVIEW_EXPORT WebView : public ScriptWrappable,
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_WEBVIEW_WEB_VIEW_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_WEBVIEW_WEB_VIEW_ANDROID_H_
