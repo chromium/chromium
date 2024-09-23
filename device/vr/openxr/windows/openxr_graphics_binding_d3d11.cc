@@ -274,7 +274,7 @@ void OpenXrGraphicsBindingD3D11::CleanupWithoutSubmit() {
 }
 
 bool OpenXrGraphicsBindingD3D11::ShouldFlipSubmittedImage() {
-  return true;
+  return IsUsingSharedImages();
 }
 
 void OpenXrGraphicsBindingD3D11::OnSwapchainImageSizeChanged() {
