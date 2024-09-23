@@ -5508,7 +5508,7 @@ Press an assigned switch or key to remove assignment.
     Local data recovery
   </message>
   <message name="IDS_SETTINGS_PEOPLE_RECOVERY_TOGGLE_SUB_LABEL" desc="Sub-label of toggle to enable or disable cryptohome recovery.">
-    Local data can be restored if you forget your password
+    Local data can be restored if you forget your PIN or password
   </message>
   <message name="IDS_SETTINGS_PEOPLE_RECOVERY_DISABLE_DIALOG_TITLE" desc="Title for the disable local data recovery dialog">
     Disable local data recovery?
