@@ -139,7 +139,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1363801537" label="Crashpad.CrashUpload.Skipped"/>
   <int value="-1345388508" label="Renderer4.IdealContentsScale"/>
   <int value="-1321341911"
-      label="DataUse.BackgroundToDataRecievedPerByte.User"/>
+      label="DataUse.BackgroundToDataReceivedPerByte.User"/>
   <int value="-1286300074"
       label="Network.Shill.Wifi.ExpiredLeaseLengthSeconds"/>
   <int value="-1277093818"
