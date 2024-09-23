@@ -598,6 +598,7 @@ public class FirstRunActivitySigninAndSyncTest {
                 () -> {
                     mFirstRunActivity.findViewById(buttonId).performClick();
                 });
+        waitUntilAnimationStops();
     }
 
     private <T extends FirstRunFragment> void waitUntilCurrentPageIs(Class<T> fragmentClass) {
@@ -606,6 +607,11 @@ public class FirstRunActivitySigninAndSyncTest {
                         Criteria.checkThat(
                                 mFirstRunActivity.getCurrentFragmentForTesting(),
                                 Matchers.instanceOf(fragmentClass)));
+    }
+
+    private void waitUntilAnimationStops() {
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mFirstRunActivity.isAnimating(), Matchers.is(false)));
     }
 
     private void launchFirstRunActivityAndWaitForNativeInitialization() {
