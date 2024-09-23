@@ -43,7 +43,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -382,6 +381,16 @@ void ReportWebStoreInstallNotAllowlistedInstalled(bool installed,
         installed);
   }
 }
+
+// Returns whether the app launcher has been enabled.
+bool IsAppLauncherEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 // static

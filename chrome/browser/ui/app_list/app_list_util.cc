@@ -11,14 +11,6 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #endif
 
-bool IsAppLauncherEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return true;
-#else
-  return false;
-#endif
-}
-
 namespace app_list {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<ash::AppListItemMetadata> GenerateItemMetadataFromSyncItem(

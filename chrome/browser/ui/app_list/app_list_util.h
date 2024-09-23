@@ -16,9 +16,6 @@ struct AppListItemMetadata;
 }
 #endif
 
-// Returns whether the app launcher has been enabled.
-bool IsAppLauncherEnabled();
-
 namespace app_list {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
