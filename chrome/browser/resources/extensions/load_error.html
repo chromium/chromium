@@ -1,41 +1,28 @@
-<style include="cr-shared-style">
-  .description-row {
-    display: flex;
-  }
-
-  .row-label {
-    display: block;
-    width: 104px;  /* Magic number from the specs. */
-  }
-
-  paper-spinner-lite {
-    margin-inline-end: 8px;
-  }
-</style>
 <cr-dialog id="dialog" close-text="$i18n{close}">
   <div slot="title">$i18n{loadErrorHeading}</div>
   <div slot="body">
     <div id="info">
-      <div id="file" class="description-row" hidden$="[[!file_]]">
+      <div id="file" class="description-row" ?hidden="${!this.file_}">
         <span class="row-label">$i18n{loadErrorFileLabel}</span>
-        <span class="row-value">[[file_]]</span>
+        <span class="row-value">${this.file_}</span>
       </div>
       <div id="error" class="description-row">
         <span class="row-label">$i18n{loadErrorErrorLabel}</span>
-        <span class="row-value">[[error_]]</span>
+        <span class="row-value">${this.error_}</span>
       </div>
     </div>
-    <extensions-code-section id="code"
+    <extensions-code-section id="code" .isActive="${this.isCodeSectionActive_}"
+        .code="${this.codeSectionProperties_}"
         could-not-display-code="$i18n{loadErrorCouldNotLoadManifest}">
     </extensions-code-section>
   </div>
   <div slot="button-container">
-    <paper-spinner-lite active="[[retrying_]]"></paper-spinner-lite>
-    <cr-button class="cancel-button" on-click="close">
+    <div class="spinner" ?hidden="${!this.retrying_}"></div>
+    <cr-button class="cancel-button" @click="${this.close}">
       $i18n{cancel}
     </cr-button>
-    <cr-button class="action-button" disabled="[[retrying_]]"
-        on-click="onRetryClick_">
+    <cr-button class="action-button" ?disabled="${this.retrying_}"
+        @click="${this.onRetryClick_}">
       $i18n{loadErrorRetry}
     </cr-button>
   </div>

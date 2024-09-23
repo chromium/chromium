@@ -73,6 +73,7 @@ build_webui("build") {
   css_files = [
     "code_section.css",
     "drop_overlay.css",
+    "load_error.css",
     "shared_style.css",
     "shared_vars.css",
   ]

@@ -22,7 +22,7 @@ export {ExtensionsItemElement, ItemDelegate} from './item.js';
 export {ExtensionsItemListElement} from './item_list.js';
 export {UserAction} from './item_util.js';
 export {ExtensionsKeyboardShortcutsElement} from './keyboard_shortcuts.js';
-export {ExtensionsLoadErrorElement} from './load_error.js';
+export {LoadErrorElement} from './load_error.js';
 export {ExtensionsManagerElement} from './manager.js';
 export {ExtensionsMv2DeprecationPanelElement} from './mv2_deprecation_panel.js';
 export {Dialog, navigation, NavigationHelper, Page, PageState} from './navigation_helper.js';

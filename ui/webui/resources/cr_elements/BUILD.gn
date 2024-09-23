@@ -166,6 +166,7 @@ build_webui("build") {
       "cr_shared_style.css",
       "cr_shared_style_lit.css",
       "cr_shared_vars.css",
+      "cr_spinner_style.css",
       "md_select.css",
       "md_select_lit.css",
       "mwb_element_shared_style.css",
