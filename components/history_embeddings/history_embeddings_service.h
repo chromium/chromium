@@ -26,12 +26,10 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/intent_classifier.h"
-#include "components/history_embeddings/passage_embeddings_service_controller.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "content/public/browser/render_frame_host.h"
@@ -40,8 +38,7 @@
 class HistoryEmbeddingsInteractiveTest;
 
 namespace optimization_guide {
-class OptimizationGuideModelExecutor;
-class OptimizationGuideModelProvider;
+class OptimizationGuideDecider;
 }  // namespace optimization_guide
 
 namespace page_content_annotations {
@@ -55,7 +52,6 @@ class OSCryptAsync;
 
 namespace history_embeddings {
 
-class Answerer;
 class Embedder;
 
 // Counts the # of ' ' vanilla-space characters in `s`.
@@ -157,15 +153,14 @@ class HistoryEmbeddingsService : public KeyedService,
   // `history_service` is never nullptr and must outlive `this`.
   // Storage uses its `history_dir() location for the database.
   HistoryEmbeddingsService(
+      os_crypt_async::OSCryptAsync* os_crypt_async,
       history::HistoryService* history_service,
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
-      optimization_guide::OptimizationGuideModelProvider* model_provider,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      PassageEmbeddingsServiceController* service_controller,
-      os_crypt_async::OSCryptAsync* os_crypt_async,
-      optimization_guide::OptimizationGuideModelExecutor*
-          optimization_guide_model_executor);
+      std::unique_ptr<Embedder> embedder,
+      std::unique_ptr<Answerer> answerer,
+      std::unique_ptr<IntentClassifier> intent_classifier);
   HistoryEmbeddingsService(const HistoryEmbeddingsService&) = delete;
   HistoryEmbeddingsService& operator=(const HistoryEmbeddingsService&) = delete;
   ~HistoryEmbeddingsService() override;
@@ -389,15 +384,15 @@ class HistoryEmbeddingsService : public KeyedService,
   // The embedder used to compute embeddings.
   std::unique_ptr<Embedder> embedder_;
 
-  // Metadata about the embedder.
-  std::optional<EmbedderMetadata> embedder_metadata_;
-
   // The answerer used to answer queries with context. May be nullptr if
   // the kEnableAnswers parameter is false.
   std::unique_ptr<Answerer> answerer_;
 
   // The intent classifier used to determine query intent and answerability.
   std::unique_ptr<IntentClassifier> intent_classifier_;
+
+  // Metadata about the embedder.
+  std::optional<EmbedderMetadata> embedder_metadata_;
 
   // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.

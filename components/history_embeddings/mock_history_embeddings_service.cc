@@ -8,8 +8,8 @@ namespace history_embeddings {
 
 MockHistoryEmbeddingsService::MockHistoryEmbeddingsService(
     history::HistoryService* history_service)
-    : HistoryEmbeddingsService(history_service,
-                               nullptr,
+    : HistoryEmbeddingsService(nullptr,
+                               history_service,
                                nullptr,
                                nullptr,
                                nullptr,

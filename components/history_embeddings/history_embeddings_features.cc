@@ -89,10 +89,6 @@ const base::FeatureParam<double> kMlAnswererMinScore(&kHistoryEmbeddings,
                                                      "MlAnswererMinScore",
                                                      0.5);
 
-const base::FeatureParam<bool> kUseMlEmbedder(&kHistoryEmbeddings,
-                                              "UseMlEmbedder",
-                                              true);
-
 const base::FeatureParam<bool> kOmniboxScoped(&kHistoryEmbeddings,
                                               "OmniboxScoped",
                                               false);

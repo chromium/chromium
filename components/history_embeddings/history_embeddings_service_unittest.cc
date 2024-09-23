@@ -25,6 +25,9 @@
 #include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/core/search_strings_update_listener.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/mock_answerer.h"
+#include "components/history_embeddings/mock_embedder.h"
+#include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_decider.h"
@@ -42,8 +45,6 @@ namespace history_embeddings {
 
 namespace {
 
-using optimization_guide::OptimizationGuideModelExecutor;
-
 base::FilePath GetTestFilePath(const std::string& file_name) {
   base::FilePath test_data_dir;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
@@ -56,22 +57,21 @@ base::FilePath GetTestFilePath(const std::string& file_name) {
 class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
  public:
   HistoryEmbeddingsServicePublic(
+      os_crypt_async::OSCryptAsync* os_crypt_async,
       history::HistoryService* history_service,
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
-      optimization_guide::OptimizationGuideModelProvider*
-          optimization_guide_model_provider,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      PassageEmbeddingsServiceController* service_controller,
-      os_crypt_async::OSCryptAsync* os_crypt_async,
-      OptimizationGuideModelExecutor* optimization_guide_model_executor)
-      : HistoryEmbeddingsService(history_service,
+      std::unique_ptr<Embedder> embedder,
+      std::unique_ptr<Answerer> answerer,
+      std::unique_ptr<IntentClassifier> intent_classfier)
+      : HistoryEmbeddingsService(os_crypt_async,
+                                 history_service,
                                  page_content_annotations_service,
-                                 optimization_guide_model_provider,
                                  optimization_guide_decider,
-                                 service_controller,
-                                 os_crypt_async,
-                                 optimization_guide_model_executor) {}
+                                 std::move(embedder),
+                                 std::move(answerer),
+                                 std::move(intent_classfier)) {}
 
   using HistoryEmbeddingsService::Storage;
 
@@ -90,10 +90,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {{"UseMlEmbedder", "false"},
-           {"SearchPassageMinimumWordCount", "3"},
-           {"UseMlAnswerer", "false"},
-           {"EnableAnswers", "true"}}},
+          {{"SearchPassageMinimumWordCount", "3"}, {"EnableAnswers", "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -117,11 +114,11 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
     CHECK(page_content_annotations_service_);
 
     service_ = std::make_unique<HistoryEmbeddingsServicePublic>(
-        history_service_.get(), page_content_annotations_service_.get(),
-        optimization_guide_model_provider_.get(),
-        optimization_guide_decider_.get(),
-        /*service_controller=*/nullptr, os_crypt_.get(),
-        /*optimization_guide_model_executor=*/nullptr);
+        os_crypt_.get(), history_service_.get(),
+        page_content_annotations_service_.get(),
+        /*optimization_guide_decider=*/nullptr,
+        std::make_unique<MockEmbedder>(), std::make_unique<MockAnswerer>(),
+        /*intent_classifier=*/nullptr);
 
     ASSERT_TRUE(listener()->filter_words_hashes().empty());
     listener()->OnSearchStringsUpdate(
@@ -447,11 +444,8 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchUsesCorrectThresholds) {
     // metadata is also set.
     feature_list_.Reset();
     feature_list_.InitAndEnableFeatureWithParameters(
-        kHistoryEmbeddings, {
-                                {"UseMlEmbedder", "false"},
-                                {"SearchPassageMinimumWordCount", "3"},
-                                {"SearchScoreThreshold", "0.5"},
-                            });
+        kHistoryEmbeddings, {{"SearchPassageMinimumWordCount", "3"},
+                             {"SearchScoreThreshold", "0.5"}});
     base::test::TestFuture<SearchResult> future;
     service_->OnSearchCompleted(future.GetRepeatingCallback(), {},
                                 scored_url_rows);
@@ -642,11 +636,11 @@ TEST_F(HistoryEmbeddingsServiceTest, AnswerMocked) {
 }
 
 TEST_F(HistoryEmbeddingsServiceTest, IntentClassifierMocked) {
-  auto* intent_classifier = GetIntentClassifier();
-  EXPECT_EQ(intent_classifier->GetModelVersion(), 1);
+  MockIntentClassifier intent_classifier;
+  EXPECT_EQ(intent_classifier.GetModelVersion(), 1);
   {
     base::test::TestFuture<ComputeIntentStatus, bool> future;
-    intent_classifier->ComputeQueryIntent(
+    intent_classifier.ComputeQueryIntent(
         "can this query be answered, please and thank you?",
         future.GetCallback());
     auto [status, is_query_answerable] = future.Take();
@@ -655,8 +649,8 @@ TEST_F(HistoryEmbeddingsServiceTest, IntentClassifierMocked) {
   }
   {
     base::test::TestFuture<ComputeIntentStatus, bool> future;
-    intent_classifier->ComputeQueryIntent("any other query",
-                                          future.GetCallback());
+    intent_classifier.ComputeQueryIntent("any other query",
+                                         future.GetCallback());
     auto [status, is_query_answerable] = future.Take();
     EXPECT_EQ(status, ComputeIntentStatus::SUCCESS);
     EXPECT_EQ(is_query_answerable, false);

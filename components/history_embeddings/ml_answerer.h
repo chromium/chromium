@@ -15,12 +15,12 @@ namespace history_embeddings {
 
 using optimization_guide::OptimizationGuideModelExecutor;
 
-// TODO: b/343237382 - Integrate History Question Answerer ML model
-class MlAnswerer : public MockAnswerer {
+class MlAnswerer : public Answerer {
  public:
   explicit MlAnswerer(OptimizationGuideModelExecutor* model_executor);
   ~MlAnswerer() override;
 
+  int64_t GetModelVersion() override;
   void ComputeAnswer(std::string query,
                      Context context,
                      ComputeAnswerCallback callback) override;

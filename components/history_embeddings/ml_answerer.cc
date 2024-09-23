@@ -187,6 +187,11 @@ MlAnswerer::MlAnswerer(OptimizationGuideModelExecutor* model_executor)
 
 MlAnswerer::~MlAnswerer() = default;
 
+int64_t MlAnswerer::GetModelVersion() {
+  // This can be replaced with the real implementation.
+  return 0;
+}
+
 void MlAnswerer::ComputeAnswer(std::string query,
                                Context context,
                                ComputeAnswerCallback callback) {

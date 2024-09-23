@@ -21,6 +21,8 @@
 #include "components/history_embeddings/answerer.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
+#include "components/history_embeddings/mock_answerer.h"
+#include "components/history_embeddings/mock_embedder.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/user_education/test/mock_feature_promo_controller.h"
 #include "content/public/browser/browser_context.h"
@@ -67,10 +69,11 @@ std::unique_ptr<KeyedService> BuildTestHistoryEmbeddingsService(
   auto* optimization_guide_keyed_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   return std::make_unique<history_embeddings::HistoryEmbeddingsService>(
-      history_service, page_content_annotations_service,
-      optimization_guide_keyed_service, optimization_guide_keyed_service,
-      nullptr, TestingBrowserProcess::GetGlobal()->os_crypt_async(),
-      optimization_guide_keyed_service);
+      TestingBrowserProcess::GetGlobal()->os_crypt_async(), history_service,
+      page_content_annotations_service, optimization_guide_keyed_service,
+      std::make_unique<history_embeddings::MockEmbedder>(),
+      std::make_unique<history_embeddings::MockAnswerer>(),
+      /*intent_classfier=*/nullptr);
 }
 
 std::unique_ptr<KeyedService> BuildTestPageContentAnnotationsService(
@@ -96,8 +99,7 @@ class HistoryEmbeddingsHandlerTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::SetUp();
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/{{history_embeddings::kHistoryEmbeddings,
-                               {{"UseMlEmbedder", "false"},
-                                {"EnableAnswers", "true"}}},
+                               {{"EnableAnswers", "true"}}},
                               {feature_engagement::kIPHHistorySearchFeature,
                                {}},
 #if BUILDFLAG(IS_CHROMEOS)

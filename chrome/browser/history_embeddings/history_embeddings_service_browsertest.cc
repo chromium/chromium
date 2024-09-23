@@ -4,6 +4,7 @@
 
 #include "components/history_embeddings/history_embeddings_service.h"
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -18,6 +19,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/mock_embedder.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
@@ -46,6 +48,17 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
             optimization_guide::UserVisibleFeatureKey::kHistorySearch),
         static_cast<int>(
             optimization_guide::prefs::FeatureOptInState::kEnabled));
+
+    HistoryEmbeddingsServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindLambdaForTesting([](content::BrowserContext* context) {
+          return HistoryEmbeddingsServiceFactory::
+              BuildServiceInstanceForBrowserContextForTesting(
+                  context, std::make_unique<MockEmbedder>(),
+                  /*answerer=*/nullptr, /*intent_classfier=*/nullptr);
+        }));
+
+    InProcessBrowserTest::SetUpOnMainThread();
   }
 
  protected:
@@ -91,12 +104,9 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
     // properly.
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {
-              {"UseMlEmbedder", "false"},
-              {"SendQualityLog", "true"},
-              {"ContentVisibilityThreshold", "0.01"},
-              {"UseUrlFilter", "false"},
-          }},
+          {{"SendQualityLog", "true"},
+           {"ContentVisibilityThreshold", "0.01"},
+           {"UseUrlFilter", "false"}}},
          {page_content_annotations::features::kPageContentAnnotations, {{}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
@@ -112,9 +122,7 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, ServiceFactoryWorks) {
-  auto* service =
-      HistoryEmbeddingsServiceFactory::GetForProfile(browser()->profile());
-  EXPECT_TRUE(service);
+  EXPECT_TRUE(service());
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, BrowserRetrievesPassages) {
@@ -175,8 +183,7 @@ class HistoryEmbeddingsWithLowAggregationBrowserTest
   void InitializeFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {{"UseMlEmbedder", "false"},
-           {"SendQualityLog", "true"},
+          {{"SendQualityLog", "true"},
            {"PassageExtractionMaxWordsPerAggregatePassage", "10"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
@@ -320,9 +327,7 @@ class HistoryEmbeddingsWithDatabaseCacheBrowserTest
   void InitializeFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {{"UseMlEmbedder", "false"},
-           {"SendQualityLog", "true"},
-           {"UseDatabaseBeforeEmbedder", "true"}}},
+          {{"SendQualityLog", "true"}, {"UseDatabaseBeforeEmbedder", "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -406,9 +411,7 @@ class HistoryEmbeddingsWithUrlFilterBrowserTest
   void InitializeFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {{"UseMlEmbedder", "false"},
-           {"SendQualityLog", "true"},
-           {"UseUrlFilter", "true"}}},
+          {{"SendQualityLog", "true"}, {"UseUrlFilter", "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)

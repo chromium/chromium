@@ -22,7 +22,9 @@ class ChromeHistoryEmbeddingsService : public HistoryEmbeddingsService {
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       OptimizationGuideKeyedService* optimization_guide_service,
-      PassageEmbeddingsServiceController* service_controller);
+      std::unique_ptr<Embedder> embedder,
+      std::unique_ptr<Answerer> answerer,
+      std::unique_ptr<IntentClassifier> intent_classifier);
   explicit ChromeHistoryEmbeddingsService(const HistoryEmbeddingsService&) =
       delete;
   ChromeHistoryEmbeddingsService& operator=(const HistoryEmbeddingsService&) =

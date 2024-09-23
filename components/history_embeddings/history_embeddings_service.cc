@@ -28,18 +28,11 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history_embeddings/core/search_strings_update_listener.h"
 #include "components/history_embeddings/history_embeddings_features.h"
-#include "components/history_embeddings/ml_answerer.h"
-#include "components/history_embeddings/ml_embedder.h"
-#include "components/history_embeddings/ml_intent_classifier.h"
-#include "components/history_embeddings/mock_answerer.h"
-#include "components/history_embeddings/mock_embedder.h"
-#include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/history_embeddings/scheduling_embedder.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
-#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -249,20 +242,23 @@ size_t SearchResult::AnswerIndex() const {
 ////////////////////////////////////////////////////////////////////////////////
 
 HistoryEmbeddingsService::HistoryEmbeddingsService(
+    os_crypt_async::OSCryptAsync* os_crypt_async,
     history::HistoryService* history_service,
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
-    optimization_guide::OptimizationGuideModelProvider*
-        optimization_guide_model_provider,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    PassageEmbeddingsServiceController* service_controller,
-    os_crypt_async::OSCryptAsync* os_crypt_async,
-    optimization_guide::OptimizationGuideModelExecutor*
-        optimization_guide_model_executor)
+    std::unique_ptr<Embedder> embedder,
+    std::unique_ptr<Answerer> answerer,
+    std::unique_ptr<IntentClassifier> intent_classifier)
     : os_crypt_async_(os_crypt_async),
       history_service_(history_service),
       page_content_annotations_service_(page_content_annotations_service),
       optimization_guide_decider_(optimization_guide_decider),
+      embedder_(
+          std::make_unique<SchedulingEmbedder>(std::move(embedder),
+                                               kScheduledEmbeddingsMax.Get())),
+      answerer_(std::move(answerer)),
+      intent_classifier_(std::move(intent_classifier)),
       query_id_(0u),
       query_id_weak_ptr_factory_(&query_id_),
       weak_ptr_factory_(this) {
@@ -272,6 +268,7 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
     return;
   }
 
+  // The history service is never nullptr; even unit tests should provide it.
   CHECK(history_service_);
   storage_ = base::SequenceBound<Storage>(
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -286,38 +283,6 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
     page_content_annotations_service_->RequestAndNotifyWhenModelAvailable(
         page_content_annotations::AnnotationType::kContentVisibility,
         base::DoNothing());
-  }
-
-  if (kUseMlEmbedder.Get()) {
-    embedder_ = std::make_unique<MlEmbedder>(optimization_guide_model_provider,
-                                             service_controller);
-  } else {
-    embedder_ = std::make_unique<MockEmbedder>();
-  }
-
-  embedder_ = std::make_unique<SchedulingEmbedder>(
-      std::move(embedder_), kScheduledEmbeddingsMax.Get());
-
-  if (kEnableAnswers.Get()) {
-    if (kUseMlAnswerer.Get()) {
-      answerer_ =
-          optimization_guide_model_executor
-              ? std::make_unique<MlAnswerer>(optimization_guide_model_executor)
-              : nullptr;
-    } else {
-      answerer_ = std::make_unique<MockAnswerer>();
-    }
-  }
-
-  if (kEnableIntentClassifier.Get()) {
-    if (kUseMlIntentClassifier.Get()) {
-      intent_classifier_ = optimization_guide_model_executor
-                               ? std::make_unique<MlIntentClassifier>(
-                                     optimization_guide_model_executor)
-                               : nullptr;
-    } else {
-      intent_classifier_ = std::make_unique<MockIntentClassifier>();
-    }
   }
 
   if (optimization_guide_decider_) {
