@@ -28,7 +28,7 @@ bool DeserializeFromJavaByteBuffer(
     mojo::StructPtr<T>* out) {
   DCHECK(out);
   base::span<const uint8_t> native_buffer =
-      base::android::JavaByteBufferToSpan(env, jbuffer);
+      base::android::JavaByteBufferToSpan(env, jbuffer.obj());
   return T::Deserialize(native_buffer.data(), native_buffer.size(), out);
 }
 

@@ -59,7 +59,7 @@ void PaymentHandlerHost::UpdateWith(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& response_buffer) {
   mojom::PaymentRequestDetailsUpdatePtr response;
-  auto span = base::android::JavaByteBufferToSpan(env, response_buffer);
+  auto span = base::android::JavaByteBufferToSpan(env, response_buffer.obj());
   bool success = mojom::PaymentRequestDetailsUpdate::Deserialize(
       span.data(), span.size(), &response);
   DCHECK(success);
