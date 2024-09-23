@@ -148,6 +148,13 @@ class SignedRequest : public UrlFetchRequestBase {
   std::vector<std::string> headers_;
 };
 
+struct ApiError {
+  google_apis::ApiErrorCode error_code;
+
+  // A localized error string if included with the response.
+  std::string error_message;
+};
+
 // Returns the localized error message from the error JSON if it can be found.
 // If a localized error message is not found, returns an empty string.
 std::string ParseErrorJson(const std::string& response_body);

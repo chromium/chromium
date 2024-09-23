@@ -28,8 +28,7 @@ namespace youtube_music {
 class GetMusicSectionRequest : public UrlFetchRequestBase {
  public:
   using Callback = base::OnceCallback<void(
-      base::expected<std::unique_ptr<TopLevelMusicRecommendations>,
-                     ApiErrorCode>)>;
+      base::expected<std::unique_ptr<TopLevelMusicRecommendations>, ApiError>)>;
 
   GetMusicSectionRequest(RequestSender* sender,
                          const std::string& device_info,
@@ -70,7 +69,7 @@ class GetMusicSectionRequest : public UrlFetchRequestBase {
 class GetPlaylistRequest : public UrlFetchRequestBase {
  public:
   using Callback = base::OnceCallback<void(
-      base::expected<std::unique_ptr<Playlist>, ApiErrorCode>)>;
+      base::expected<std::unique_ptr<Playlist>, ApiError>)>;
 
   GetPlaylistRequest(RequestSender* sender,
                      const std::string& device_info,
@@ -114,7 +113,7 @@ class GetPlaylistRequest : public UrlFetchRequestBase {
 class PlaybackQueuePrepareRequest : public SignedRequest {
  public:
   using Callback = base::OnceCallback<void(
-      base::expected<std::unique_ptr<Queue>, ApiErrorCode>)>;
+      base::expected<std::unique_ptr<Queue>, ApiError>)>;
 
   PlaybackQueuePrepareRequest(RequestSender* sender,
                               const PlaybackQueuePrepareRequestPayload& payload,
@@ -156,7 +155,7 @@ class PlaybackQueuePrepareRequest : public SignedRequest {
 class PlaybackQueueNextRequest : public SignedRequest {
  public:
   using Callback = base::OnceCallback<void(
-      base::expected<std::unique_ptr<QueueContainer>, ApiErrorCode>)>;
+      base::expected<std::unique_ptr<QueueContainer>, ApiError>)>;
 
   PlaybackQueueNextRequest(RequestSender* sender,
                            const PlaybackQueueNextRequestPayload& payload,
@@ -208,7 +207,7 @@ class PlaybackQueueNextRequest : public SignedRequest {
 class ReportPlaybackRequest : public SignedRequest {
  public:
   using Callback = base::OnceCallback<void(
-      base::expected<std::unique_ptr<ReportPlaybackResult>, ApiErrorCode>)>;
+      base::expected<std::unique_ptr<ReportPlaybackResult>, ApiError>)>;
 
   ReportPlaybackRequest(RequestSender* sender,
                         std::unique_ptr<ReportPlaybackRequestPayload> payload,

@@ -60,6 +60,15 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
     )");
 
+// Runs `callback` with `PARSE_ERROR` for payloads that are unexpectedly null.
+// `callback` is in an unspecified state after this runs.
+template <class T>
+void ReportParseError(T&& callback) {
+  google_apis::youtube_music::ApiError api_error;
+  api_error.error_code = google_apis::PARSE_ERROR;
+  std::move(callback).Run(base::unexpected(api_error));
+}
+
 google_apis::youtube_music::ReportPlaybackRequestPayload::PlaybackState
 GetPayloadPlaybackState(const PlaybackState player_state) {
   switch (player_state) {
@@ -315,26 +324,31 @@ void YouTubeMusicClient::OnGetMusicSectionRequestDone(
     base::expected<
         std::unique_ptr<
             google_apis::youtube_music::TopLevelMusicRecommendations>,
-        google_apis::ApiErrorCode> result) {
+        google_apis::youtube_music::ApiError> result) {
   if (!music_section_callback_) {
     return;
   }
 
-  if (!result.has_value() || !result.value()) {
-    std::move(music_section_callback_).Run(result.error(), std::nullopt);
+  if (!result.has_value()) {
+    std::move(music_section_callback_).Run(base::unexpected(result.error()));
+    return;
+  }
+
+  if (!result.value()) {
+    // This result is always expected to have contents.
+    ReportParseError(std::move(music_section_callback_));
     return;
   }
 
   std::move(music_section_callback_)
-      .Run(google_apis::HTTP_SUCCESS,
-           GetPlaylistsFromApiTopLevelMusicRecommendations(*result.value()));
+      .Run(GetPlaylistsFromApiTopLevelMusicRecommendations(*result.value()));
 }
 
 void YouTubeMusicClient::OnGetPlaylistRequestDone(
     const std::string& playlist_id,
     const base::Time& request_start_time,
     base::expected<std::unique_ptr<google_apis::youtube_music::Playlist>,
-                   google_apis::ApiErrorCode> result) {
+                   google_apis::youtube_music::ApiError> result) {
   if (playlist_callback_map_.find(playlist_id) ==
       playlist_callback_map_.end()) {
     return;
@@ -348,89 +362,88 @@ void YouTubeMusicClient::OnGetPlaylistRequestDone(
     return;
   }
 
-  if (!result.has_value() || !result.value()) {
-    std::move(playlist_callback).Run(result.error(), std::nullopt);
+  if (!result.has_value()) {
+    std::move(playlist_callback).Run(base::unexpected(result.error()));
     return;
   }
 
-  std::move(playlist_callback)
-      .Run(google_apis::HTTP_SUCCESS,
-           GetPlaylistFromApiPlaylist(*result.value()));
+  if (!result.value()) {
+    // This result is always expected to have contents.
+    ReportParseError(std::move(playlist_callback));
+    return;
+  }
+
+  std::move(playlist_callback).Run(GetPlaylistFromApiPlaylist(*result.value()));
 }
 
 void YouTubeMusicClient::OnPlaybackQueuePrepareRequestDone(
     const base::Time& request_start_time,
     base::expected<std::unique_ptr<google_apis::youtube_music::Queue>,
-                   google_apis::ApiErrorCode> result) {
+                   google_apis::youtube_music::ApiError> result) {
   if (!playback_context_prepare_callback_) {
     return;
   }
 
   if (!result.has_value()) {
     std::move(playback_context_prepare_callback_)
-        .Run(result.error(), std::nullopt);
+        .Run(base::unexpected(result.error()));
     return;
   }
 
   if (!result.value()) {
-    std::move(playback_context_prepare_callback_)
-        .Run(google_apis::ApiErrorCode::HTTP_SUCCESS, std::nullopt);
+    ReportParseError(std::move(playback_context_prepare_callback_));
     return;
   }
 
   std::move(playback_context_prepare_callback_)
-      .Run(google_apis::HTTP_SUCCESS,
-           GetPlaybackContextFromApiQueue(*result.value()));
+      .Run(GetPlaybackContextFromApiQueue(*result.value()));
 }
 
 void YouTubeMusicClient::OnPlaybackQueueNextRequestDone(
     const base::Time& request_start_time,
     base::expected<std::unique_ptr<google_apis::youtube_music::QueueContainer>,
-                   google_apis::ApiErrorCode> result) {
+                   google_apis::youtube_music::ApiError> result) {
   if (!playback_context_next_callback_) {
     return;
   }
 
   if (!result.has_value()) {
     std::move(playback_context_next_callback_)
-        .Run(result.error(), std::nullopt);
+        .Run(base::unexpected(result.error()));
     return;
   }
 
   if (!result.value()) {
-    std::move(playback_context_next_callback_)
-        .Run(google_apis::ApiErrorCode::HTTP_SUCCESS, std::nullopt);
+    // This result is always expected to have contents.
+    ReportParseError(std::move(playback_context_next_callback_));
     return;
   }
 
   std::move(playback_context_next_callback_)
-      .Run(google_apis::HTTP_SUCCESS,
-           GetPlaybackContextFromApiQueue(result.value()->queue()));
+      .Run(GetPlaybackContextFromApiQueue(result.value()->queue()));
 }
 
 void YouTubeMusicClient::OnReportPlaybackRequestDone(
     const base::Time& request_start_time,
     base::expected<
         std::unique_ptr<google_apis::youtube_music::ReportPlaybackResult>,
-        google_apis::ApiErrorCode> result) {
+        google_apis::youtube_music::ApiError> result) {
   if (!report_playback_callback_) {
     return;
   }
 
   if (!result.has_value()) {
-    std::move(report_playback_callback_).Run(result.error(), std::nullopt);
+    std::move(report_playback_callback_).Run(base::unexpected(result.error()));
     return;
   }
 
   if (!result.value()) {
-    std::move(report_playback_callback_)
-        .Run(google_apis::ApiErrorCode::HTTP_SUCCESS, std::nullopt);
+    ReportParseError(std::move(report_playback_callback_));
     return;
   }
 
   std::move(report_playback_callback_)
-      .Run(google_apis::HTTP_SUCCESS,
-           result.value()->playback_reporting_token());
+      .Run(result.value()->playback_reporting_token());
 }
 
 }  // namespace ash::youtube_music

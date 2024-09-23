@@ -204,8 +204,11 @@ void FocusModeYouTubeMusicDelegate::GetPlaylistInternal(
 void FocusModeYouTubeMusicDelegate::OnGetPlaylistDone(
     const base::Time start_time,
     const GetPlaylistsRequestState::PlaylistType type,
-    google_apis::ApiErrorCode http_error_code,
-    std::optional<youtube_music::Playlist> playlist) {
+    base::expected<youtube_music::Playlist,
+                   google_apis::youtube_music::ApiError> playlist) {
+  google_apis::ApiErrorCode http_error_code = playlist.has_value()
+                                                  ? google_apis::HTTP_SUCCESS
+                                                  : playlist.error().error_code;
   const std::string method = "YouTubeMusic.GetPlaylist";
   focus_mode_util::RecordHistogramForApiStatus(method, http_error_code);
   focus_mode_util::RecordHistogramForApiLatency(method,
@@ -280,8 +283,11 @@ void FocusModeYouTubeMusicDelegate::GetMusicSectionInternal() {
 
 void FocusModeYouTubeMusicDelegate::OnGetMusicSectionDone(
     const base::Time start_time,
-    google_apis::ApiErrorCode http_error_code,
-    std::optional<const std::vector<youtube_music::Playlist>> playlists) {
+    base::expected<const std::vector<youtube_music::Playlist>,
+                   google_apis::youtube_music::ApiError> playlists) {
+  google_apis::ApiErrorCode http_error_code =
+      playlists.has_value() ? google_apis::HTTP_SUCCESS
+                            : playlists.error().error_code;
   const std::string method = "YouTubeMusic.GetMusicSection";
   focus_mode_util::RecordHistogramForApiStatus(method, http_error_code);
   focus_mode_util::RecordHistogramForApiLatency(method,
@@ -392,8 +398,12 @@ void FocusModeYouTubeMusicDelegate::OnNextTrackDone(
     const base::Time start_time,
     const bool prepare,
     const std::string& playlist_id,
-    google_apis::ApiErrorCode http_error_code,
-    std::optional<const youtube_music::PlaybackContext> playback_context) {
+    base::expected<const youtube_music::PlaybackContext,
+                   google_apis::youtube_music::ApiError> playback_context) {
+  google_apis::ApiErrorCode http_error_code =
+      playback_context.has_value() ? google_apis::HTTP_SUCCESS
+                                   : playback_context.error().error_code;
+
   const std::string method = prepare ? "YouTubeMusic.PlaybackQueuePrepare"
                                      : "YouTubeMusic.PlaybackQueueNext";
   focus_mode_util::RecordHistogramForApiStatus(method, http_error_code);
@@ -528,8 +538,13 @@ void FocusModeYouTubeMusicDelegate::ReportPlaybackInternal(const GURL& url) {
 void FocusModeYouTubeMusicDelegate::OnReportPlaybackDone(
     const base::Time start_time,
     const GURL& url,
-    google_apis::ApiErrorCode http_error_code,
-    std::optional<const std::string> new_playback_reporting_token) {
+    base::expected<const std::string, google_apis::youtube_music::ApiError>
+        new_playback_reporting_token) {
+  google_apis::ApiErrorCode http_error_code =
+      new_playback_reporting_token.has_value()
+          ? google_apis::HTTP_SUCCESS
+          : new_playback_reporting_token.error().error_code;
+
   const std::string method = "YouTubeMusic.ReportPlayback";
   focus_mode_util::RecordHistogramForApiStatus(method, http_error_code);
   focus_mode_util::RecordHistogramForApiLatency(method,

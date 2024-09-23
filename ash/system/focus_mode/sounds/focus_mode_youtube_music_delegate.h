@@ -129,10 +129,11 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   void GetPlaylistInternal(const GetPlaylistsRequestState::PlaylistType type);
 
   // Called when get playlists request is done.
-  void OnGetPlaylistDone(const base::Time start_time,
-                         const GetPlaylistsRequestState::PlaylistType type,
-                         google_apis::ApiErrorCode http_error_code,
-                         std::optional<youtube_music::Playlist> playlist);
+  void OnGetPlaylistDone(
+      const base::Time start_time,
+      const GetPlaylistsRequestState::PlaylistType type,
+      base::expected<youtube_music::Playlist,
+                     google_apis::youtube_music::ApiError> playlist);
 
   // Triggers request to query for focus-intent playlists for the given bucket.
   void GetMusicSectionInternal();
@@ -140,8 +141,8 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   // Called when get music section request is done.
   void OnGetMusicSectionDone(
       const base::Time start_time,
-      google_apis::ApiErrorCode http_error_code,
-      std::optional<const std::vector<youtube_music::Playlist>> playlists);
+      base::expected<const std::vector<youtube_music::Playlist>,
+                     google_apis::youtube_music::ApiError> playlists);
 
   // Invoked when sub-request is done for `GetPlaylists()`. It's responsible for
   // collecting the data, and reporting the data back when we are at the target
@@ -156,8 +157,8 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
       const base::Time start_time,
       const bool prepare,
       const std::string& playlist_id,
-      google_apis::ApiErrorCode http_error_code,
-      std::optional<const youtube_music::PlaybackContext> playback_context);
+      base::expected<const youtube_music::PlaybackContext,
+                     google_apis::youtube_music::ApiError> playback_context);
 
   void ReportPlaybackInternal(const GURL& url);
 
@@ -165,8 +166,8 @@ class ASH_EXPORT FocusModeYouTubeMusicDelegate
   void OnReportPlaybackDone(
       const base::Time start_time,
       const GURL& url,
-      google_apis::ApiErrorCode http_error_code,
-      std::optional<const std::string> new_playback_reporting_token);
+      base::expected<const std::string, google_apis::youtube_music::ApiError>
+          new_playback_reporting_token);
 
   // Playlists request state for `GetPlaylists`.
   GetPlaylistsRequestState get_playlists_state_;

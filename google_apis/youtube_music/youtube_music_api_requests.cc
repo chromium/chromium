@@ -21,6 +21,12 @@ namespace {
 
 constexpr char kContentTypeJson[] = "application/json; charset=utf-8";
 
+template <class T>
+void RunCallbackWithError(T callback, google_apis::ApiErrorCode error) {
+  std::move(callback).Run(base::unexpected(google_apis::youtube_music::ApiError{
+      .error_code = error, .error_message = std::string()}));
+}
+
 }  // namespace
 
 namespace google_apis::youtube_music {
@@ -73,14 +79,14 @@ void GetMusicSectionRequest::ProcessURLFetchResults(
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     default:
-      RunCallbackOnPrematureFailure(error);
+      RunCallbackWithError(std::move(callback_), error);
       OnProcessURLFetchResultsComplete();
       break;
   }
 }
 
 void GetMusicSectionRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
-  std::move(callback_).Run(base::unexpected(error));
+  RunCallbackWithError(std::move(callback_), error);
 }
 
 std::unique_ptr<TopLevelMusicRecommendations> GetMusicSectionRequest::Parse(
@@ -92,7 +98,7 @@ std::unique_ptr<TopLevelMusicRecommendations> GetMusicSectionRequest::Parse(
 void GetMusicSectionRequest::OnDataParsed(
     std::unique_ptr<TopLevelMusicRecommendations> recommendations) {
   if (!recommendations) {
-    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+    RunCallbackWithError(std::move(callback_), PARSE_ERROR);
   } else {
     std::move(callback_).Run(std::move(recommendations));
   }
@@ -147,14 +153,14 @@ void GetPlaylistRequest::ProcessURLFetchResults(
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     default:
-      RunCallbackOnPrematureFailure(error);
+      RunCallbackWithError(std::move(callback_), error);
       OnProcessURLFetchResultsComplete();
       break;
   }
 }
 
 void GetPlaylistRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
-  std::move(callback_).Run(base::unexpected(error));
+  RunCallbackWithError(std::move(callback_), error);
 }
 
 std::unique_ptr<Playlist> GetPlaylistRequest::Parse(const std::string& json) {
@@ -164,7 +170,7 @@ std::unique_ptr<Playlist> GetPlaylistRequest::Parse(const std::string& json) {
 
 void GetPlaylistRequest::OnDataParsed(std::unique_ptr<Playlist> playlist) {
   if (!playlist) {
-    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+    RunCallbackWithError(std::move(callback_), PARSE_ERROR);
   } else {
     std::move(callback_).Run(std::move(playlist));
   }
@@ -222,7 +228,7 @@ void PlaybackQueuePrepareRequest::ProcessURLFetchResults(
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     default:
-      RunCallbackOnPrematureFailure(error);
+      RunCallbackWithError(std::move(callback_), error);
       OnProcessURLFetchResultsComplete();
       break;
   }
@@ -230,7 +236,7 @@ void PlaybackQueuePrepareRequest::ProcessURLFetchResults(
 
 void PlaybackQueuePrepareRequest::RunCallbackOnPrematureFailure(
     ApiErrorCode error) {
-  std::move(callback_).Run(base::unexpected(error));
+  RunCallbackWithError(std::move(callback_), error);
 }
 
 std::unique_ptr<Queue> PlaybackQueuePrepareRequest::Parse(
@@ -241,7 +247,7 @@ std::unique_ptr<Queue> PlaybackQueuePrepareRequest::Parse(
 
 void PlaybackQueuePrepareRequest::OnDataParsed(std::unique_ptr<Queue> queue) {
   if (!queue) {
-    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+    RunCallbackWithError(std::move(callback_), PARSE_ERROR);
   } else {
     std::move(callback_).Run(std::move(queue));
   }
@@ -299,7 +305,7 @@ void PlaybackQueueNextRequest::ProcessURLFetchResults(
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     default:
-      RunCallbackOnPrematureFailure(error);
+      RunCallbackWithError(std::move(callback_), error);
       OnProcessURLFetchResultsComplete();
       break;
   }
@@ -307,7 +313,7 @@ void PlaybackQueueNextRequest::ProcessURLFetchResults(
 
 void PlaybackQueueNextRequest::RunCallbackOnPrematureFailure(
     ApiErrorCode error) {
-  std::move(callback_).Run(base::unexpected(error));
+  RunCallbackWithError(std::move(callback_), error);
 }
 
 std::unique_ptr<QueueContainer> PlaybackQueueNextRequest::Parse(
@@ -319,7 +325,7 @@ std::unique_ptr<QueueContainer> PlaybackQueueNextRequest::Parse(
 void PlaybackQueueNextRequest::OnDataParsed(
     std::unique_ptr<QueueContainer> queue_container) {
   if (!queue_container) {
-    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+    RunCallbackWithError(std::move(callback_), PARSE_ERROR);
   } else {
     std::move(callback_).Run(std::move(queue_container));
   }
@@ -376,14 +382,14 @@ void ReportPlaybackRequest::ProcessURLFetchResults(
                          weak_ptr_factory_.GetWeakPtr()));
       break;
     default:
-      RunCallbackOnPrematureFailure(error);
+      RunCallbackWithError(std::move(callback_), error);
       OnProcessURLFetchResultsComplete();
       break;
   }
 }
 
 void ReportPlaybackRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
-  std::move(callback_).Run(base::unexpected(error));
+  RunCallbackWithError(std::move(callback_), error);
 }
 
 std::unique_ptr<ReportPlaybackResult> ReportPlaybackRequest::Parse(
@@ -395,7 +401,7 @@ std::unique_ptr<ReportPlaybackResult> ReportPlaybackRequest::Parse(
 void ReportPlaybackRequest::OnDataParsed(
     std::unique_ptr<ReportPlaybackResult> report_playback_result) {
   if (!report_playback_result) {
-    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+    RunCallbackWithError(std::move(callback_), PARSE_ERROR);
   } else {
     std::move(callback_).Run(std::move(report_playback_result));
   }
