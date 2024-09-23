@@ -115,9 +115,10 @@ class PermissionManager::PendingRequest {
 // object.
 class PermissionManager::PermissionResponseCallback {
  public:
-  PermissionResponseCallback(PermissionManager* permission_manager,
-                             PendingRequestLocalId request_local_id,
-                             int permission_id)
+  PermissionResponseCallback(
+      const base::WeakPtr<PermissionManager>& permission_manager,
+      PendingRequestLocalId request_local_id,
+      int permission_id)
       : permission_manager_(permission_manager),
         request_local_id_(request_local_id),
         permission_id_(permission_id),
@@ -128,20 +129,23 @@ class PermissionManager::PermissionResponseCallback {
       delete;
 
   ~PermissionResponseCallback() {
-    if (!request_answered_ &&
+    if (!request_answered_ && permission_manager_ &&
         permission_manager_->pending_requests_.Lookup(request_local_id_)) {
       permission_manager_->pending_requests_.Remove(request_local_id_);
     }
   }
 
   void OnPermissionsRequestResponseStatus(ContentSetting content_setting) {
+    if (!permission_manager_) {
+      return;
+    }
     request_answered_ = true;
     permission_manager_->OnPermissionsRequestResponseStatus(
         request_local_id_, permission_id_, content_setting);
   }
 
  private:
-  raw_ptr<PermissionManager> permission_manager_;
+  base::WeakPtr<PermissionManager> permission_manager_;
   PendingRequestLocalId request_local_id_;
   int permission_id_;
   bool request_answered_;
@@ -250,8 +254,8 @@ void PermissionManager::RequestPermissionsInternal(
     const GURL canonical_requesting_origin = PermissionUtil::GetCanonicalOrigin(
         permission, request_description.requesting_origin, embedding_origin);
 
-    auto response_callback =
-        std::make_unique<PermissionResponseCallback>(this, request_local_id, i);
+    auto response_callback = std::make_unique<PermissionResponseCallback>(
+        weak_factory_.GetWeakPtr(), request_local_id, i);
     PermissionContextBase* context = GetPermissionContext(permission);
     if (!context || PermissionUtil::IsPermissionBlockedInPartition(
                         permission, request_description.requesting_origin,
