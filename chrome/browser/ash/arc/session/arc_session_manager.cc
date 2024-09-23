@@ -93,6 +93,9 @@ constexpr const char kArcSaltPath[] = "/var/lib/misc/arc_salt";
 constexpr const char kArcPrepareHostGeneratedDirJobName[] =
     "arc_2dprepare_2dhost_2dgenerated_2ddir";
 
+constexpr const char kArcvmInstallAndroidImageDlc[] =
+    "arcvm_2dinstall_2dandroid_2dimage_2ddlc";
+
 // Maximum amount of time we'll wait for ARC to finish booting up. Once this
 // timeout expires, keep ARC running in case the user wants to file feedback,
 // but present the UI to try again.
@@ -1960,6 +1963,14 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
               UpstartOperation::JOB_STOP_AND_START,
               {std::string("IS_ARCVM=") + (is_arcvm ? "1" : "0")}},
   };
+
+  if (arc::IsArcVmDlcEnabled()) {
+    VLOG(1) << "Adding and starting the Android DLC install job.";
+    jobs.emplace_front(JobDesc{kArcvmInstallAndroidImageDlc,
+                               UpstartOperation::JOB_STOP_AND_START,
+                               {}});
+  }
+
   ConfigureUpstartJobs(std::move(jobs),
                        base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
                                       weak_ptr_factory_.GetWeakPtr()));

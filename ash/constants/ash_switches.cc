@@ -512,6 +512,9 @@ const char kEnableArc[] = "enable-arc";
 // Enables ARCVM.
 const char kEnableArcVm[] = "enable-arcvm";
 
+// Enables ARCVM DLC.
+const char kEnableArcVmDlc[] = "enable-arcvm-dlc";
+
 // Enables ARCVM realtime VCPU feature.
 const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
 

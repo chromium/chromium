@@ -132,6 +132,9 @@ bool IsArcAvailable();
 // for ARC R container and your code won't work on that configuration.
 bool IsArcVmEnabled();
 
+// Returns true if ARC VM DLC is enabled.
+bool IsArcVmDlcEnabled();
+
 // This is a thin wrapper around version_loader::GetArcAndroidSdkVersion() and
 // returns the version as integer. For example, when the device uses ARC++ P,
 // it returns kArcVersionP that is 28, and for ARC++ container R and ARCVM R, it

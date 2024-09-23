@@ -156,6 +156,7 @@ extern const char kDisableSigninFrameClientCerts[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableVolumeAdjustSound[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArc[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArcVm[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArcVmDlc[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableArcVmRtVcpu[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kEnableAshDebugBrowser[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
