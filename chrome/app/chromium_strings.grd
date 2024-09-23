@@ -660,7 +660,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_ELEVATION_SERVICE_DESCRIPTION"
                  desc="The description of the Windows elevation service. Displayed in the Windows Services management console.">
-          Provides elevation services for <ph name="BROWSER_NAME">$1<ex>Chromium</ex></ph>.
+          Provides elevated privileges for <ph name="BROWSER_NAME">$1<ex>Chromium</ex></ph>.
         </message>
       </if>
       <!-- Options Dialog -->
