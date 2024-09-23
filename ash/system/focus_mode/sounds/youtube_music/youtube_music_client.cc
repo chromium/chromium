@@ -320,15 +320,14 @@ void YouTubeMusicClient::OnGetMusicSectionRequestDone(
     return;
   }
 
-  if (!result.has_value()) {
+  if (!result.has_value() || !result.value()) {
     std::move(music_section_callback_).Run(result.error(), std::nullopt);
     return;
   }
 
   std::move(music_section_callback_)
       .Run(google_apis::HTTP_SUCCESS,
-           GetPlaylistsFromApiTopLevelMusicRecommendations(
-               result.value().get()));
+           GetPlaylistsFromApiTopLevelMusicRecommendations(*result.value()));
 }
 
 void YouTubeMusicClient::OnGetPlaylistRequestDone(
@@ -349,14 +348,14 @@ void YouTubeMusicClient::OnGetPlaylistRequestDone(
     return;
   }
 
-  if (!result.has_value()) {
+  if (!result.has_value() || !result.value()) {
     std::move(playlist_callback).Run(result.error(), std::nullopt);
     return;
   }
 
   std::move(playlist_callback)
       .Run(google_apis::HTTP_SUCCESS,
-           GetPlaylistFromApiPlaylist(result.value().get()));
+           GetPlaylistFromApiPlaylist(*result.value()));
 }
 
 void YouTubeMusicClient::OnPlaybackQueuePrepareRequestDone(
@@ -381,7 +380,7 @@ void YouTubeMusicClient::OnPlaybackQueuePrepareRequestDone(
 
   std::move(playback_context_prepare_callback_)
       .Run(google_apis::HTTP_SUCCESS,
-           GetPlaybackContextFromApiQueue(result.value().get()));
+           GetPlaybackContextFromApiQueue(*result.value()));
 }
 
 void YouTubeMusicClient::OnPlaybackQueueNextRequestDone(
@@ -406,7 +405,7 @@ void YouTubeMusicClient::OnPlaybackQueueNextRequestDone(
 
   std::move(playback_context_next_callback_)
       .Run(google_apis::HTTP_SUCCESS,
-           GetPlaybackContextFromApiQueue(&result.value()->queue()));
+           GetPlaybackContextFromApiQueue(result.value()->queue()));
 }
 
 void YouTubeMusicClient::OnReportPlaybackRequestDone(
