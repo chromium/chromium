@@ -6338,11 +6338,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox_feature_configs::SuggestionAnswerMigration::
                             kOmniboxSuggestionAnswerMigration)},
 
-    {"omnibox-on-clobber-focus-type-on-content",
-     flag_descriptions::kOmniboxOnClobberFocusTypeOnContentName,
-     flag_descriptions::kOmniboxOnClobberFocusTypeOnContentDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxOnClobberFocusTypeOnContent)},
-
     {"omnibox-zero-suggest-prefetch-debouncing",
      flag_descriptions::kOmniboxZeroSuggestPrefetchDebouncingName,
      flag_descriptions::kOmniboxZeroSuggestPrefetchDebouncingDescription,

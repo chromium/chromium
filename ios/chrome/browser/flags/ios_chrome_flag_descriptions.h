@@ -690,6 +690,11 @@ extern const char kOmniboxMlUrlScoringModelDescription[];
 extern const char kOmniboxMlUrlSearchBlendingName[];
 extern const char kOmniboxMlUrlSearchBlendingDescription[];
 
+// Title and description for the flag that enables ON_CLOBBER focus type
+// for zero prefix requests with an empty input on WEB/SRP.
+extern const char kOmniboxOnClobberFocusTypeOnIOSName[];
+extern const char kOmniboxOnClobberFocusTypeOnIOSDescription[];
+
 // Title and description for the flag to enable Omnibox On Device Head
 // suggestions (incognito).
 extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[];

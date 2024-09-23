@@ -6656,9 +6656,9 @@
     "expiry_milestone": 140
   },
   {
-    "name": "omnibox-on-clobber-focus-type-on-content",
-    "owners": [ "stkhapugin@chromium.org", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 130
+    "name": "omnibox-on-clobber-focus-type-on-ios",
+    "owners": [ "ananyaseelam@google.com", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "omnibox-on-device-head-suggestions",

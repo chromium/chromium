@@ -1949,6 +1949,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableLogFormEventsToAllParsedFormTypes)},
+    {"omnibox-on-clobber-focus-type-on-ios",
+     flag_descriptions::kOmniboxOnClobberFocusTypeOnIOSName,
+     flag_descriptions::kOmniboxOnClobberFocusTypeOnIOSDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxOnClobberFocusTypeOnContent)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -2800,12 +2800,6 @@ const char kOmniboxMlUrlSearchBlendingName[] = "Omnibox ML URL Search Blending";
 const char kOmniboxMlUrlSearchBlendingDescription[] =
     "Specifies how to blend URL ML scores and search traditional scores.";
 
-const char kOmniboxOnClobberFocusTypeOnContentName[] =
-    "Omnibox On Clobber Focus Type On Content";
-const char kOmniboxOnClobberFocusTypeOnContentDescription[] =
-    "Send ON_CLOBBER focus type for zero-prefix requests with an empty input "
-    "on Web/SRP.";
-
 const char kOmniboxSuggestionAnswerMigrationName[] =
     "Omnibox SuggestionAnswer Migration";
 const char kOmniboxSuggestionAnswerMigrationDescription[] =
