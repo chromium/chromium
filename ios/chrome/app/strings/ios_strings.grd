@@ -2546,6 +2546,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_OVERLAY_CONSENT_TITLE" desc="The title for the lens overlay consent dialog. [iOS only].">
         Tap or highlight to search anything with Google Lens
       </message>
+      <message name="IDS_IOS_LENS_OVERLAY_NEW_TAB_MESSAGE" desc="Message displayed when a context menu selection resuls in a new tab openening in the background [iOS only].">
+        Your selection opened in a new tab
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_GO_TO_NEW_TAB" desc="Call to action to go to a tab that has just been opened in the background.">
+        Go to tab
+      </message>
       <message name="IDS_IOS_LINK_TO_TEXT_ERROR_DESCRIPTION" desc="Description message in the alert dialog shown when link-to-text link generation failed. [iOS only]">
         A link to the highlight can not be created.
       </message>

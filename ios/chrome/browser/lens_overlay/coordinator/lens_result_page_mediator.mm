@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 #import "ios/web/public/ui/context_menu_params.h"
@@ -31,6 +32,7 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 namespace {
@@ -334,15 +336,16 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 - (void)contextMenuConfigurationProvider:
             (ContextMenuConfigurationProvider*)configurationProvider
         didOpenNewTabInBackgroundWithURL:(GURL)URL {
-  MDCSnackbarMessage* snackbarMessage =
-      CreateSnackbarMessage(@"**New tab created**");
+  MDCSnackbarMessage* snackbarMessage = CreateSnackbarMessage(
+      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_NEW_TAB_MESSAGE));
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
   __weak __typeof__(self) weakSelf = self;
   action.handler = ^() {
     [weakSelf activateWebStateWithURL:URL];
   };
-  action.title = @"**Open**";
-  action.accessibilityLabel = @"**Open**";
+  action.title = l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_GO_TO_NEW_TAB);
+  action.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_GO_TO_NEW_TAB);
   snackbarMessage.action = action;
   [self.snackbarHandler showSnackbarMessage:snackbarMessage bottomOffset:0];
 }
