@@ -204,14 +204,14 @@ public class SearchActivityClientImplUnitTest {
 
     @Test
     public void requestOmniboxForResult_noActionWhenActivityIsNull() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                null, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(null, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
     }
 
     @Test
     public void requestOmniboxForResult_propagatesCurrentUrl() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, GOOD_URL, IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(mActivity, GOOD_URL, IntentOrigin.CUSTOM_TAB, null);
 
         var intentForResult = Shadows.shadowOf(mActivity).getNextStartedActivityForResult();
 
@@ -225,8 +225,8 @@ public class SearchActivityClientImplUnitTest {
     @Test
     public void requestOmniboxForResult_acceptsEmptyUrl() {
         // This is technically an invalid case. The test verifies we still do the right thing.
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(mActivity, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
 
         var intentForResult = Shadows.shadowOf(mActivity).getNextStartedActivityForResult();
 

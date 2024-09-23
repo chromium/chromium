@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout.LayoutParams;
 
@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -39,7 +40,7 @@ public class HubManagerImpl implements HubManager, HubController {
             new ValueChangedCallback<>(this::onFocusedPaneChanged);
     private final @NonNull ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
             new ObservableSupplierImpl<>();
-    private final @NonNull Context mContext;
+    private final @NonNull Activity mActivity;
     private final @NonNull OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final @NonNull PaneManagerImpl mPaneManager;
     private final @NonNull HubContainerView mHubContainerView;
@@ -50,6 +51,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull MenuButtonCoordinator mMenuButtonCoordinator;
     private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
     private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final @NonNull SearchActivityClient mSearchActivityClient;
 
     // This is effectively NonNull and final once the HubLayout is initialized.
     private HubLayoutController mHubLayoutController;
@@ -60,7 +62,7 @@ public class HubManagerImpl implements HubManager, HubController {
 
     /** See {@link HubManagerFactory#createHubManager}. */
     public HubManagerImpl(
-            @NonNull Context context,
+            @NonNull Activity activity,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull PaneListBuilder paneListBuilder,
             @NonNull BackPressManager backPressManager,
@@ -69,8 +71,9 @@ public class HubManagerImpl implements HubManager, HubController {
             @NonNull ObservableSupplier<Tab> tabSupplier,
             @NonNull MenuButtonCoordinator menuButtonCoordinator,
             @NonNull HubShowPaneHelper hubShowPaneHelper,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
-        mContext = context;
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @NonNull SearchActivityClient searchActivityClient) {
+        mActivity = activity;
         mProfileProviderSupplier = profileProviderSupplier;
         mPaneManager = new PaneManagerImpl(paneListBuilder, mHubVisibilitySupplier);
         mBackPressManager = backPressManager;
@@ -80,10 +83,11 @@ public class HubManagerImpl implements HubManager, HubController {
         mMenuButtonCoordinator = menuButtonCoordinator;
         mHubShowPaneHelper = hubShowPaneHelper;
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        mSearchActivityClient = searchActivityClient;
 
         // TODO(crbug.com/40283238): Consider making this a xml file so the entire core UI is
         // inflated.
-        mHubContainerView = new HubContainerView(mContext);
+        mHubContainerView = new HubContainerView(mActivity);
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mHubContainerView.setLayoutParams(params);
@@ -159,7 +163,7 @@ public class HubManagerImpl implements HubManager, HubController {
     @Override
     public @ColorInt int getBackgroundColor(@Nullable Pane pane) {
         @HubColorScheme int colorScheme = HubColors.getColorSchemeSafe(pane);
-        return HubColors.getBackgroundColor(mContext, colorScheme);
+        return HubColors.getBackgroundColor(mActivity, colorScheme);
     }
 
     @Override
@@ -199,13 +203,15 @@ public class HubManagerImpl implements HubManager, HubController {
 
         mHubCoordinator =
                 new HubCoordinator(
+                        mActivity,
                         mProfileProviderSupplier,
                         mHubContainerView,
                         mPaneManager,
                         mHubLayoutController,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSearchActivityClient);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
         Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         attachPaneDependencies(pane);

@@ -108,8 +108,8 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentOrigin_trustedIntent() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(mActivity, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
@@ -117,8 +117,8 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentOrigin_untrustedIntent() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(mActivity, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
@@ -127,8 +127,8 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentSearchType_trustedIntent() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(mActivity, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
@@ -143,8 +143,8 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentSearchType_untrustedIntent() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(mActivity, EMPTY_URL, IntentOrigin.CUSTOM_TAB, null);
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         intent.removeExtra(IntentUtils.TRUSTED_APPLICATION_CODE_EXTRA);
@@ -153,8 +153,8 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentUrl_forNullUrl() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, null, IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(mActivity, null, IntentOrigin.CUSTOM_TAB, null);
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertNull(SearchActivityUtils.getIntentUrl(intent));
         // Remove trust
@@ -164,8 +164,9 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentUrl_forEmptyUrl() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, GURL.emptyGURL(), IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(
+                        mActivity, GURL.emptyGURL(), IntentOrigin.CUSTOM_TAB, null);
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertNull(SearchActivityUtils.getIntentUrl(intent));
         // Remove trust
@@ -175,8 +176,9 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentUrl_forInvalidUrl() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, new GURL("abcd"), IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(
+                        mActivity, new GURL("abcd"), IntentOrigin.CUSTOM_TAB, null);
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertNull(SearchActivityUtils.getIntentUrl(intent));
         // Remove trust
@@ -186,8 +188,9 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentUrl_forValidUrl() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, new GURL("https://abc.xyz"), IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(
+                        mActivity, new GURL("https://abc.xyz"), IntentOrigin.CUSTOM_TAB, null);
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals("https://abc.xyz/", SearchActivityUtils.getIntentUrl(intent).getSpec());
         // Remove trust
@@ -197,8 +200,8 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentSearchType_emptyPackageName() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, GOOD_URL, IntentOrigin.CUSTOM_TAB, "");
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(mActivity, GOOD_URL, IntentOrigin.CUSTOM_TAB, "");
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
@@ -211,8 +214,8 @@ public class SearchActivityUtilsUnitTest {
 
     @Test
     public void getIntentSearchType_nullPackageName() {
-        SearchActivityClientImpl.requestOmniboxForResult(
-                mActivity, GOOD_URL, IntentOrigin.CUSTOM_TAB, null);
+        new SearchActivityClientImpl()
+                .requestOmniboxForResult(mActivity, GOOD_URL, IntentOrigin.CUSTOM_TAB, null);
 
         var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
         assertEquals(IntentOrigin.CUSTOM_TAB, SearchActivityUtils.getIntentOrigin(intent));
@@ -228,8 +231,9 @@ public class SearchActivityUtilsUnitTest {
         var cases = List.of("ab", "a.b", "a-b", "0.9", "a.0", "k-9", "A_Z", "ABC123");
 
         for (var testCase : cases) {
-            SearchActivityClientImpl.requestOmniboxForResult(
-                    mActivity, GOOD_URL, IntentOrigin.CUSTOM_TAB, testCase);
+            new SearchActivityClientImpl()
+                    .requestOmniboxForResult(
+                            mActivity, GOOD_URL, IntentOrigin.CUSTOM_TAB, testCase);
             var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
             assertEquals(testCase, SearchActivityUtils.getReferrer(intent));
             // Remove trust
@@ -243,8 +247,9 @@ public class SearchActivityUtilsUnitTest {
         var cases = List.of("a", "a.", ".a", "a&b", "a?b", "a+b", "a$b", "a_");
 
         for (var testCase : cases) {
-            SearchActivityClientImpl.requestOmniboxForResult(
-                    mActivity, GOOD_URL, IntentOrigin.CUSTOM_TAB, testCase);
+            new SearchActivityClientImpl()
+                    .requestOmniboxForResult(
+                            mActivity, GOOD_URL, IntentOrigin.CUSTOM_TAB, testCase);
             var intent = Shadows.shadowOf(mActivity).getNextStartedActivityForResult().intent;
             // Referrer will likely be stripped by the Client part...
             assertNull(IntentUtils.safeGetStringExtra(intent, SearchActivityExtras.EXTRA_REFERRER));

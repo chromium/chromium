@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_LI
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -26,8 +27,12 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +42,7 @@ import java.util.Objects;
 public class HubToolbarMediator {
     private static final int INVALID_PANE_SWITCHER_INDEX = -1;
 
+    private final @NonNull Activity mActivity;
     private final @NonNull PropertyModel mPropertyModel;
 
     private final @NonNull Callback<FullButtonData> mOnActionButtonChangeCallback =
@@ -45,6 +51,7 @@ public class HubToolbarMediator {
 
     private final @NonNull PaneManager mPaneManager;
     private final @NonNull Tracker mTracker;
+    private final @NonNull SearchActivityClient mSearchActivityClient;
     // The order of entries in this map are the order the buttons should appear to the user. A null
     // value should not be shown to the user.
     private final ArrayList<Pair<Integer, DisplayButtonData>> mCachedPaneSwitcherButtonData =
@@ -59,12 +66,16 @@ public class HubToolbarMediator {
 
     /** Creates the mediator. */
     public HubToolbarMediator(
+            @NonNull Activity activity,
             @NonNull PropertyModel propertyModel,
             @NonNull PaneManager paneManager,
-            @NonNull Tracker tracker) {
+            @NonNull Tracker tracker,
+            @NonNull SearchActivityClient searchActivityClient) {
+        mActivity = activity;
         mPropertyModel = propertyModel;
         mPaneManager = paneManager;
         mTracker = tracker;
+        mSearchActivityClient = searchActivityClient;
 
         for (@PaneId int paneId : paneManager.getPaneOrderController().getPaneOrder()) {
             @Nullable Pane pane = paneManager.getPaneForId(paneId);
@@ -221,6 +232,7 @@ public class HubToolbarMediator {
     }
 
     private void onSearchClicked() {
-        // TODO(crbug.com/366234331): Launch search activity when this is clicked.
+        mSearchActivityClient.requestOmniboxForResult(
+                mActivity, new GURL(UrlConstants.NTP_NON_NATIVE_URL), IntentOrigin.HUB, null);
     }
 }

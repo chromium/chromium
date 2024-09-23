@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -55,6 +57,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
     /**
      * Creates the {@link HubCoordinator}.
      *
+     * @param activity The Android activity context.
      * @param profileProviderSupplier Used to fetch dependencies.
      * @param containerView The view to attach the Hub to.
      * @param paneManager The {@link PaneManager} for Hub.
@@ -62,15 +65,18 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
      * @param currentTabSupplier The supplier of the current {@link Tab}.
      * @param menuButtonCoordinator Root component for the app menu.
      * @param edgeToEdgeSupplier The supplier of {@link EdgeToEdgeController}.
+     * @param searchActivityClient A client for the search activity, used to launch search.
      */
     public HubCoordinator(
+            @NonNull Activity activity,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull FrameLayout containerView,
             @NonNull PaneManager paneManager,
             @NonNull HubLayoutController hubLayoutController,
             @NonNull ObservableSupplier<Tab> currentTabSupplier,
             @NonNull MenuButtonCoordinator menuButtonCoordinator,
-            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @NonNull SearchActivityClient searchActivityClient) {
         Context context = containerView.getContext();
         mBackPressStateChangeCallback = (ignored) -> updateHandleBackPressSupplier();
         mPaneManager = paneManager;
@@ -91,7 +97,12 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
         HubToolbarView hubToolbarView = mContainerView.findViewById(R.id.hub_toolbar);
         mHubToolbarCoordinator =
                 new HubToolbarCoordinator(
-                        hubToolbarView, paneManager, menuButtonCoordinator, tracker);
+                        activity,
+                        hubToolbarView,
+                        paneManager,
+                        menuButtonCoordinator,
+                        tracker,
+                        searchActivityClient);
 
         HubPaneHostView hubPaneHostView = mContainerView.findViewById(R.id.hub_pane_host);
         mHubPaneHostCoordinator =

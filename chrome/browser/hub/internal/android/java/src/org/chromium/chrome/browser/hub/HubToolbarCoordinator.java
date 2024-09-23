@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.hub;
 
+import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -25,15 +27,19 @@ public class HubToolbarCoordinator {
      * @param paneManager Interact with the current and all {@link Pane}s.
      * @param menuButtonCoordinator Root component for the app menu.
      * @param tracker Used to record user engagement events.
+     * @param searchActivityClient A client for the search activity, used to launch search.
      */
     public HubToolbarCoordinator(
+            @NonNull Activity activity,
             @NonNull HubToolbarView hubToolbarView,
             @NonNull PaneManager paneManager,
             @NonNull MenuButtonCoordinator menuButtonCoordinator,
-            @NonNull Tracker tracker) {
+            @NonNull Tracker tracker,
+            @NonNull SearchActivityClient searchActivityClient) {
         PropertyModel model = new PropertyModel.Builder(HubToolbarProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(model, hubToolbarView, HubToolbarViewBinder::bind);
-        mMediator = new HubToolbarMediator(model, paneManager, tracker);
+        mMediator =
+                new HubToolbarMediator(activity, model, paneManager, tracker, searchActivityClient);
 
         MenuButton menuButton = hubToolbarView.findViewById(R.id.menu_button_wrapper);
         menuButtonCoordinator.setMenuButton(menuButton);

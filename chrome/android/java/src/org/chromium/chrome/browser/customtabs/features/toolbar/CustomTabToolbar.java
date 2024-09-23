@@ -1926,11 +1926,12 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         if (tapHandler != null) {
                             tapHandler.accept(tab);
                         } else {
-                            SearchActivityClientImpl.requestOmniboxForResult(
-                                    tab.getWindowAndroid().getActivity().get(),
-                                    tab.getUrl(),
-                                    IntentOrigin.CUSTOM_TAB,
-                                    clientPackageName);
+                            new SearchActivityClientImpl()
+                                    .requestOmniboxForResult(
+                                            tab.getWindowAndroid().getActivity().get(),
+                                            tab.getUrl(),
+                                            IntentOrigin.CUSTOM_TAB,
+                                            clientPackageName);
                         }
                     });
 

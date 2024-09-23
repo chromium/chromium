@@ -66,19 +66,8 @@ public class SearchActivityClientImpl implements SearchActivityClient {
         return intent;
     }
 
-    /**
-     * Call up SearchActivity/Omnibox on behalf of the current Activity.
-     *
-     * <p>Allows the caller to instantiate the Omnibox and retrieve Suggestions for the supplied
-     * webpage. Response will be delivered via {@link Activity#onActivityResult}.
-     *
-     * @param activity the current activity; may be {@code null}, in which case intent will not be
-     *     issued
-     * @param url the URL of the page to retrieve suggestions for
-     * @param intentOrigin The origin of the incoming intent.
-     * @param referrer the referrer package name
-     */
-    public static void requestOmniboxForResult(
+    @Override
+    public void requestOmniboxForResult(
             @Nullable Activity activity,
             @NonNull GURL currentUrl,
             @IntentOrigin int intentOrigin,

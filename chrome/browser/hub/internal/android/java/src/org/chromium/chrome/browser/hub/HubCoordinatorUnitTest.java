@@ -17,6 +17,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
@@ -57,6 +59,7 @@ public class HubCoordinatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private Activity mActivity;
     @Mock private Tab mTab;
     @Mock private Tab mIncognitoTab;
     @Mock private HubLayoutController mHubLayoutController;
@@ -66,6 +69,7 @@ public class HubCoordinatorUnitTest {
     @Mock private DisplayButtonData mReferenceButtonData;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Tracker mTracker;
+    @Mock private SearchActivityClient mSearchActivityClient;
 
     private ObservableSupplierImpl<Boolean> mHubVisibilitySupplier = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mTabSwitcherBackPressSupplier =
@@ -132,13 +136,15 @@ public class HubCoordinatorUnitTest {
 
         mHubCoordinator =
                 new HubCoordinator(
+                        mActivity,
                         mProfileProviderSupplier,
                         mRootView,
                         mPaneManager,
                         mHubLayoutController,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mEdgeToEdgeSupplier);
+                        mEdgeToEdgeSupplier,
+                        mSearchActivityClient);
         ShadowLooper.runUiThreadTasks();
         mRootView.getChildCount();
         assertNotEquals(0, mRootView.getChildCount());
