@@ -181,6 +181,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Account is uknown with an invalid token"/>
 </enum>
 
+<enum name="BooleanBoundToTheSameKey">
+  <int value="0" label="Bound to different keys"/>
+  <int value="1" label="Bound to the same key"/>
+</enum>
+
 <enum name="BooleanGetAccountsSucceeded">
   <int value="0" label="Account fetching failed"/>
   <int value="1" label="Account fetching succeeded"/>
@@ -1031,6 +1036,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Engine Initialized With Auto Start"/>
   <int value="5" label="Restored backup of a syncing device on Android"/>
 </enum>
+
+<!-- LINT.IfChange(TokenBindingBoundTokenPrevalence) -->
+
+<enum name="TokenBindingBoundTokenPrevalence">
+  <int value="0" label="Token list is empty"/>
+  <int value="1" label="None of the tokens are bound"/>
+  <int value="2" label="Some tokens are bound, some unbound"/>
+  <int value="3" label="All tokens are bound"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.cc:BoundTokenPrevalence) -->
 
 <!-- LINT.IfChange(TokenBindingGenerateAssertionResult) -->
 

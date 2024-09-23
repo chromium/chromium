@@ -1618,6 +1618,11 @@ class MutableProfileOAuth2TokenServiceDelegateBoundTokensTest
     test_service_observation_.Observe(oauth2_service_delegate_.get());
   }
 
+  void ShutdownOAuth2ServiceDelegate() {
+    test_service_observation_.Reset();
+    oauth2_service_delegate_->Shutdown();
+  }
+
  private:
   unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service_;
 };
@@ -1678,7 +1683,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
-       PersistenceLoadBoundTokens) {
+       PersistenceLoadOneBoundToken) {
   InitializeOAuth2ServiceDelegateWithTokenBinding();
   const CoreAccountId kAccountId = CoreAccountId::FromGaiaId("account_id");
   const CoreAccountId kAccountId2 = CoreAccountId::FromGaiaId("account_id_2");
@@ -1692,16 +1697,13 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
       kFakeWrappedBindingKey);
   oauth2_service_delegate_->UpdateCredentials(kAccountId2, "non_bound_token");
 
-  // Clear in memory storage and re-load tokens from disk.
-  oauth2_service_delegate_->refresh_tokens_.clear();
+  // Re-initialize the delegate and re-load tokens from disk.
+  ShutdownOAuth2ServiceDelegate();
+  InitializeOAuth2ServiceDelegateWithTokenBinding();
+  base::HistogramTester histogram_tester;
   oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
                                             /*is_syncing=*/false);
-  EXPECT_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS,
-            oauth2_service_delegate_->load_credentials_state());
   WaitForRefreshTokensLoaded();
-  EXPECT_EQ(
-      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
-      oauth2_service_delegate_->load_credentials_state());
 
   EXPECT_TRUE(oauth2_service_delegate_->RefreshTokenIsAvailable(kAccountId));
   EXPECT_FALSE(
@@ -1709,6 +1711,58 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   EXPECT_TRUE(oauth2_service_delegate_->RefreshTokenIsAvailable(kAccountId2));
   EXPECT_TRUE(
       oauth2_service_delegate_->GetWrappedBindingKey(kAccountId2).empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.TokenBinding.BoundTokenPrevalence",
+      /*kSomeTokensBoundSomeUnbound*/ 2, /*expected_bucket_count=*/1);
+  // The following histogram is not recorded because there is only one bound
+  // token.
+  histogram_tester.ExpectTotalCount("Signin.TokenBinding.BoundToTheSameKey", 0);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
+       PersistenceLoadMultipleBoundTokens) {
+  InitializeOAuth2ServiceDelegateWithTokenBinding();
+  const CoreAccountId kAccountId = CoreAccountId::FromGaiaId("account_id");
+  const CoreAccountId kAccountId2 = CoreAccountId::FromGaiaId("account_id_2");
+  const CoreAccountId kAccountId3 = CoreAccountId::FromGaiaId("account_id_3");
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+  // Ensure DB is clean.
+  ASSERT_TRUE(oauth2_service_delegate_->GetAccounts().empty());
+
+  oauth2_service_delegate_->UpdateCredentials(
+      kAccountId, "bound_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey);
+  oauth2_service_delegate_->UpdateCredentials(
+      kAccountId2, "bound_token_2",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey);
+  oauth2_service_delegate_->UpdateCredentials(
+      kAccountId3, "bound_token_3",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey);
+
+  // Re-initialize the delegate and re-load tokens from disk.
+  ShutdownOAuth2ServiceDelegate();
+  InitializeOAuth2ServiceDelegateWithTokenBinding();
+  base::HistogramTester histogram_tester;
+  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
+                                            /*is_syncing=*/false);
+  WaitForRefreshTokensLoaded();
+
+  for (const CoreAccountId& account_id :
+       {kAccountId, kAccountId2, kAccountId3}) {
+    EXPECT_TRUE(oauth2_service_delegate_->RefreshTokenIsAvailable(account_id));
+    EXPECT_EQ(oauth2_service_delegate_->GetWrappedBindingKey(account_id),
+              kFakeWrappedBindingKey);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.TokenBinding.BoundTokenPrevalence",
+      /*kAllTokensBound*/ 3, /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Signin.TokenBinding.BoundToTheSameKey",
+                                      true, /*expected_bucket_count=*/1);
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,

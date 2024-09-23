@@ -2544,6 +2544,31 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.TokenBinding.BoundTokenPrevalence"
+    enum="TokenBindingBoundTokenPrevalence" expires_after="2025-02-10">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Value indicating how the number of the bound refresh tokens relates to the
+    total number of valid refresh tokens. This is recorded each time any tokens
+    have been successfully loaded into memory from the database, which typically
+    happens on startup.
+  </summary>
+</histogram>
+
+<histogram name="Signin.TokenBinding.BoundToTheSameKey"
+    enum="BooleanBoundToTheSameKey" expires_after="2025-02-10">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Whether all refresh tokens in a single profile are bound to the same key.
+    The expectation is that all tokens should be bound to the same key. This is
+    recorded each time any tokens have been successfully loaded into memory from
+    the database, which typically happens on startup. Recorded only if at least
+    two of the successfully loaded tokens are bound.
+  </summary>
+</histogram>
+
 <histogram name="Signin.TokenBinding.GenerateAssertionResult"
     enum="TokenBindingGenerateAssertionResult" expires_after="2025-02-10">
   <owner>alexilin@chromium.org</owner>

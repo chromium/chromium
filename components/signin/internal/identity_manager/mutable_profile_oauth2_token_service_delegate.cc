@@ -102,6 +102,48 @@ signin::LoadCredentialsState LoadCredentialsStateFromTokenResult(
       LOAD_CREDENTIALS_FINISHED_WITH_UNKNOWN_ERRORS;
 }
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(BoundTokenPrevalence)
+enum class BoundTokenPrevalence {
+  kEmpty = 0,
+  kZeroTokensBound = 1,
+  kSomeTokensBoundSomeUnbound = 2,
+  kAllTokensBound = 3,
+  kMaxValue = kAllTokensBound
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:TokenBindingBoundTokenPrevalence)
+
+void RecordTokenBindingHistogramsOnCredentialsLoaded(
+    TokenBindingHelper* token_binding_helper,
+    size_t token_count) {
+  size_t bound_token_count =
+      token_binding_helper ? token_binding_helper->GetBoundTokenCount() : 0;
+  CHECK_LE(bound_token_count, token_count);
+
+  BoundTokenPrevalence prevalence = [token_count, bound_token_count] {
+    if (token_count == 0) {
+      return BoundTokenPrevalence::kEmpty;
+    } else if (bound_token_count == 0) {
+      return BoundTokenPrevalence::kZeroTokensBound;
+    } else if (token_count == bound_token_count) {
+      return BoundTokenPrevalence::kAllTokensBound;
+    } else {
+      return BoundTokenPrevalence::kSomeTokensBoundSomeUnbound;
+    }
+  }();
+
+  base::UmaHistogramEnumeration("Signin.TokenBinding.BoundTokenPrevalence",
+                                prevalence);
+  if (bound_token_count > 1) {
+    CHECK(token_binding_helper);
+    base::UmaHistogramBoolean("Signin.TokenBinding.BoundToTheSameKey",
+                              token_binding_helper->AreAllBindingKeysSame());
+  }
+}
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
 // This feature controls whether or not token data is re-encrypted when OSCrypt
 // indicates that it should be. This is intended as an emergency 'off-switch' in
 // case any unexpected issues are encountered in the key migration.
@@ -577,6 +619,13 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
       FireRefreshTokenRevoked(account_id);
     }
   }
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  RecordTokenBindingHistogramsOnCredentialsLoaded(
+      token_binding_helper_.get(),
+      std::ranges::count_if(refresh_tokens_, [](const auto& kv_pair) {
+        return kv_pair.second != GaiaConstants::kInvalidRefreshToken;
+      }));
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   base::UmaHistogramBoolean("Signin.ReencryptTokensInDb", did_reencrypt);
 }
 
